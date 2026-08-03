@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "my-book-club-site"
+  },
+  "targets": {
+    "my-book-club-site": {
+      "hosting": {
+        "the-easy-way-app-student": [
+          "the-easy-way-app-student"
+        ]
+      }
+    }
+  }
+}
