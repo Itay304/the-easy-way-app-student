@@ -48,6 +48,10 @@ export default function Home() {
             : Promise.resolve(null),
         ]);
 
+        if (import.meta.env.DEV) {
+          console.log('[getMyAssignments] response:', assignmentsRes.data);
+        }
+
         const preview = assignmentsRes.data.assignments
           .filter((a) => a.status === 'active')
           .slice(0, ASSIGNMENTS_PREVIEW_LIMIT);
@@ -62,7 +66,8 @@ export default function Home() {
             setAnnouncement(latestAnnouncement);
           }
         }
-      } catch {
+      } catch (err) {
+        console.error('[Home] load failed:', err);
         if (!cancelled) setError('שגיאה בטעינת מסך הבית.');
       } finally {
         if (!cancelled) setLoading(false);

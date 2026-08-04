@@ -11,11 +11,18 @@ export default function useAuthRole() {
 
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
       if (!firebaseUser) {
+        setUser(null);
         setProfile(null);
         setStatus('signed-out');
+        return;
       }
+      // מרעננים בכפייה את ה-ID token לפני כל שימוש בו, בדיוק כמו
+      // UserRoleManager.java ב-Android: ל-getMyAssignments (Cloud Function)
+      // יש request.auth.token.institutionId — אם ה-token נשאר cached מלפני
+      // סנכרון ה-Custom Claims (syncUserClaims), הקריאה "נכשלת בשקט" ומחזירה
+      // assignments ריק, גם כשה-Firestore doc כבר מעודכן.
+      firebaseUser.getIdToken(true).finally(() => setUser(firebaseUser));
     });
     return unsubAuth;
   }, []);
@@ -29,10 +36,11 @@ export default function useAuthRole() {
       (snap) => {
         const data = snap.data() || {};
         const institutionId = data.institutionId || null;
+        const emailPrefix = user.email ? user.email.split('@')[0] : '';
         setProfile({
           role: data.role || 'student',
           institutionId,
-          displayName: data.displayName || user.email,
+          displayName: data.displayName || user.displayName || emailPrefix,
           classIds: Array.isArray(data.classIds) ? data.classIds : [],
           totalXp: typeof data.totalXp === 'number' ? data.totalXp : 0,
           level: typeof data.level === 'number' ? data.level : 1,

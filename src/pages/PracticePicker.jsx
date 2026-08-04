@@ -25,7 +25,10 @@ export default function PracticePicker() {
         const found = res.data.assignments.find((a) => a.assignmentId === assignmentId);
         setAssignment(found || null);
       })
-      .catch(() => !cancelled && setError('שגיאה בטעינת המשימה.'));
+      .catch((err) => {
+        console.error('[PracticePicker] load failed:', err);
+        if (!cancelled) setError('שגיאה בטעינת המשימה.');
+      });
     return () => {
       cancelled = true;
     };

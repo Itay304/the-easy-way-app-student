@@ -16,7 +16,7 @@ import Profile from './pages/Profile.jsx';
 function Layout() {
   return (
     <div className="min-h-dvh flex flex-col">
-      <main className="flex-1 max-w-3xl w-full mx-auto pb-4">
+      <main className="flex-1 max-w-3xl w-full mx-auto pb-24">
         <Outlet />
       </main>
       <BottomNav />

@@ -63,7 +63,8 @@ export default function PracticeSession() {
         if (!cancelled) setAssignment(found);
         const sessionWords = await buildSessionWords(found, user.uid);
         if (!cancelled) setWords(sessionWords);
-      } catch {
+      } catch (err) {
+        console.error('[PracticeSession] load failed:', err);
         if (!cancelled) setError('שגיאה בטעינת מילות המשימה.');
       }
     }

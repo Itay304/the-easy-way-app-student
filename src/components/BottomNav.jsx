@@ -3,7 +3,7 @@ import { TABS } from '../lib/tabs.js';
 
 export default function BottomNav() {
   return (
-    <nav className="sticky bottom-0 z-40 bg-white shadow-[0_-2px_8px_rgba(0,0,0,0.06)] grid grid-cols-4">
+    <nav className="fixed inset-x-0 bottom-0 z-40 bg-white shadow-[0_-2px_8px_rgba(0,0,0,0.06)] grid grid-cols-4 pb-[env(safe-area-inset-bottom)]">
       {TABS.map((tab) => (
         <NavLink
           key={tab.path}

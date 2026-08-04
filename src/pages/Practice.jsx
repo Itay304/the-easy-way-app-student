@@ -29,7 +29,8 @@ export default function Practice() {
           active.map(async (a) => ({ assignment: a, ...(await computeAssignmentProgress(allProgress, a)) })),
         );
         if (!cancelled) setAssignments(withProgress);
-      } catch {
+      } catch (err) {
+        console.error('[Practice] load failed:', err);
         if (!cancelled) setError('שגיאה בטעינת המשימות.');
       }
     }
