@@ -2,8 +2,10 @@ import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom
 import useAuthRole from './hooks/useAuthRole.js';
 import useBackButtonGuard from './hooks/useBackButtonGuard.js';
 import useSettings from './hooks/useSettings.js';
+import useInstallGate from './hooks/useInstallGate.js';
 import { AuthProvider } from './context/AuthContext.jsx';
 import LoadingSpinner from './components/LoadingSpinner.jsx';
+import InstallRequired from './components/InstallRequired.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import Login from './pages/Login.jsx';
 import NoInstitution from './pages/NoInstitution.jsx';
@@ -27,9 +29,14 @@ function Layout() {
 }
 
 export default function App() {
+  const { requiresInstall } = useInstallGate();
   const { status, user, profile } = useAuthRole();
   const { animationsEnabled } = useSettings();
   useBackButtonGuard();
+
+  if (requiresInstall) {
+    return <InstallRequired />;
+  }
 
   if (status === 'loading') {
     return (
