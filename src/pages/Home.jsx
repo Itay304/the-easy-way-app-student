@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Flame, Star, ClipboardList } from 'lucide-react';
+import { Star, ClipboardList } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import {
   callGetMyAssignments,
@@ -12,15 +12,18 @@ import {
   markAnnouncementRead,
 } from '../lib/api.js';
 import { computeAssignmentProgress } from '../lib/assignmentProgress.js';
+import { pickWordOfDay } from '../lib/wordOfDay.js';
 import { ListSkeleton } from '../components/Skeleton.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
 import EmptyState from '../components/EmptyState.jsx';
 import AnnouncementBanner from '../components/home/AnnouncementBanner.jsx';
 import LeaderboardCard from '../components/home/LeaderboardCard.jsx';
+import StreakCard from '../components/home/StreakCard.jsx';
+import WordOfTheDayCard from '../components/home/WordOfTheDayCard.jsx';
 import AssignmentProgressCard from '../components/practice/AssignmentProgressCard.jsx';
 
 const ASSIGNMENTS_PREVIEW_LIMIT = 3;
-const LEADERBOARD_TOP_N = 3;
+const LEADERBOARD_TOP_N = 5;
 
 export default function Home() {
   const { user, profile } = useAuth();
@@ -30,6 +33,7 @@ export default function Home() {
   const [rankInfo, setRankInfo] = useState(null);
   const [topStudents, setTopStudents] = useState([]);
   const [announcement, setAnnouncement] = useState(null);
+  const [wordOfDay, setWordOfDay] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
@@ -52,16 +56,17 @@ export default function Home() {
           console.log('[getMyAssignments] response:', assignmentsRes.data);
         }
 
-        const preview = assignmentsRes.data.assignments
-          .filter((a) => a.status === 'active')
-          .slice(0, ASSIGNMENTS_PREVIEW_LIMIT);
-        const withProgress = await Promise.all(
-          preview.map(async (a) => ({ assignment: a, ...(await computeAssignmentProgress(allProgress, a)) })),
-        );
+        const active = assignmentsRes.data.assignments.filter((a) => a.status === 'active');
+        const preview = active.slice(0, ASSIGNMENTS_PREVIEW_LIMIT);
+        const [withProgress, todayWord] = await Promise.all([
+          Promise.all(preview.map(async (a) => ({ assignment: a, ...(await computeAssignmentProgress(allProgress, a)) }))),
+          pickWordOfDay(active, allProgress),
+        ]);
 
         if (!cancelled) {
           setAssignments(withProgress);
           setRankInfo(rank);
+          setWordOfDay(todayWord);
           if (latestAnnouncement && !isAnnouncementRead(latestAnnouncement.id)) {
             setAnnouncement(latestAnnouncement);
           }
@@ -100,16 +105,10 @@ export default function Home() {
 
       <AnnouncementBanner announcement={announcement} onDismiss={dismissAnnouncement} />
 
+      <WordOfTheDayCard word={wordOfDay} />
+
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-white shadow-md p-4 flex items-center gap-3">
-          <div className="h-11 w-11 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
-            <Flame size={22} strokeWidth={2.25} />
-          </div>
-          <div>
-            <p className="text-xl font-bold text-brand-text leading-none">{profile.streak}</p>
-            <p className="text-xs text-brand-grey-text mt-1">ימים ברצף</p>
-          </div>
-        </div>
+        <StreakCard streak={profile.streak} lastActiveDate={profile.lastActiveDate} />
         <div className="rounded-2xl bg-white shadow-md p-4 flex items-center gap-3">
           <div className="h-11 w-11 rounded-xl bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center shrink-0">
             <Star size={22} strokeWidth={2.25} />

@@ -45,6 +45,8 @@ export default function useAuthRole() {
           totalXp: typeof data.totalXp === 'number' ? data.totalXp : 0,
           level: typeof data.level === 'number' ? data.level : 1,
           streak: typeof data.streak === 'number' ? data.streak : 0,
+          lastActiveDate: data.lastActiveDate || null,
+          totalActiveDays: typeof data.totalActiveDays === 'number' ? data.totalActiveDays : 0,
         });
         setStatus(institutionId ? 'ready' : 'no-institution');
       },

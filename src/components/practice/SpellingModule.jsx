@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react';
 import { ArrowRight, Check, X } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
+import useCelebration from '../../hooks/useCelebration.js';
+import Confetti from './Confetti.jsx';
+import XpFlyup from './XpFlyup.jsx';
 
 function blankSentence(sentence, word) {
   if (!sentence) return null;
@@ -10,7 +13,7 @@ function blankSentence(sentence, word) {
   return sentence.replace(re, '_____');
 }
 
-export default function SpellingModule({ words, onFinish, onBack }) {
+export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner }) {
   const eligibleWords = useMemo(
     () => words.filter((w) => (w.partOfSpeech || '').toLowerCase() !== 'phrase'),
     [words],
@@ -23,6 +26,7 @@ export default function SpellingModule({ words, onFinish, onBack }) {
   const [feedback, setFeedback] = useState(null); // 'correct' | 'wrong' | null
   const [correctCount, setCorrectCount] = useState(0);
   const [masteredCount, setMasteredCount] = useState(0);
+  const { confettiKey, xpFlyup, shaking, celebrate, shake, stopShake } = useCelebration();
 
   const current = session[index];
   const progressPct = session.length > 0 ? Math.round((index / session.length) * 100) : 0;
@@ -56,6 +60,7 @@ export default function SpellingModule({ words, onFinish, onBack }) {
 
     if (isCorrect) {
       setFeedback('correct');
+      celebrate(10);
       let nextSession = session;
       let nextCorrectCount = correctCount;
       let nextMasteredCount = masteredCount;
@@ -81,6 +86,7 @@ export default function SpellingModule({ words, onFinish, onBack }) {
     }
 
     setFeedback('wrong');
+    shake();
     if (!wrongOnce) {
       const updated = { ...current, totalAttempts: current.totalAttempts + 1 };
       const nextSession = [...session];
@@ -100,10 +106,19 @@ export default function SpellingModule({ words, onFinish, onBack }) {
 
   return (
     <div className="px-4 pt-6 space-y-5">
+      {confettiKey && <Confetti key={confettiKey} count={50} durationMs={1500} />}
+      {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
+
       <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-brand-grey-text hover:text-brand-text">
         <ArrowRight size={16} />
         חזרה
       </button>
+
+      {adaptiveBanner && (
+        <p className="text-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
+          מתאים את הסשן עבורך 🎯
+        </p>
+      )}
 
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
@@ -123,7 +138,7 @@ export default function SpellingModule({ words, onFinish, onBack }) {
         )}
       </div>
 
-      <div className="space-y-3">
+      <div className={`space-y-3 ${shaking ? 'animate-shake' : ''}`} onAnimationEnd={stopShake}>
         <input
           type="text"
           dir="ltr"
@@ -142,10 +157,15 @@ export default function SpellingModule({ words, onFinish, onBack }) {
         />
 
         {feedback === 'wrong' && (
-          <p className="flex items-center justify-center gap-1 text-sm font-semibold text-red-600">
-            <X size={16} />
-            נסה/י שוב
-          </p>
+          <div className="text-center space-y-1">
+            <p className="flex items-center justify-center gap-1 text-sm font-semibold text-red-600">
+              <X size={16} />
+              נסה/י שוב
+            </p>
+            <p className="text-sm font-bold text-brand-green" dir="ltr">
+              {current.englishWord}
+            </p>
+          </div>
         )}
         {feedback === 'correct' && (
           <p className="flex items-center justify-center gap-1 text-sm font-semibold text-brand-green">

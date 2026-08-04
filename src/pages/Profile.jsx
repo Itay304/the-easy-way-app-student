@@ -6,14 +6,18 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { callGetMyAssignments, getAllProgress, getClass, getInstitution } from '../lib/api.js';
 import { computeAssignmentProgress } from '../lib/assignmentProgress.js';
 import { levelProgress } from '../lib/gamification.js';
+import { getEarnedBadges } from '../lib/badges.js';
 import { Skeleton } from '../components/Skeleton.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
+import BadgeGrid from '../components/profile/BadgeGrid.jsx';
+import SettingsSection from '../components/profile/SettingsSection.jsx';
 
 export default function Profile() {
   const { user, profile } = useAuth();
   const [className, setClassName] = useState(null);
   const [institutionName, setInstitutionName] = useState(null);
   const [completedCount, setCompletedCount] = useState(null);
+  const [earnedBadgeIds, setEarnedBadgeIds] = useState(new Set());
   const [error, setError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -23,11 +27,12 @@ export default function Profile() {
     async function load() {
       setError('');
       try {
-        const [classDoc, institutionDoc, assignmentsRes, allProgress] = await Promise.all([
+        const [classDoc, institutionDoc, assignmentsRes, allProgress, badges] = await Promise.all([
           profile.classIds.length > 0 ? getClass(profile.institutionId, profile.classIds[0]) : Promise.resolve(null),
           getInstitution(profile.institutionId),
           callGetMyAssignments(),
           getAllProgress(user.uid),
+          getEarnedBadges(user.uid),
         ]);
 
         const active = assignmentsRes.data.assignments.filter((a) => a.status === 'active');
@@ -38,8 +43,10 @@ export default function Profile() {
           setClassName(classDoc?.name || null);
           setInstitutionName(institutionDoc?.name || null);
           setCompletedCount(completed);
+          setEarnedBadgeIds(new Set(badges.map((b) => b.id)));
         }
-      } catch {
+      } catch (err) {
+        console.error('[Profile] load failed:', err);
         if (!cancelled) setError('שגיאה בטעינת הפרופיל.');
       }
     }
@@ -110,6 +117,10 @@ export default function Profile() {
           </div>
         </div>
       </div>
+
+      <BadgeGrid earnedIds={earnedBadgeIds} />
+
+      <SettingsSection />
 
       <button
         onClick={() => signOut(auth)}

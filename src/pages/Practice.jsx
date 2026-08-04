@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ClipboardList } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ClipboardList, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { callGetMyAssignments, getAllProgress } from '../lib/api.js';
 import { computeAssignmentProgress } from '../lib/assignmentProgress.js';
@@ -46,6 +47,16 @@ export default function Practice() {
       <h1 className="text-2xl font-bold text-brand-text">תרגול</h1>
 
       {error && <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />}
+
+      {assignments && assignments.length > 0 && (
+        <Link
+          to="/sprint"
+          className="flex items-center justify-center gap-2 rounded-2xl bg-amber-500 text-white font-bold py-4 shadow-md hover:opacity-90 transition"
+        >
+          <Zap size={20} strokeWidth={2.5} />
+          ספרינט ⚡ — 10 מילים, 60 שניות
+        </Link>
+      )}
 
       {!assignments && !error && <ListSkeleton rows={4} />}
 

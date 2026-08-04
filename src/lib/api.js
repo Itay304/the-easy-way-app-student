@@ -127,10 +127,13 @@ export function markAnnouncementRead(id) {
 }
 
 // ── XP / רמה / streak — אותה נוסחה ומבנה כתיבה כמו GamificationEngine +
-// StreakManager (Android), רק שכל הכתיבה מתבצעת פעם אחת בסוף session ──────
+// StreakManager (Android), רק שכל הכתיבה מתבצעת פעם אחת בסוף session.
+// totalActiveDays/totalCorrectAttempts/totalAttemptsCount הם שדות חדשים —
+// אין להם מקבילה ב-Android — נחוצים לתג "שקדן" (30 ימי תרגול סה"כ, לא
+// streak רציף) ולממוצע הכיתה במצב ספרינט (ראה getClassAverageAccuracy). ──
 
-export async function applySessionGamification(uid, { xpGained }) {
-  if (!uid || xpGained <= 0) return;
+export async function applySessionGamification(uid, { xpGained = 0, sessionCorrect = 0, sessionTotal = 0 }) {
+  if (!uid || (xpGained <= 0 && sessionTotal <= 0)) return null;
 
   const userRef = doc(db, 'users', uid);
   const userSnap = await getDoc(userRef);
@@ -142,22 +145,67 @@ export async function applySessionGamification(uid, { xpGained }) {
 
   const todayKey = toDateKey(Date.now());
   const lastDateStr = current.lastActiveDate;
+  const currentActiveDays = typeof current.totalActiveDays === 'number' ? current.totalActiveDays : 0;
   let newStreak;
+  let newTotalActiveDays = currentActiveDays;
   if (!lastDateStr) {
     newStreak = 1;
+    newTotalActiveDays = currentActiveDays + 1;
   } else {
     const diffDays = Math.round(
       (new Date(todayKey) - new Date(lastDateStr)) / (24 * 60 * 60 * 1000),
     );
-    if (diffDays === 0) newStreak = typeof current.streak === 'number' ? current.streak : 1;
-    else if (diffDays === 1) newStreak = (typeof current.streak === 'number' ? current.streak : 0) + 1;
-    else newStreak = 1;
+    if (diffDays === 0) {
+      newStreak = typeof current.streak === 'number' ? current.streak : 1;
+    } else if (diffDays === 1) {
+      newStreak = (typeof current.streak === 'number' ? current.streak : 0) + 1;
+      newTotalActiveDays = currentActiveDays + 1;
+    } else {
+      newStreak = 1;
+      newTotalActiveDays = currentActiveDays + 1;
+    }
   }
 
-  const updates = { totalXp: newXp, level: newLevel, streak: newStreak, lastActiveDate: todayKey };
+  const newTotalCorrect =
+    (typeof current.totalCorrectAttempts === 'number' ? current.totalCorrectAttempts : 0) + sessionCorrect;
+  const newTotalAttemptsCount =
+    (typeof current.totalAttemptsCount === 'number' ? current.totalAttemptsCount : 0) + sessionTotal;
+
+  const updates = {
+    totalXp: newXp,
+    level: newLevel,
+    streak: newStreak,
+    lastActiveDate: todayKey,
+    totalActiveDays: newTotalActiveDays,
+    totalCorrectAttempts: newTotalCorrect,
+    totalAttemptsCount: newTotalAttemptsCount,
+  };
   if (userSnap.exists()) {
     await updateDoc(userRef, updates);
   } else {
     await setDoc(userRef, updates, { merge: true });
   }
+
+  return { totalXp: newXp, level: newLevel, streak: newStreak, totalActiveDays: newTotalActiveDays };
+}
+
+// ── מצב ספרינט — ממוצע דיוק כיתתי, מחושב מהשדות המצטברים שלעיל בלבד
+// (ללא Cloud Function חדשה): שתי שאילתות equality על users/, לא נדרש
+// אינדקס מורכב. ────────────────────────────────────────────────────────
+
+export async function getClassAverageAccuracy(institutionId) {
+  const q = query(
+    collection(db, 'users'),
+    where('institutionId', '==', institutionId),
+    where('role', '==', 'student'),
+  );
+  const snap = await getDocs(q);
+  let sumCorrect = 0;
+  let sumTotal = 0;
+  snap.docs.forEach((d) => {
+    const data = d.data();
+    sumCorrect += typeof data.totalCorrectAttempts === 'number' ? data.totalCorrectAttempts : 0;
+    sumTotal += typeof data.totalAttemptsCount === 'number' ? data.totalAttemptsCount : 0;
+  });
+  return sumTotal > 0 ? sumCorrect / sumTotal : null;
 }
