@@ -1,110 +1,59 @@
-import { useEffect, useState } from 'react';
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-} from 'firebase/auth';
-import { auth } from './firebase.js';
+import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
+import useAuthRole from './hooks/useAuthRole.js';
+import useBackButtonGuard from './hooks/useBackButtonGuard.js';
+import { AuthProvider } from './context/AuthContext.jsx';
+import LoadingSpinner from './components/LoadingSpinner.jsx';
+import BottomNav from './components/BottomNav.jsx';
+import Login from './pages/Login.jsx';
+import NoInstitution from './pages/NoInstitution.jsx';
+import Home from './pages/Home.jsx';
+import Practice from './pages/Practice.jsx';
+import PracticePicker from './pages/PracticePicker.jsx';
+import PracticeSession from './pages/PracticeSession.jsx';
+import Statistics from './pages/Statistics.jsx';
+import Profile from './pages/Profile.jsx';
 
-export default function App() {
-  const [user, setUser] = useState(undefined); // undefined = loading, null = signed out
-
-  useEffect(() => onAuthStateChanged(auth, setUser), []);
-
-  if (user === undefined) {
-    return (
-      <div className="min-h-dvh flex items-center justify-center text-brand-grey-text">
-        טוען...
-      </div>
-    );
-  }
-
-  if (user) {
-    return <StudentHome user={user} />;
-  }
-
-  return <AuthForm />;
-}
-
-function AuthForm() {
-  const [mode, setMode] = useState('login'); // 'login' | 'signup'
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setError('');
-    setSubmitting(true);
-    try {
-      if (mode === 'login') {
-        await signInWithEmailAndPassword(auth, email, password);
-      } else {
-        await createUserWithEmailAndPassword(auth, email, password);
-      }
-    } catch {
-      setError(mode === 'login' ? 'אימייל או סיסמה שגויים.' : 'שגיאה בהרשמה. נסו שוב.');
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
+function Layout() {
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center px-6 py-12">
-      <img src="/icons/icon-192.png" alt="EasyLex" className="h-16 w-16 rounded-2xl shadow-md mb-6" />
-      <h1 className="text-2xl font-bold text-brand-text mb-8">EasyLex — תלמיד</h1>
-
-      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="אימייל"
-          className="w-full rounded-xl border border-black/10 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-turquoise"
-        />
-        <input
-          type="password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="סיסמה"
-          className="w-full rounded-xl border border-black/10 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-turquoise"
-        />
-        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full py-4 rounded-xl bg-brand-turquoise text-white font-bold text-lg hover:opacity-90 transition disabled:opacity-60"
-        >
-          {submitting ? '...' : mode === 'login' ? 'כניסה' : 'הרשמה'}
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-          className="w-full text-sm text-brand-grey-text hover:text-brand-text underline"
-        >
-          {mode === 'login' ? 'אין לך חשבון? הירשם' : 'כבר יש לך חשבון? התחבר'}
-        </button>
-      </form>
+    <div className="min-h-dvh flex flex-col">
+      <main className="flex-1 max-w-3xl w-full mx-auto pb-4">
+        <Outlet />
+      </main>
+      <BottomNav />
     </div>
   );
 }
 
-function StudentHome({ user }) {
+export default function App() {
+  const { status, user, profile } = useAuthRole();
+  useBackButtonGuard();
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-dvh flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (status === 'signed-out') return <Login />;
+  if (status === 'no-institution') return <NoInstitution />;
+
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center px-6 py-12 text-center">
-      <img src="/icons/icon-192.png" alt="EasyLex" className="h-16 w-16 rounded-2xl shadow-md mb-6" />
-      <h1 className="text-2xl font-bold text-brand-text mb-2">המשימות שלי — בקרוב</h1>
-      <p className="text-brand-grey-text mb-10">מסך התרגול והמשימות שלך יגיע כאן בשלב הבא.</p>
-      <button
-        onClick={() => signOut(auth)}
-        className="text-sm text-brand-grey-text hover:text-brand-text underline"
-      >
-        התנתק ({user.email})
-      </button>
-    </div>
+    <AuthProvider user={user} profile={profile}>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/practice" element={<Practice />} />
+            <Route path="/practice/:assignmentId" element={<PracticePicker />} />
+            <Route path="/practice/:assignmentId/:module" element={<PracticeSession />} />
+            <Route path="/stats" element={<Statistics />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }

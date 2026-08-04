@@ -25,3 +25,12 @@ body {
 #root {
   min-height: 100dvh;
 }
+
+/* הסתרת scrollbars בכל האפליקציה — עדיין גולל, רק בלי הפס הוויזואלי. */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
