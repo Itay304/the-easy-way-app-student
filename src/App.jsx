@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import useAuthRole from './hooks/useAuthRole.js';
 import useBackButtonGuard from './hooks/useBackButtonGuard.js';
@@ -6,6 +7,7 @@ import useInstallGate from './hooks/useInstallGate.js';
 import { AuthProvider } from './context/AuthContext.jsx';
 import LoadingSpinner from './components/LoadingSpinner.jsx';
 import InstallRequired from './components/InstallRequired.jsx';
+import SplashScreen from './components/SplashScreen.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import Login from './pages/Login.jsx';
 import NoInstitution from './pages/NoInstitution.jsx';
@@ -29,10 +31,18 @@ function Layout() {
 }
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
   const { requiresInstall } = useInstallGate();
   const { status, user, profile } = useAuthRole();
   const { animationsEnabled } = useSettings();
   useBackButtonGuard();
+
+  // מוצג רק בטעינה ראשונה — App לא נטען מחדש בניווט בתוך ה-app (React
+  // Router client-side), רק ב-reload/כניסה מחדש, כך ש-state רגיל מספיק
+  // ואין צורך ב-sessionStorage.
+  if (showSplash) {
+    return <SplashScreen onDone={() => setShowSplash(false)} />;
+  }
 
   if (requiresInstall) {
     return <InstallRequired />;
