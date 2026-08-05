@@ -6,14 +6,14 @@ import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
 
 const MODULES = [
-  { key: 'flashcards', label: 'כרטיסיות', icon: Layers },
-  { key: 'quiz', label: 'מבחן', icon: ListChecks },
-  { key: 'spelling', label: 'איות', icon: PenLine },
-  { key: 'matching', label: 'התאמה', icon: Link2 },
-  { key: 'whoami', label: 'מי אני? 🕵️', icon: Search },
-  { key: 'truefalse', label: 'נכון/לא נכון ⚡', icon: Zap },
-  { key: 'whatmeans', label: 'מה המשמעות? 📖', icon: BookOpen },
-  { key: 'fillsentence', label: 'השלמת משפט ✍️', icon: PencilLine },
+  { key: 'flashcards', label: 'כרטיסיות', icon: Layers, bg: 'bg-brand-turquoise/10', text: 'text-brand-turquoise' },
+  { key: 'quiz', label: 'מבחן', icon: ListChecks, bg: 'bg-blue-50', text: 'text-blue-600' },
+  { key: 'spelling', label: 'איות', icon: PenLine, bg: 'bg-purple-50', text: 'text-purple-600' },
+  { key: 'matching', label: 'התאמה', icon: Link2, bg: 'bg-brand-green/10', text: 'text-brand-green' },
+  { key: 'whoami', label: 'מי אני?', icon: Search, bg: 'bg-amber-50', text: 'text-amber-600' },
+  { key: 'truefalse', label: 'נכון/לא נכון', icon: Zap, bg: 'bg-pink-50', text: 'text-pink-600' },
+  { key: 'whatmeans', label: 'מה המשמעות?', icon: BookOpen, bg: 'bg-indigo-50', text: 'text-indigo-600' },
+  { key: 'fillsentence', label: 'השלמת משפט', icon: PencilLine, bg: 'bg-cyan-50', text: 'text-cyan-600' },
 ];
 
 export default function PracticePicker() {
@@ -69,17 +69,17 @@ export default function PracticePicker() {
             <p className="text-brand-grey-text mt-1">איך תרצה לתרגל?</p>
           </div>
 
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
             {MODULES.map((m) => (
               <button
                 key={m.key}
                 onClick={() => navigate(`/practice/${assignmentId}/${m.key}`)}
-                className="w-full flex items-center gap-4 rounded-2xl bg-white shadow-md p-5 hover:shadow-lg transition text-right"
+                className="aspect-square flex flex-col items-center justify-center gap-2 rounded-2xl bg-white shadow-md p-4 hover:shadow-lg transition"
               >
-                <div className="h-12 w-12 rounded-xl bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center shrink-0">
-                  <m.icon size={24} strokeWidth={2.25} />
+                <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 ${m.bg} ${m.text}`}>
+                  <m.icon size={28} strokeWidth={2.25} />
                 </div>
-                <span className="font-semibold text-brand-text text-lg">{m.label}</span>
+                <span className="font-semibold text-brand-text text-sm text-center leading-tight">{m.label}</span>
               </button>
             ))}
           </div>
