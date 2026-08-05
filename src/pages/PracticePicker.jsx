@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowRight, Layers, ListChecks, PenLine, Link2 } from 'lucide-react';
+import { ArrowRight, Layers, ListChecks, PenLine, Link2, Search, Zap, BookOpen, PencilLine } from 'lucide-react';
 import { callGetMyAssignments } from '../lib/api.js';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
@@ -10,6 +10,10 @@ const MODULES = [
   { key: 'quiz', label: 'מבחן', icon: ListChecks },
   { key: 'spelling', label: 'איות', icon: PenLine },
   { key: 'matching', label: 'התאמה', icon: Link2 },
+  { key: 'whoami', label: 'מי אני? 🕵️', icon: Search },
+  { key: 'truefalse', label: 'נכון/לא נכון ⚡', icon: Zap },
+  { key: 'whatmeans', label: 'מה המשמעות? 📖', icon: BookOpen },
+  { key: 'fillsentence', label: 'השלמת משפט ✍️', icon: PencilLine },
 ];
 
 export default function PracticePicker() {

@@ -1,4 +1,4 @@
-import { Volume2, VolumeX, Sparkles } from 'lucide-react';
+import { Volume2, VolumeX, Sparkles, Music, Keyboard } from 'lucide-react';
 import useSettings from '../../hooks/useSettings.js';
 
 function ToggleRow({ icon: Icon, label, checked, onChange }) {
@@ -27,13 +27,29 @@ function ToggleRow({ icon: Icon, label, checked, onChange }) {
 }
 
 export default function SettingsSection() {
-  const { soundEnabled, animationsEnabled, toggleSound, toggleAnimations } = useSettings();
+  const {
+    soundEnabled,
+    animationsEnabled,
+    musicEnabled,
+    whoAmITypingMode,
+    toggleSound,
+    toggleAnimations,
+    toggleMusic,
+    toggleWhoAmITypingMode,
+  } = useSettings();
 
   return (
     <div className="rounded-2xl bg-white shadow-md p-5 divide-y divide-black/5">
       <h2 className="text-lg font-bold text-brand-text mb-1">הגדרות</h2>
       <ToggleRow icon={soundEnabled ? Volume2 : VolumeX} label="צלילים" checked={soundEnabled} onChange={toggleSound} />
       <ToggleRow icon={Sparkles} label="אנימציות" checked={animationsEnabled} onChange={toggleAnimations} />
+      <ToggleRow icon={Music} label="מוזיקת רקע בתרגול" checked={musicEnabled} onChange={toggleMusic} />
+      <ToggleRow
+        icon={Keyboard}
+        label='הקלדה במקום בחירה ב"מי אני?"'
+        checked={whoAmITypingMode}
+        onChange={toggleWhoAmITypingMode}
+      />
     </div>
   );
 }

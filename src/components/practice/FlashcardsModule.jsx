@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { ArrowRight, Check, X } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
 import useCelebration from '../../hooks/useCelebration.js';
+import useCombo from '../../hooks/useCombo.js';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
+import ComboBar from './ComboBar.jsx';
 
 export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBanner }) {
   const [index, setIndex] = useState(0);
@@ -12,6 +14,7 @@ export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBann
   const [correctCount, setCorrectCount] = useState(0);
   const [masteredCount, setMasteredCount] = useState(0);
   const { confettiKey, xpFlyup, shaking, celebrate, shake, stopShake } = useCelebration();
+  const { combo, justBroke, registerAnswer, getMaxCombo } = useCombo();
 
   const current = session[index];
   const progressPct = Math.round((index / words.length) * 100);
@@ -32,6 +35,7 @@ export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBann
     } else {
       shake();
     }
+    registerAnswer(knew);
 
     const nextSession = [...session];
     nextSession[index] = updated;
@@ -43,6 +47,7 @@ export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBann
         correctCount: correctCount + (knew ? 1 : 0),
         wordsMasteredCount: masteredCount + (knew && before < 5 && masteryLevel(updated.correctAttempts, updated.totalAttempts) === 5 ? 1 : 0),
         moduleComplete: false,
+        maxCombo: getMaxCombo(),
       });
       return;
     }
@@ -66,6 +71,8 @@ export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBann
           מתאים את הסשן עבורך 🎯
         </p>
       )}
+
+      <ComboBar combo={combo} justBroke={justBroke} />
 
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />

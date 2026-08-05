@@ -48,6 +48,13 @@ export async function getWordsForList(listId) {
   return snap.docs.map((d) => ({ id: d.id, sourceListId: listId, ...d.data() }));
 }
 
+/** מטא-דאטה (name/wordCount) לכמה word_lists בבת אחת — משמש לצבירת
+ * "סה"כ מילים בבאנד" (ר' src/lib/bands.js), שאין לה שדה מוכן ב-Firestore. */
+export async function getWordListsMeta(listIds) {
+  const results = await Promise.all(listIds.map((id) => getWordListMeta(id)));
+  return results.filter(Boolean);
+}
+
 // ── progress ─────────────────────────────────────────────────────────────
 
 export async function getAllProgress(uid) {

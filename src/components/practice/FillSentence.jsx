@@ -1,31 +1,64 @@
 import { useMemo, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
-import { buildChoices } from '../../lib/quizChoices.js';
+import { shuffle } from '../../lib/quizChoices.js';
 import useCelebration from '../../hooks/useCelebration.js';
 import useCombo from '../../hooks/useCombo.js';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
 
-export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) {
+const RESOLVE_DELAY_MS = 900;
+
+function blankSentence(sentence, word) {
+  if (!sentence) return null;
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(escaped, 'i');
+  if (!re.test(sentence)) return null;
+  return sentence.replace(re, '_____');
+}
+
+function buildWordChoices(words, current) {
+  const pool = words.filter((w) => w.englishWord !== current.englishWord).map((w) => w.englishWord);
+  const distractors = shuffle(pool).slice(0, 3);
+  return shuffle([current.englishWord, ...distractors]);
+}
+
+export default function FillSentence({ words, onFinish, onBack, adaptiveBanner }) {
+  const eligibleWords = useMemo(() => {
+    const seen = new Set();
+    const list = [];
+    for (const w of words) {
+      if (!w.exampleSentence || seen.has(w.englishWord)) continue;
+      if (!blankSentence(w.exampleSentence, w.englishWord)) continue;
+      seen.add(w.englishWord);
+      list.push(w);
+    }
+    return shuffle(list);
+  }, [words]);
+
   const [index, setIndex] = useState(0);
-  const [session, setSession] = useState(() => words.map((w) => ({ ...w })));
+  const [session, setSession] = useState(() => eligibleWords.map((w) => ({ ...w })));
   const [correctCount, setCorrectCount] = useState(0);
   const [masteredCount, setMasteredCount] = useState(0);
   const [selected, setSelected] = useState(null);
   const { confettiKey, xpFlyup, celebrate, shake } = useCelebration();
   const { combo, justBroke, registerAnswer, getMaxCombo } = useCombo();
 
-  const choices = useMemo(() => buildChoices(words, index), [words, index]);
   const current = session[index];
-  const progressPct = Math.round((index / words.length) * 100);
+  const choices = useMemo(
+    () => (eligibleWords.length >= 4 && current ? buildWordChoices(eligibleWords, current) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [index, eligibleWords],
+  );
+  const progressPct = session.length > 0 ? Math.round((index / session.length) * 100) : 0;
+  const blanked = current ? blankSentence(current.exampleSentence, current.englishWord) : null;
 
   function selectAnswer(choice) {
     if (selected !== null) return;
     setSelected(choice);
 
-    const isCorrect = choice === current.hebrewTranslation;
+    const isCorrect = choice === current.englishWord;
     const before = masteryLevel(current.correctAttempts, current.totalAttempts);
     const updated = { ...current, totalAttempts: current.totalAttempts + 1 };
     if (isCorrect) updated.correctAttempts = current.correctAttempts + 1;
@@ -58,7 +91,15 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
       }
       setIndex((i) => i + 1);
       setSelected(null);
-    }, 900);
+    }, RESOLVE_DELAY_MS);
+  }
+
+  if (eligibleWords.length < 4) {
+    return (
+      <div className="px-4 pt-6 text-center py-12">
+        <p className="text-brand-grey-text">אין מספיק משפטי דוגמה לתרגול "השלמת משפט" במשימה זו.</p>
+      </div>
+    );
   }
 
   return (
@@ -86,16 +127,17 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
         {index + 1} מתוך {session.length}
       </p>
 
-      <div className="rounded-2xl bg-white shadow-md p-8 text-center">
-        <p className="text-3xl font-bold text-brand-text" dir="ltr">
-          {current.englishWord}
+      <div className="rounded-2xl bg-white shadow-md p-6 text-center">
+        <p className="text-xs text-brand-grey-text mb-2">השלימו את המשפט ✍️</p>
+        <p className="text-lg font-semibold text-brand-text" dir="ltr">
+          {blanked}
         </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-3">
         {choices.map((choice) => {
           const isSelected = selected === choice;
-          const isCorrectChoice = choice === current.hebrewTranslation;
+          const isCorrectChoice = choice === current.englishWord;
           let style = 'bg-white text-brand-text';
           let shakeClass = '';
           if (selected !== null) {
@@ -110,7 +152,8 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
               key={choice}
               onClick={() => selectAnswer(choice)}
               disabled={selected !== null}
-              className={`w-full rounded-xl shadow-md p-4 font-semibold text-lg transition ${style} ${shakeClass}`}
+              dir="ltr"
+              className={`rounded-xl shadow-md p-4 font-semibold transition ${style} ${shakeClass}`}
             >
               {choice}
             </button>

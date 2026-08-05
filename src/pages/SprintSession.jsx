@@ -14,14 +14,17 @@ import { syncSession } from '../lib/progressSync.js';
 import { checkAndAwardBadges } from '../lib/badges.js';
 import { buildChoices, shuffle } from '../lib/quizChoices.js';
 import useCelebration from '../hooks/useCelebration.js';
+import useBackgroundMusic from '../hooks/useBackgroundMusic.js';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
 import Confetti from '../components/practice/Confetti.jsx';
 import XpFlyup from '../components/practice/XpFlyup.jsx';
+import BadgeUnlockToast from '../components/practice/BadgeUnlockToast.jsx';
 
 const SPRINT_DURATION_SEC = 60;
 const SPRINT_WORD_COUNT = 10;
 const MIN_POOL_SIZE = 4;
+const NIGHT_OWL_HOUR = 22;
 
 async function buildSprintPool(uid) {
   const res = await callGetMyAssignments();
@@ -66,8 +69,10 @@ export default function SprintSession() {
   const [correctCount, setCorrectCount] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(SPRINT_DURATION_SEC);
   const [result, setResult] = useState(null); // { correctCount, answered, classAverage }
+  const [badgeQueue, setBadgeQueue] = useState([]);
   const { confettiKey, xpFlyup, celebrate, shake } = useCelebration();
   const finishingRef = useRef(false);
+  useBackgroundMusic();
 
   useEffect(() => {
     let cancelled = false;
@@ -126,12 +131,14 @@ export default function SprintSession() {
           getAllProgress(user.uid),
           getRankAndTotal(profile.institutionId, gamification.totalXp),
         ]);
-        await checkAndAwardBadges(user.uid, {
+        const newlyEarned = await checkAndAwardBadges(user.uid, {
           streak: gamification.streak,
           allProgress,
           rank: rankInfo.rank,
           totalActiveDays: gamification.totalActiveDays,
+          isNightOwlSession: new Date().getHours() >= NIGHT_OWL_HOUR,
         });
+        if (newlyEarned.length > 0) setBadgeQueue(newlyEarned);
       }
     } catch (err) {
       console.error('[SprintSession] finish sync failed:', err);
@@ -243,6 +250,10 @@ export default function SprintSession() {
         <button onClick={goBack} className="w-full py-4 rounded-xl bg-brand-turquoise text-white font-bold">
           סיום
         </button>
+
+        {badgeQueue[0] && (
+          <BadgeUnlockToast badge={badgeQueue[0]} onDismiss={() => setBadgeQueue((q) => q.slice(1))} />
+        )}
       </div>
     );
   }

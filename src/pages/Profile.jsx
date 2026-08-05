@@ -11,6 +11,7 @@ import { Skeleton } from '../components/Skeleton.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
 import BadgeGrid from '../components/profile/BadgeGrid.jsx';
 import SettingsSection from '../components/profile/SettingsSection.jsx';
+import BandProgress from '../components/profile/BandProgress.jsx';
 
 export default function Profile() {
   const { user, profile } = useAuth();
@@ -18,6 +19,7 @@ export default function Profile() {
   const [institutionName, setInstitutionName] = useState(null);
   const [completedCount, setCompletedCount] = useState(null);
   const [earnedBadgeIds, setEarnedBadgeIds] = useState(new Set());
+  const [allProgress, setAllProgress] = useState(null);
   const [error, setError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -44,6 +46,7 @@ export default function Profile() {
           setInstitutionName(institutionDoc?.name || null);
           setCompletedCount(completed);
           setEarnedBadgeIds(new Set(badges.map((b) => b.id)));
+          setAllProgress(allProgress);
         }
       } catch (err) {
         console.error('[Profile] load failed:', err);
@@ -117,6 +120,8 @@ export default function Profile() {
           </div>
         </div>
       </div>
+
+      {allProgress && <BandProgress allProgress={allProgress} />}
 
       <BadgeGrid earnedIds={earnedBadgeIds} />
 

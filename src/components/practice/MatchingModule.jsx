@@ -3,8 +3,10 @@ import { ArrowRight, Check, X } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
 import { shuffle } from '../../lib/quizChoices.js';
 import useCelebration from '../../hooks/useCelebration.js';
+import useCombo from '../../hooks/useCombo.js';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
+import ComboBar from './ComboBar.jsx';
 
 const TARGETS_PER_ROUND = 3;
 const ROUND_ADVANCE_DELAY_MS = 1100;
@@ -62,6 +64,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
   const [correctCount, setCorrectCount] = useState(0);
   const [masteredCount, setMasteredCount] = useState(0);
   const { confettiKey, xpFlyup, celebrate, shake } = useCelebration();
+  const { combo, justBroke, registerAnswer, getMaxCombo } = useCombo();
 
   useEffect(() => {
     setRound(rounds[roundIndex] || null);
@@ -97,6 +100,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
     setCorrectCount(nextCorrectCount);
     setMasteredCount(nextMasteredCount);
 
+    registerAnswer(isCorrect);
     if (isCorrect) {
       celebrate(10);
     } else {
@@ -120,6 +124,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
             correctCount: nextCorrectCount,
             wordsMasteredCount: nextMasteredCount,
             moduleComplete: totalSentences > 0 && nextCorrectCount / totalSentences >= 0.6,
+            maxCombo: getMaxCombo(),
           });
           return;
         }
@@ -157,6 +162,8 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
           מתאים את הסשן עבורך 🎯
         </p>
       )}
+
+      <ComboBar combo={combo} justBroke={justBroke} />
 
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />

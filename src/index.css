@@ -123,6 +123,48 @@ body {
   animation: fade-in-up 0.3s ease-out both;
 }
 
+@keyframes reveal-down {
+  0% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-reveal-down {
+  animation: reveal-down 0.35s ease-out both;
+}
+
+@keyframes card-fly-right {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(140%, -30px) rotate(20deg);
+    opacity: 0;
+  }
+}
+.animate-card-fly-right {
+  animation: card-fly-right 0.5s ease-in forwards;
+}
+
+@keyframes card-fly-left {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-140%, -30px) rotate(-20deg);
+    opacity: 0;
+  }
+}
+.animate-card-fly-left {
+  animation: card-fly-left 0.5s ease-in forwards;
+}
+
 .no-animations * {
   animation-duration: 0.001s !important;
   transition-duration: 0.001s !important;

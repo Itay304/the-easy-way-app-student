@@ -20,6 +20,7 @@ import AnnouncementBanner from '../components/home/AnnouncementBanner.jsx';
 import LeaderboardCard from '../components/home/LeaderboardCard.jsx';
 import StreakCard from '../components/home/StreakCard.jsx';
 import WordOfTheDayCard from '../components/home/WordOfTheDayCard.jsx';
+import DailyChallengeCard from '../components/home/DailyChallengeCard.jsx';
 import AssignmentProgressCard from '../components/practice/AssignmentProgressCard.jsx';
 
 const ASSIGNMENTS_PREVIEW_LIMIT = 3;
@@ -102,6 +103,8 @@ export default function Home() {
       </div>
 
       {error && <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />}
+
+      <DailyChallengeCard uid={user.uid} />
 
       <AnnouncementBanner announcement={announcement} onDismiss={dismissAnnouncement} />
 
