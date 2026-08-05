@@ -69,6 +69,12 @@ export default function PracticePicker() {
             <p className="text-brand-grey-text mt-1">איך תרצה לתרגל?</p>
           </div>
 
+          {assignment.practiceMode === 'varied' && (
+            <p className="text-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
+              🎯 המורה בחר מגוון — בחר מודול לתרגול
+            </p>
+          )}
+
           <div className="grid grid-cols-2 gap-3">
             {MODULES.map((m) => (
               <button
