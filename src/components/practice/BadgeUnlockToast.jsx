@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import Confetti from './Confetti.jsx';
-import { playSecretBadgeSound } from '../../lib/sound.js';
+import { playVictorySound } from '../../lib/sound.js';
 
 const AUTO_DISMISS_MS = 3500;
 
 export default function BadgeUnlockToast({ badge, onDismiss }) {
   useEffect(() => {
     if (!badge) return undefined;
-    playSecretBadgeSound();
+    playVictorySound();
     const t = setTimeout(onDismiss, AUTO_DISMISS_MS);
     return () => clearTimeout(t);
   }, [badge, onDismiss]);
