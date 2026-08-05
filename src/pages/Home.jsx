@@ -11,7 +11,7 @@ import {
   isAnnouncementRead,
   markAnnouncementRead,
 } from '../lib/api.js';
-import { computeAssignmentProgress } from '../lib/assignmentProgress.js';
+import { computeAssignmentMastery } from '../lib/assignmentMastery.js';
 import { pickWordOfDay } from '../lib/wordOfDay.js';
 import { ListSkeleton } from '../components/Skeleton.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
@@ -60,7 +60,7 @@ export default function Home() {
         const active = assignmentsRes.data.assignments.filter((a) => a.status === 'active');
         const preview = active.slice(0, ASSIGNMENTS_PREVIEW_LIMIT);
         const [withProgress, todayWord] = await Promise.all([
-          Promise.all(preview.map(async (a) => ({ assignment: a, ...(await computeAssignmentProgress(allProgress, a)) }))),
+          Promise.all(preview.map(async (a) => ({ assignment: a, ...(await computeAssignmentMastery(allProgress, a)) }))),
           pickWordOfDay(active, allProgress),
         ]);
 
@@ -146,11 +146,11 @@ export default function Home() {
 
         {!loading && assignments && assignments.length > 0 && (
           <div className="space-y-3">
-            {assignments.map(({ assignment, completed, total }) => (
+            {assignments.map(({ assignment, mastered, total }) => (
               <AssignmentProgressCard
                 key={assignment.assignmentId}
                 assignment={assignment}
-                completed={completed}
+                mastered={mastered}
                 total={total}
               />
             ))}

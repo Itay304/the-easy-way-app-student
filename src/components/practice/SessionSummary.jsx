@@ -1,9 +1,18 @@
 import { PartyPopper, Star, CheckCircle2, XCircle, Award } from 'lucide-react';
 import Confetti from './Confetti.jsx';
 
-export default function SessionSummary({ correctCount, total, xpGained, wordsMasteredCount = 0, onDone }) {
+export default function SessionSummary({
+  correctCount,
+  total,
+  xpGained,
+  wordsMasteredCount = 0,
+  assignmentMastered = null,
+  assignmentTotal = null,
+  onDone,
+}) {
   const incorrectCount = Math.max(total - correctCount, 0);
   const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+  const assignmentPct = assignmentTotal > 0 ? Math.round((assignmentMastered / assignmentTotal) * 100) : null;
 
   return (
     <div className="px-4 pt-10 flex flex-col items-center text-center space-y-6">
@@ -17,6 +26,21 @@ export default function SessionSummary({ correctCount, total, xpGained, wordsMas
         <h1 className="text-2xl font-bold text-brand-text">כל הכבוד! 🎉</h1>
         <p className="text-brand-grey-text mt-1">סיימת את התרגול</p>
       </div>
+
+      {assignmentPct !== null && (
+        <div className="w-full rounded-2xl bg-white shadow-md p-5 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-brand-text">התקדמות במשימה</span>
+            <span className="text-sm font-bold text-brand-turquoise">{assignmentPct}%</span>
+          </div>
+          <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
+            <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${assignmentPct}%` }} />
+          </div>
+          <p className="text-xs text-brand-grey-text">
+            {assignmentMastered} מתוך {assignmentTotal} מילים נכבשו
+          </p>
+        </div>
+      )}
 
       <div className="w-full rounded-2xl bg-white shadow-md p-6 space-y-4">
         <div className="flex items-center justify-between">

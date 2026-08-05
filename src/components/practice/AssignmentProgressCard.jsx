@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { CalendarClock } from 'lucide-react';
 
-export default function AssignmentProgressCard({ assignment, completed, total }) {
-  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+export default function AssignmentProgressCard({ assignment, mastered, total }) {
+  const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
 
   return (
     <Link

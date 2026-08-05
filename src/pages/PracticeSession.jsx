@@ -10,6 +10,7 @@ import {
 } from '../lib/api.js';
 import { syncSession } from '../lib/progressSync.js';
 import { applyAdaptiveOrder } from '../lib/adaptivePractice.js';
+import { computeAssignmentMastery } from '../lib/assignmentMastery.js';
 import { checkAndAwardBadges } from '../lib/badges.js';
 import { updateDailyChallengeProgress } from '../lib/dailyChallenge.js';
 import useBackgroundMusic from '../hooks/useBackgroundMusic.js';
@@ -109,6 +110,7 @@ export default function PracticeSession() {
     const xpGained = correctCount * 10 + wordsMasteredCount * 100 + (moduleComplete ? 50 : 0) + bonusXp;
     const secondsPracticed = Math.round((Date.now() - sessionStartRef.current) / 1000);
     const sessionAccuracy = finalWords.length > 0 ? correctCount / finalWords.length : 0;
+    let assignmentMastery = null;
     try {
       await syncSession(user.uid, finalWords);
       const gamification = await applySessionGamification(user.uid, {
@@ -123,11 +125,13 @@ export default function PracticeSession() {
         sessionAccuracy,
       });
 
+      // allProgress נטען אחרי syncSession כדי לשקף את התוצאות המעודכנות של
+      // הסשן הזה — גם ל-badges וגם להתקדמות-במשימה שמוצגת ב-SessionSummary.
+      const allProgress = await getAllProgress(user.uid);
+      assignmentMastery = await computeAssignmentMastery(allProgress, assignment);
+
       if (gamification && profile?.institutionId) {
-        const [allProgress, rankInfo] = await Promise.all([
-          getAllProgress(user.uid),
-          getRankAndTotal(profile.institutionId, gamification.totalXp),
-        ]);
+        const rankInfo = await getRankAndTotal(profile.institutionId, gamification.totalXp);
         const newlyEarned = await checkAndAwardBadges(user.uid, {
           streak: gamification.streak,
           allProgress,
@@ -145,7 +149,14 @@ export default function PracticeSession() {
       console.error('[PracticeSession] finish sync failed:', err);
       // כתיבת progress/תגים נכשלה — עדיין מציגים סיכום, לא חוסמים את המשתמש
     }
-    setResult({ correctCount, total: finalWords.length, xpGained, wordsMasteredCount });
+    setResult({
+      correctCount,
+      total: finalWords.length,
+      xpGained,
+      wordsMasteredCount,
+      assignmentMastered: assignmentMastery?.mastered ?? null,
+      assignmentTotal: assignmentMastery?.total ?? null,
+    });
   }
 
   function goBack() {

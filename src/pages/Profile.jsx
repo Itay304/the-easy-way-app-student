@@ -4,7 +4,7 @@ import { LogOut, Flame, CheckCircle2 } from 'lucide-react';
 import { auth } from '../firebase.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { callGetMyAssignments, getAllProgress, getClass, getInstitution } from '../lib/api.js';
-import { computeAssignmentProgress } from '../lib/assignmentProgress.js';
+import { computeAssignmentMastery } from '../lib/assignmentMastery.js';
 import { levelProgress } from '../lib/gamification.js';
 import { getEarnedBadges } from '../lib/badges.js';
 import { Skeleton } from '../components/Skeleton.jsx';
@@ -38,8 +38,8 @@ export default function Profile() {
         ]);
 
         const active = assignmentsRes.data.assignments.filter((a) => a.status === 'active');
-        const results = await Promise.all(active.map((a) => computeAssignmentProgress(allProgress, a)));
-        const completed = results.filter((r) => r.total > 0 && r.completed >= r.total).length;
+        const results = await Promise.all(active.map((a) => computeAssignmentMastery(allProgress, a)));
+        const completed = results.filter((r) => r.total > 0 && r.mastered >= r.total).length;
 
         if (!cancelled) {
           setClassName(classDoc?.name || null);

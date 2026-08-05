@@ -4,10 +4,11 @@ import { getWordListMeta } from './api.js';
 import { isMastered } from './gamification.js';
 
 /**
- * "% נכבש" למשימה — למסך הסטטיסטיקה בלבד. שונה בכוונה מ-
- * computeAssignmentProgress (Home/Practice), שם "הושלם" = correctAttempts>0.
- * כאן משתמשים בהגדרה המחמירה יותר isMastered(), בדיוק כמו
- * InstitutionalStatsViewModel/Word.isMastered() ב-Android.
+ * "% נכבש" למשימה — המקור היחיד לחישוב התקדמות במשימה בכל האפליקציה
+ * (Home, Practice, Profile, Statistics, SessionSummary). "נכבש" =
+ * isMastered() — correctAttempts>=3 ויחס הצלחה>=70%, לא סתם ניסיון בודד
+ * שהצליח — בדיוק כמו InstitutionalStatsViewModel/Word.isMastered()
+ * ב-Android.
  */
 export async function computeAssignmentMastery(allProgress, assignment) {
   const progressByWord = new Map(

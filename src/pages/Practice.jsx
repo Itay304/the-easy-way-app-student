@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ClipboardList, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { callGetMyAssignments, getAllProgress } from '../lib/api.js';
-import { computeAssignmentProgress } from '../lib/assignmentProgress.js';
+import { computeAssignmentMastery } from '../lib/assignmentMastery.js';
 import { ListSkeleton } from '../components/Skeleton.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
 import EmptyState from '../components/EmptyState.jsx';
@@ -27,7 +27,7 @@ export default function Practice() {
         ]);
         const active = assignmentsRes.data.assignments.filter((a) => a.status === 'active');
         const withProgress = await Promise.all(
-          active.map(async (a) => ({ assignment: a, ...(await computeAssignmentProgress(allProgress, a)) })),
+          active.map(async (a) => ({ assignment: a, ...(await computeAssignmentMastery(allProgress, a)) })),
         );
         if (!cancelled) setAssignments(withProgress);
       } catch (err) {
@@ -66,11 +66,11 @@ export default function Practice() {
 
       {assignments && assignments.length > 0 && (
         <div className="space-y-3">
-          {assignments.map(({ assignment, completed, total }) => (
+          {assignments.map(({ assignment, mastered, total }) => (
             <AssignmentProgressCard
               key={assignment.assignmentId}
               assignment={assignment}
-              completed={completed}
+              mastered={mastered}
               total={total}
             />
           ))}
