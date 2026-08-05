@@ -1,10 +1,11 @@
 import { isMusicEnabled } from './settings.js';
 
-// לופ מוזיקת רקע — קובץ MP3 חיצוני (Pixabay, CC0, ללא צורך בקרדיט),
-// לא Web Audio סינתטי. אלמנט <audio> יחיד ב-module scope (singleton),
-// נוצר lazy רק בהפעלה הראשונה, בדיוק כמו ה-AudioContext ב-sound.js.
-const MUSIC_URL = 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3';
-const DEFAULT_VOLUME = 0.3;
+// לופ מוזיקת רקע — קובץ MP3 מקומי (public/music/background.mp3, נטען
+// כ-'/music/background.mp3'), לא Web Audio סינתטי ולא CDN חיצוני.
+// אלמנט <audio> יחיד ב-module scope (singleton), נוצר lazy רק בהפעלה
+// הראשונה, בדיוק כמו ה-AudioContext ב-sound.js.
+const MUSIC_URL = '/music/background.mp3';
+const DEFAULT_VOLUME = 0.2;
 
 let audioEl = null;
 let activeVolume = DEFAULT_VOLUME;
