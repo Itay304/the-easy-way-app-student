@@ -16,6 +16,7 @@ import ErrorBanner from '../components/ErrorBanner.jsx';
 import FlashcardsModule from '../components/practice/FlashcardsModule.jsx';
 import QuizModule from '../components/practice/QuizModule.jsx';
 import SpellingModule from '../components/practice/SpellingModule.jsx';
+import MatchingModule from '../components/practice/MatchingModule.jsx';
 import SessionSummary from '../components/practice/SessionSummary.jsx';
 
 // תרגול אדפטיבי (30% מהמילים החלשות בתחילת הסשן) חל רק על quiz/flashcards,
@@ -40,6 +41,7 @@ async function buildSessionWords(assignment, uid) {
       partOfSpeech: w.partOfSpeech,
       exampleSentence: w.exampleSentence,
       hebrewExample: w.hebrewExample,
+      descriptionSentence: w.descriptionSentence,
       sourceListId: assignment.listId,
       correctAttempts: baseline?.correctAttempts || 0,
       totalAttempts: baseline?.totalAttempts || 0,
@@ -156,6 +158,8 @@ export default function PracticeSession() {
     return <QuizModule words={words} onFinish={handleFinish} onBack={goBack} adaptiveBanner={isAdaptive} />;
   if (module === 'spelling')
     return <SpellingModule words={words} onFinish={handleFinish} onBack={goBack} />;
+  if (module === 'matching')
+    return <MatchingModule words={words} onFinish={handleFinish} onBack={goBack} />;
 
   return null;
 }

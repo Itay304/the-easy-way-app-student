@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowRight, Layers, ListChecks, PenLine } from 'lucide-react';
+import { ArrowRight, Layers, ListChecks, PenLine, Link2 } from 'lucide-react';
 import { callGetMyAssignments } from '../lib/api.js';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
@@ -9,6 +9,7 @@ const MODULES = [
   { key: 'flashcards', label: 'כרטיסיות', icon: Layers },
   { key: 'quiz', label: 'מבחן', icon: ListChecks },
   { key: 'spelling', label: 'איות', icon: PenLine },
+  { key: 'matching', label: 'התאמה', icon: Link2 },
 ];
 
 export default function PracticePicker() {
