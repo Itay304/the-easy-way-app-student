@@ -55,6 +55,22 @@ export async function getWordListsMeta(listIds) {
   return results.filter(Boolean);
 }
 
+// ── מאגר מילים גלובלי (כל word_lists) — למסיחות במבחן/נכון-לא-נכון, כדי
+// שלא יהיה אפשר "לנחש לפי הקשר" מתוך המילים הצרות של המשימה בלבד.
+// נשמר ב-cache ברמת ה-module (לא state) — סשן דפדפן אחד, לא רוצים
+// לשלוף מחדש אלפי מסמכים בכל מעבר בין מודולי תרגול. ─────────────────────
+
+let globalWordPoolCache = null;
+
+export async function getGlobalWordPool() {
+  if (globalWordPoolCache) return globalWordPoolCache;
+  const listsSnap = await getDocs(collection(db, 'word_lists'));
+  const listIds = listsSnap.docs.map((d) => d.id);
+  const wordArrays = await Promise.all(listIds.map((id) => getWordsForList(id)));
+  globalWordPoolCache = wordArrays.flat();
+  return globalWordPoolCache;
+}
+
 // ── progress ─────────────────────────────────────────────────────────────
 
 export async function getAllProgress(uid) {

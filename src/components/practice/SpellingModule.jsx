@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ArrowRight, Check, X } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
+import { shuffle } from '../../lib/quizChoices.js';
 import useCelebration from '../../hooks/useCelebration.js';
 import useCombo from '../../hooks/useCombo.js';
 import Confetti from './Confetti.jsx';
@@ -17,7 +18,7 @@ function blankSentence(sentence, word) {
 
 export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner }) {
   const eligibleWords = useMemo(
-    () => words.filter((w) => (w.partOfSpeech || '').toLowerCase() !== 'phrase'),
+    () => shuffle(words.filter((w) => (w.partOfSpeech || '').toLowerCase() !== 'phrase')),
     [words],
   );
 

@@ -1,25 +1,45 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
-import { buildChoices } from '../../lib/quizChoices.js';
+import { buildChoicesFromPool } from '../../lib/quizChoices.js';
+import { getGlobalWordPool } from '../../lib/api.js';
 import useCelebration from '../../hooks/useCelebration.js';
 import useCombo from '../../hooks/useCombo.js';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
+import LoadingSpinner from '../LoadingSpinner.jsx';
 
+// הסדר של words כבר מגיע מעורבב מ-applyAdaptiveOrder (PracticeSession),
+// שם הערבוב נעשה בתוך כל קבוצה (חלשות/שאר) בנפרד — ערבוב נוסף כאן היה
+// הורס את סדר "מילים חלשות קודם" המכוון. ר' lib/adaptivePractice.js.
 export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) {
   const [index, setIndex] = useState(0);
   const [session, setSession] = useState(() => words.map((w) => ({ ...w })));
   const [correctCount, setCorrectCount] = useState(0);
   const [masteredCount, setMasteredCount] = useState(0);
   const [selected, setSelected] = useState(null);
+  const [globalPool, setGlobalPool] = useState(null);
   const { confettiKey, xpFlyup, celebrate, shake } = useCelebration();
   const { combo, justBroke, registerAnswer, getMaxCombo } = useCombo();
 
-  const choices = useMemo(() => buildChoices(words, index), [words, index]);
+  useEffect(() => {
+    let cancelled = false;
+    getGlobalWordPool().then((pool) => {
+      if (!cancelled) setGlobalPool(pool);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const current = session[index];
-  const progressPct = Math.round((index / words.length) * 100);
+  const choices = useMemo(
+    () => (globalPool && current ? buildChoicesFromPool(current, globalPool) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [globalPool, index],
+  );
+  const progressPct = Math.round((index / session.length) * 100);
 
   function selectAnswer(choice) {
     if (selected !== null) return;
@@ -92,31 +112,35 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
         </p>
       </div>
 
-      <div className="space-y-3">
-        {choices.map((choice) => {
-          const isSelected = selected === choice;
-          const isCorrectChoice = choice === current.hebrewTranslation;
-          let style = 'bg-white text-brand-text';
-          let shakeClass = '';
-          if (selected !== null) {
-            if (isCorrectChoice) style = 'bg-brand-green/10 text-brand-green';
-            else if (isSelected) {
-              style = 'bg-red-50 text-red-600';
-              shakeClass = 'animate-shake';
+      {globalPool === null ? (
+        <LoadingSpinner />
+      ) : (
+        <div className="space-y-3">
+          {choices.map((choice) => {
+            const isSelected = selected === choice;
+            const isCorrectChoice = choice === current.hebrewTranslation;
+            let style = 'bg-white text-brand-text';
+            let shakeClass = '';
+            if (selected !== null) {
+              if (isCorrectChoice) style = 'bg-brand-green/10 text-brand-green';
+              else if (isSelected) {
+                style = 'bg-red-50 text-red-600';
+                shakeClass = 'animate-shake';
+              }
             }
-          }
-          return (
-            <button
-              key={choice}
-              onClick={() => selectAnswer(choice)}
-              disabled={selected !== null}
-              className={`w-full rounded-xl shadow-md p-4 font-semibold text-lg transition ${style} ${shakeClass}`}
-            >
-              {choice}
-            </button>
-          );
-        })}
-      </div>
+            return (
+              <button
+                key={choice}
+                onClick={() => selectAnswer(choice)}
+                disabled={selected !== null}
+                className={`w-full rounded-xl shadow-md p-4 font-semibold text-lg transition ${style} ${shakeClass}`}
+              >
+                {choice}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowRight, Layers, ListChecks, PenLine, Link2, Search, Zap, BookOpen, PencilLine } from 'lucide-react';
+import { ArrowRight, Layers, ListChecks, PenLine, Link2, Search, Zap, BookOpen, PencilLine, Shuffle } from 'lucide-react';
 import { callGetMyAssignments } from '../lib/api.js';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
@@ -66,29 +66,40 @@ export default function PracticePicker() {
         <>
           <div>
             <h1 className="text-2xl font-bold text-brand-text">{assignment.title}</h1>
-            <p className="text-brand-grey-text mt-1">איך תרצה לתרגל?</p>
-          </div>
-
-          {assignment.practiceMode === 'varied' && (
-            <p className="text-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
-              🎯 המורה בחר מגוון — בחר מודול לתרגול
+            <p className="text-brand-grey-text mt-1">
+              {assignment.practiceMode === 'varied' ? 'המורה הכין לך תרגול מגוון' : 'איך תרצה לתרגל?'}
             </p>
-          )}
-
-          <div className="grid grid-cols-2 gap-3">
-            {MODULES.map((m) => (
-              <button
-                key={m.key}
-                onClick={() => navigate(`/practice/${assignmentId}/${m.key}`)}
-                className="aspect-square flex flex-col items-center justify-center gap-2 rounded-2xl bg-white shadow-md p-4 hover:shadow-lg transition"
-              >
-                <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 ${m.bg} ${m.text}`}>
-                  <m.icon size={28} strokeWidth={2.25} />
-                </div>
-                <span className="font-semibold text-brand-text text-sm text-center leading-tight">{m.label}</span>
-              </button>
-            ))}
           </div>
+
+          {assignment.practiceMode === 'varied' ? (
+            <button
+              onClick={() => navigate(`/practice/${assignmentId}/varied`)}
+              className="w-full flex flex-col items-center gap-3 rounded-2xl bg-white shadow-md p-8 hover:shadow-lg transition"
+            >
+              <div className="h-16 w-16 rounded-2xl bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center">
+                <Shuffle size={32} strokeWidth={2.25} />
+              </div>
+              <span className="font-bold text-brand-text text-lg">התחל תרגול מגוון 🎯</span>
+              <p className="text-sm text-brand-grey-text text-center">
+                כל 5 מילים תעברו למודול תרגול אחר — כרטיסיות, מבחן, נכון/לא נכון ואיות, לסירוגין
+              </p>
+            </button>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {MODULES.map((m) => (
+                <button
+                  key={m.key}
+                  onClick={() => navigate(`/practice/${assignmentId}/${m.key}`)}
+                  className="aspect-square flex flex-col items-center justify-center gap-2 rounded-2xl bg-white shadow-md p-4 hover:shadow-lg transition"
+                >
+                  <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 ${m.bg} ${m.text}`}>
+                    <m.icon size={28} strokeWidth={2.25} />
+                  </div>
+                  <span className="font-semibold text-brand-text text-sm text-center leading-tight">{m.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </>
       )}
     </div>

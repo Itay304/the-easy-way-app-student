@@ -24,6 +24,7 @@ import WhoAmI from '../components/practice/WhoAmI.jsx';
 import TrueFalse from '../components/practice/TrueFalse.jsx';
 import WhatMeans from '../components/practice/WhatMeans.jsx';
 import FillSentence from '../components/practice/FillSentence.jsx';
+import VariedModule from '../components/practice/VariedModule.jsx';
 import SessionSummary from '../components/practice/SessionSummary.jsx';
 import BadgeUnlockToast from '../components/practice/BadgeUnlockToast.jsx';
 
@@ -211,6 +212,8 @@ export default function PracticeSession() {
     return <WhatMeans words={words} onFinish={handleFinish} onBack={goBack} />;
   if (module === 'fillsentence')
     return <FillSentence words={words} onFinish={handleFinish} onBack={goBack} />;
+  if (module === 'varied')
+    return <VariedModule words={words} onFinish={handleFinish} onBack={goBack} />;
 
   return null;
 }

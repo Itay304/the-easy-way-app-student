@@ -13,3 +13,14 @@ export function buildChoices(words, index) {
   const distractors = shuffle(distractorPool).slice(0, 3);
   return shuffle([correct.hebrewTranslation, ...distractors]);
 }
+
+/** כמו buildChoices, אבל המסיחות מגיעות ממאגר חיצוני (למשל כל word_lists,
+ * ר' getGlobalWordPool ב-api.js) ולא מתוך רשימת המילים של המשימה עצמה —
+ * כדי שאי אפשר יהיה "לנחש לפי הקשר" מתוך המילים הצרות של המשימה. */
+export function buildChoicesFromPool(correctWord, pool, count = 3) {
+  const distractorPool = pool
+    .filter((w) => w.englishWord !== correctWord.englishWord)
+    .map((w) => w.hebrewTranslation);
+  const distractors = shuffle(distractorPool).slice(0, count);
+  return shuffle([correctWord.hebrewTranslation, ...distractors]);
+}
