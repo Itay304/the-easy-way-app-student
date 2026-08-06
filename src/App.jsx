@@ -41,7 +41,12 @@ export default function App() {
   // בקשת הרשאת Push לאחר login — מוגן ב-flag לכל uid בתוך
   // requestPushPermissionAndSaveToken עצמה, כך שלא מציקים בכל טעינה.
   useEffect(() => {
-    if (user) requestPushPermissionAndSaveToken(user.uid);
+    if (user) {
+      console.log('FCM: App.jsx effect firing, user.uid = ' + user.uid);
+      requestPushPermissionAndSaveToken(user.uid);
+    } else {
+      console.log('FCM: App.jsx effect firing, but user is null/undefined — skipping');
+    }
   }, [user]);
 
   // מוצג רק בטעינה ראשונה — App לא נטען מחדש בניווט בתוך ה-app (React

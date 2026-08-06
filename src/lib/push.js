@@ -22,35 +22,63 @@ function requestedKey(uid) {
  * את הדגל לא-מסומן כדי שהניסיון הבא (login הבא) ינסה שוב.
  */
 export async function requestPushPermissionAndSaveToken(uid) {
-  if (typeof window === 'undefined' || typeof Notification === 'undefined') return;
-  if (localStorage.getItem(requestedKey(uid)) === '1') return;
+  console.log('FCM: init started');
+
+  if (typeof window === 'undefined' || typeof Notification === 'undefined') {
+    console.log('FCM: error = Notification API not available in this environment');
+    return;
+  }
+
+  if (localStorage.getItem(requestedKey(uid)) === '1') {
+    console.log('FCM: skipped — already requested+saved successfully before for this uid');
+    return;
+  }
+
+  console.log('FCM: VAPID key = ' + VAPID_KEY?.substring(0, 10));
 
   if (!VAPID_KEY) {
-    console.warn('[push] VITE_FIREBASE_VAPID_KEY לא מוגדר — מדלגים על רישום Push.');
+    console.log('FCM: error = VITE_FIREBASE_VAPID_KEY is missing/empty');
     return;
   }
 
   try {
     const messaging = await getMessagingIfSupported();
-    if (!messaging) return; // הדפדפן/הסביבה לא תומכים ב-FCM (למשל Safari ישן, iframe)
+    if (!messaging) {
+      console.log('FCM: error = getMessagingIfSupported() returned null (FCM unsupported in this browser/context)');
+      return;
+    }
 
+    console.log('FCM: permission status = ' + Notification.permission);
+    console.log('FCM: requesting permission...');
     const permission = await Notification.requestPermission();
-    if (permission !== 'granted') return;
+    console.log('FCM: permission status = ' + permission);
+    if (permission !== 'granted') {
+      console.log('FCM: error = permission not granted (' + permission + ')');
+      return;
+    }
 
     // getToken() בלי serviceWorkerRegistration מחפש /firebase-messaging-sw.js
     // כברירת מחדל. ה-handler שלנו ממוזג לתוך /service-worker.js הקיים
     // (נרשם ב-main.jsx) במקום קובץ נפרד — לכן חייבים למסור לו את אותו
     // registration במפורש, אחרת getToken() מנסה לרשום קובץ שלא קיים.
     const registration = await navigator.serviceWorker.ready;
+    console.log('FCM: service worker ready, scope = ' + registration.scope);
+
     const token = await getToken(messaging, {
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: registration,
     });
+    console.log('FCM: token = ' + token?.substring(0, 10));
+
     if (token) {
       await updateDoc(doc(db, 'users', uid), { fcmToken: token });
       localStorage.setItem(requestedKey(uid), '1');
+      console.log('FCM: token saved to users/' + uid + '.fcmToken');
+    } else {
+      console.log('FCM: error = getToken() resolved with no token');
     }
   } catch (err) {
+    console.log('FCM: error = ' + err);
     console.error('[push] בקשת הרשאה/שמירת token נכשלה:', err);
   }
 }
