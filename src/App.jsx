@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import useAuthRole from './hooks/useAuthRole.js';
 import useBackButtonGuard from './hooks/useBackButtonGuard.js';
 import useSettings from './hooks/useSettings.js';
 import useInstallGate from './hooks/useInstallGate.js';
+import { requestPushPermissionAndSaveToken } from './lib/push.js';
 import { AuthProvider } from './context/AuthContext.jsx';
 import LoadingSpinner from './components/LoadingSpinner.jsx';
 import InstallRequired from './components/InstallRequired.jsx';
@@ -36,6 +37,12 @@ export default function App() {
   const { status, user, profile } = useAuthRole();
   const { animationsEnabled } = useSettings();
   useBackButtonGuard();
+
+  // בקשת הרשאת Push לאחר login — מוגן ב-flag לכל uid בתוך
+  // requestPushPermissionAndSaveToken עצמה, כך שלא מציקים בכל טעינה.
+  useEffect(() => {
+    if (user) requestPushPermissionAndSaveToken(user.uid);
+  }, [user]);
 
   // מוצג רק בטעינה ראשונה — App לא נטען מחדש בניווט בתוך ה-app (React
   // Router client-side), רק ב-reload/כניסה מחדש, כך ש-state רגיל מספיק
