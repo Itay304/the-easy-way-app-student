@@ -11,7 +11,6 @@ import { Skeleton } from '../components/Skeleton.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
 import BadgeGrid from '../components/profile/BadgeGrid.jsx';
 import SettingsSection from '../components/profile/SettingsSection.jsx';
-import BandProgress from '../components/profile/BandProgress.jsx';
 
 export default function Profile() {
   const { user, profile } = useAuth();
@@ -19,7 +18,6 @@ export default function Profile() {
   const [institutionName, setInstitutionName] = useState(null);
   const [completedCount, setCompletedCount] = useState(null);
   const [earnedBadgeIds, setEarnedBadgeIds] = useState(new Set());
-  const [allProgress, setAllProgress] = useState(null);
   const [error, setError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -46,7 +44,6 @@ export default function Profile() {
           setInstitutionName(institutionDoc?.name || null);
           setCompletedCount(completed);
           setEarnedBadgeIds(new Set(badges.map((b) => b.id)));
-          setAllProgress(allProgress);
         }
       } catch (err) {
         console.error('[Profile] load failed:', err);
@@ -65,12 +62,12 @@ export default function Profile() {
   const initial = (profile.displayName || '?').trim().charAt(0).toUpperCase();
 
   return (
-    <div className="px-4 pt-6 space-y-4">
+    <div className="px-4 pt-6 space-y-5">
       <h1 className="text-2xl font-bold text-brand-text">פרופיל</h1>
 
       {error && <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />}
 
-      <div className="rounded-2xl bg-white shadow-md p-6 flex flex-col items-center text-center">
+      <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-6 flex flex-col items-center text-center">
         <div className="h-20 w-20 rounded-full bg-brand-turquoise text-white flex items-center justify-center text-3xl font-bold mb-3">
           {initial}
         </div>
@@ -86,7 +83,7 @@ export default function Profile() {
         )}
       </div>
 
-      <div className="rounded-2xl bg-white shadow-md p-5 space-y-2">
+      <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-5 space-y-2">
         <div className="flex items-center justify-between">
           <span className="font-semibold text-brand-text">רמה {level}</span>
           <span className="text-sm text-brand-grey-text">
@@ -99,7 +96,7 @@ export default function Profile() {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-white shadow-md p-4 flex items-center gap-3">
+        <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex items-center gap-3">
           <div className="h-11 w-11 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
             <Flame size={22} strokeWidth={2.25} />
           </div>
@@ -108,7 +105,7 @@ export default function Profile() {
             <p className="text-xs text-brand-grey-text mt-1">ימים ברצף</p>
           </div>
         </div>
-        <div className="rounded-2xl bg-white shadow-md p-4 flex items-center gap-3">
+        <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex items-center gap-3">
           <div className="h-11 w-11 rounded-xl bg-brand-green/10 text-brand-green flex items-center justify-center shrink-0">
             <CheckCircle2 size={22} strokeWidth={2.25} />
           </div>
@@ -121,15 +118,13 @@ export default function Profile() {
         </div>
       </div>
 
-      {allProgress && <BandProgress allProgress={allProgress} />}
-
       <BadgeGrid earnedIds={earnedBadgeIds} />
 
       <SettingsSection />
 
       <button
         onClick={() => signOut(auth)}
-        className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-white shadow-md text-red-600 font-bold"
+        className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-gradient-to-b from-white to-gray-50 shadow-lg text-red-600 font-bold"
       >
         <LogOut size={18} />
         התנתקות

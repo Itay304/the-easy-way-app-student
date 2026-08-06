@@ -83,7 +83,7 @@ export default function Statistics() {
   }, [user, reloadKey]);
 
   return (
-    <div className="px-4 pt-6 space-y-4">
+    <div className="px-4 pt-6 space-y-5">
       <h1 className="text-2xl font-bold text-brand-text">סטטיסטיקות</h1>
 
       {error && <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />}

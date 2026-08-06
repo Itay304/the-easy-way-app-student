@@ -226,7 +226,7 @@ export default function SprintSession() {
           </p>
         </div>
 
-        <div className="w-full rounded-2xl bg-white shadow-md p-6 space-y-4">
+        <div className="w-full rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-6 space-y-4">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2 text-brand-grey-text">
               <Trophy size={18} className="text-amber-500" />
@@ -247,7 +247,7 @@ export default function SprintSession() {
           {comparisonText && <p className="text-sm font-semibold text-brand-turquoise pt-2">{comparisonText}</p>}
         </div>
 
-        <button onClick={goBack} className="w-full py-4 rounded-xl bg-brand-turquoise text-white font-bold">
+        <button onClick={goBack} className="w-full py-4 rounded-xl bg-gradient-to-r from-turquoise-400 to-turquoise-600 text-white font-bold">
           סיום
         </button>
 
@@ -262,7 +262,7 @@ export default function SprintSession() {
 
   return (
     <div className="px-4 pt-6 space-y-5">
-      {confettiKey && <Confetti key={confettiKey} count={50} durationMs={1500} />}
+      {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
       <div className="flex items-center justify-between">
@@ -280,7 +280,7 @@ export default function SprintSession() {
         {index + 1} מתוך {pool.length}
       </p>
 
-      <div className="rounded-2xl bg-white shadow-md p-8 text-center">
+      <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 text-center">
         <p className="text-3xl font-bold text-brand-text" dir="ltr">
           {current.englishWord}
         </p>

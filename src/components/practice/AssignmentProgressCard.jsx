@@ -7,7 +7,7 @@ export default function AssignmentProgressCard({ assignment, mastered, total }) 
   return (
     <Link
       to={`/practice/${assignment.assignmentId}`}
-      className="block rounded-2xl bg-white shadow-md p-4"
+      className="block rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4"
     >
       <div className="flex items-center justify-between mb-2">
         <p className="font-semibold text-brand-text truncate">{assignment.title}</p>

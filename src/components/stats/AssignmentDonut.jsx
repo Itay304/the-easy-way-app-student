@@ -8,7 +8,7 @@ export default function AssignmentDonut({ title, mastered, total }) {
   ];
 
   return (
-    <div className="rounded-2xl bg-white shadow-md p-4 flex items-center gap-4">
+    <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex items-center gap-4">
       <div className="h-20 w-20 shrink-0 relative">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>

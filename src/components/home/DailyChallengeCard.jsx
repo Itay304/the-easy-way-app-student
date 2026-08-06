@@ -44,7 +44,7 @@ export default function DailyChallengeCard({ uid }) {
       : Math.min(100, Math.round((challenge.progress / challenge.target) * 100));
 
   return (
-    <div className="rounded-2xl bg-white shadow-md p-4 space-y-2">
+    <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 space-y-2">
       <div className="flex items-center gap-2">
         <div
           className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 ${

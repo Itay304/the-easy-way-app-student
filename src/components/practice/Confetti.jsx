@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { isAnimationsEnabled } from '../../lib/settings.js';
 
-const COLORS = ['#14b8a6', '#22c55e', '#f59e0b', '#ef4444', '#3b82f6', '#a855f7'];
+// זהב + טורקיז המותג — לא ריבועים/כתום/סגול נופלים כמו קודם.
+const COLORS = ['#FFD700', '#FDB813', '#00bfa5', '#26e0c9'];
+const FRICTION = 0.97;
 
-export default function Confetti({ count = 50, durationMs = 1500 }) {
+export default function Confetti({ count = 30, durationMs = 1000 }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -19,36 +21,40 @@ export default function Confetti({ count = 50, durationMs = 1500 }) {
     resize();
     window.addEventListener('resize', resize);
 
-    const particles = Array.from({ length: count }, () => ({
-      x: canvas.width / 2 + (Math.random() - 0.5) * 120,
-      y: canvas.height / 3,
-      vx: (Math.random() - 0.5) * 9,
-      vy: Math.random() * -9 - 3,
-      size: Math.random() * 6 + 4,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
-      rotation: Math.random() * 360,
-      rotationSpeed: (Math.random() - 0.5) * 22,
-    }));
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 3;
+    const particles = Array.from({ length: count }, () => {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 4 + 2;
+      return {
+        x: cx,
+        y: cy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        size: Math.random() * 4 + 2,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      };
+    });
 
-    const gravity = 0.32;
     const start = performance.now();
     let raf;
 
     function tick(now) {
       const elapsed = now - start;
+      const opacity = Math.max(0, 1 - elapsed / durationMs);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach((p) => {
-        p.vy += gravity;
         p.x += p.vx;
         p.y += p.vy;
-        p.rotation += p.rotationSpeed;
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate((p.rotation * Math.PI) / 180);
+        p.vx *= FRICTION;
+        p.vy *= FRICTION;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
-        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
-        ctx.restore();
+        ctx.globalAlpha = opacity;
+        ctx.fill();
       });
+      ctx.globalAlpha = 1;
       if (elapsed < durationMs) {
         raf = requestAnimationFrame(tick);
       } else {

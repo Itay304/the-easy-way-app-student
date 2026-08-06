@@ -26,7 +26,7 @@ export default function StreakCard({ streak, lastActiveDate }) {
   const Icon = config.icon;
 
   return (
-    <div className="rounded-2xl bg-white shadow-md p-4 flex items-center gap-3">
+    <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex items-center gap-3">
       <div className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 ${config.iconClass}`}>
         <Icon size={22} strokeWidth={2.25} />
       </div>

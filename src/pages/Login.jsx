@@ -55,7 +55,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full py-4 rounded-xl bg-brand-turquoise text-white font-bold text-lg hover:opacity-90 transition disabled:opacity-60"
+          className="w-full py-4 rounded-xl bg-gradient-to-r from-turquoise-400 to-turquoise-600 text-white font-bold text-lg hover:opacity-90 transition disabled:opacity-60"
         >
           {submitting ? '...' : mode === 'login' ? 'כניסה' : 'הרשמה'}
         </button>

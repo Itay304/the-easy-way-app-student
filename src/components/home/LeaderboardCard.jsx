@@ -46,7 +46,7 @@ export default function LeaderboardCard({ topStudents, myRank, totalStudents, my
   }, [topStudents]);
 
   return (
-    <section className="rounded-2xl bg-white shadow-md p-5">
+    <section className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-5">
       <div className="flex items-center gap-2 mb-1">
         <Trophy size={18} className="text-amber-500" />
         <h2 className="text-lg font-bold text-brand-text">טבלת מובילים</h2>

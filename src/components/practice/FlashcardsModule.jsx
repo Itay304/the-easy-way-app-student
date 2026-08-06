@@ -58,7 +58,7 @@ export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBann
 
   return (
     <div className="px-4 pt-6 space-y-5">
-      {confettiKey && <Confetti key={confettiKey} count={50} durationMs={1500} />}
+      {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
       <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-brand-grey-text hover:text-brand-text">
@@ -95,13 +95,13 @@ export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBann
         }}
       >
         <div className={`flip-card-inner ${flipped ? 'is-flipped' : ''}`}>
-          <div className="flip-card-face rounded-2xl bg-white shadow-md p-8 flex flex-col items-center justify-center text-center">
+          <div className="flip-card-face rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 flex flex-col items-center justify-center text-center">
             <p className="text-3xl font-bold text-brand-text" dir="ltr">
               {current.englishWord}
             </p>
             <p className="text-xs text-brand-grey-text mt-4">הקש להיפוך</p>
           </div>
-          <div className="flip-card-face flip-card-back rounded-2xl bg-white shadow-md p-8 flex flex-col items-center justify-center text-center">
+          <div className="flip-card-face flip-card-back rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 flex flex-col items-center justify-center text-center">
             <p className="text-2xl font-bold text-brand-turquoise mb-3">{current.hebrewTranslation}</p>
             {current.exampleSentence && (
               <p className="text-sm text-brand-grey-text" dir="ltr">

@@ -2,7 +2,7 @@ import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'rec
 
 export default function MasteryLineChart({ data }) {
   return (
-    <div className="rounded-2xl bg-white shadow-md p-4">
+    <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4">
       <h2 className="text-lg font-bold text-brand-text mb-3">מילים שנכבשו לאורך זמן</h2>
       <div className="h-48" dir="ltr">
         <ResponsiveContainer width="100%" height="100%">

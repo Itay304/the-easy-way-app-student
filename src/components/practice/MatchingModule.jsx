@@ -149,7 +149,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
 
   return (
     <div className="px-4 pt-6 space-y-5">
-      {confettiKey && <Confetti key={confettiKey} count={50} durationMs={1500} />}
+      {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
       <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-brand-grey-text hover:text-brand-text">

@@ -45,7 +45,7 @@ export default function PracticePicker() {
   }
 
   return (
-    <div className="px-4 pt-6 space-y-4">
+    <div className="px-4 pt-6 space-y-5">
       <button
         onClick={goBack}
         className="inline-flex items-center gap-1 text-sm text-brand-grey-text hover:text-brand-text"
@@ -74,7 +74,7 @@ export default function PracticePicker() {
           {assignment.practiceMode === 'varied' ? (
             <button
               onClick={() => navigate(`/practice/${assignmentId}/varied`)}
-              className="w-full flex flex-col items-center gap-3 rounded-2xl bg-white shadow-md p-8 hover:shadow-lg transition"
+              className="w-full flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 hover:shadow-lg transition"
             >
               <div className="h-16 w-16 rounded-2xl bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center">
                 <Shuffle size={32} strokeWidth={2.25} />
@@ -90,7 +90,7 @@ export default function PracticePicker() {
                 <button
                   key={m.key}
                   onClick={() => navigate(`/practice/${assignmentId}/${m.key}`)}
-                  className="aspect-square flex flex-col items-center justify-center gap-2 rounded-2xl bg-white shadow-md p-4 hover:shadow-lg transition"
+                  className="aspect-square flex flex-col items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 hover:shadow-lg transition"
                 >
                   <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 ${m.bg} ${m.text}`}>
                     <m.icon size={28} strokeWidth={2.25} />

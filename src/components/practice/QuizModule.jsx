@@ -83,7 +83,7 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
 
   return (
     <div className="px-4 pt-6 space-y-5">
-      {confettiKey && <Confetti key={confettiKey} count={50} durationMs={1500} />}
+      {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
       <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-brand-grey-text hover:text-brand-text">
@@ -106,7 +106,7 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
         {index + 1} מתוך {session.length}
       </p>
 
-      <div className="rounded-2xl bg-white shadow-md p-8 text-center">
+      <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 text-center">
         <p className="text-3xl font-bold text-brand-text" dir="ltr">
           {current.englishWord}
         </p>

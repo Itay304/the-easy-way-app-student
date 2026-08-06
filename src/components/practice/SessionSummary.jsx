@@ -16,7 +16,7 @@ export default function SessionSummary({
 
   return (
     <div className="px-4 pt-10 flex flex-col items-center text-center space-y-6">
-      <Confetti count={120} durationMs={2500} />
+      <Confetti count={70} durationMs={1500} />
 
       <div className="h-20 w-20 rounded-full bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center">
         <PartyPopper size={40} strokeWidth={2} />
@@ -28,7 +28,7 @@ export default function SessionSummary({
       </div>
 
       {assignmentPct !== null && (
-        <div className="w-full rounded-2xl bg-white shadow-md p-5 space-y-2">
+        <div className="w-full rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-5 space-y-2">
           <div className="flex items-center justify-between">
             <span className="font-semibold text-brand-text">התקדמות במשימה</span>
             <span className="text-sm font-bold text-brand-turquoise">{assignmentPct}%</span>
@@ -42,7 +42,7 @@ export default function SessionSummary({
         </div>
       )}
 
-      <div className="w-full rounded-2xl bg-white shadow-md p-6 space-y-4">
+      <div className="w-full rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-6 space-y-4">
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2 text-brand-grey-text">
             <CheckCircle2 size={18} className="text-brand-green" />
@@ -76,7 +76,7 @@ export default function SessionSummary({
         </div>
       </div>
 
-      <button onClick={onDone} className="w-full py-4 rounded-xl bg-brand-turquoise text-white font-bold">
+      <button onClick={onDone} className="w-full py-4 rounded-xl bg-gradient-to-r from-turquoise-400 to-turquoise-600 text-white font-bold">
         סיום
       </button>
     </div>
