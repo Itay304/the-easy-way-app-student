@@ -51,8 +51,14 @@ export async function requestPushPermissionAndSaveToken(uid) {
 
     console.log('FCM: permission status = ' + Notification.permission);
     console.log('FCM: requesting permission...');
+
+    // בדיקת השערה: אולי הפונקציה רצה לפני שה-DOM/הדף "מוכן" בעיני הדפדפן.
+    // TODO: זמני לאבחון — להסיר
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    alert('before requestPermission'); // TODO: זמני לאבחון — להסיר
     const permission = await Notification.requestPermission();
-    alert('Permission result: ' + permission); // TODO: זמני לאבחון — להסיר
+    alert('after requestPermission: ' + permission); // TODO: זמני לאבחון — להסיר
     console.log('FCM: permission status = ' + permission);
     if (permission !== 'granted') {
       console.log('FCM: error = permission not granted (' + permission + ')');
@@ -80,6 +86,7 @@ export async function requestPushPermissionAndSaveToken(uid) {
       console.log('FCM: error = getToken() resolved with no token');
     }
   } catch (err) {
+    alert('FCM catch: ' + err); // TODO: זמני לאבחון — להסיר
     console.log('FCM: error = ' + err);
     console.error('[push] בקשת הרשאה/שמירת token נכשלה:', err);
   }
