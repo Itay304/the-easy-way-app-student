@@ -22,6 +22,7 @@ function requestedKey(uid) {
  * את הדגל לא-מסומן כדי שהניסיון הבא (login הבא) ינסה שוב.
  */
 export async function requestPushPermissionAndSaveToken(uid) {
+  alert('FCM function called for uid: ' + uid); // TODO: זמני לאבחון — להסיר
   console.log('FCM: init started');
 
   if (typeof window === 'undefined' || typeof Notification === 'undefined') {
@@ -51,6 +52,7 @@ export async function requestPushPermissionAndSaveToken(uid) {
     console.log('FCM: permission status = ' + Notification.permission);
     console.log('FCM: requesting permission...');
     const permission = await Notification.requestPermission();
+    alert('Permission result: ' + permission); // TODO: זמני לאבחון — להסיר
     console.log('FCM: permission status = ' + permission);
     if (permission !== 'granted') {
       console.log('FCM: error = permission not granted (' + permission + ')');
