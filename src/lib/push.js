@@ -1,25 +1,28 @@
 import { getToken } from 'firebase/messaging';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db, getMessagingIfSupported } from '../firebase.js';
 
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
-// v2: גרסה קודמת של ה-key סימנה "כבר ביקשנו" גם כשהבקשה בפועל נכשלה
-// (VAPID_KEY חסר/getToken נכשל), ותקעה משתמשים לצמיתות גם אחרי שהתיקון
-// נפרס. שינוי שם ה-key מבטל את הדגלים התקועים האלה בבת אחת.
+// v3: מעבר משדה יחיד users/{uid}.fcmToken (נדרס בכל מכשיר חדש — התראות
+// הגיעו רק ל-login האחרון) לאוסף users/{uid}/tokens/{token}, כך שלכל
+// מכשיר יש מסמך משלו ואפשר לשלוח לכולם. גרסה קודמת (v2) של ה-flag
+// כבר לא רלוונטית לסכימה החדשה — bump נוסף כדי שכל המכשירים שכבר
+// נרשמו יעברו רישום מחדש פעם אחת ויכתבו למבנה הנכון.
 function requestedKey(uid) {
-  return `easylex_push_requested_v2_${uid}`;
+  return `easylex_push_requested_v3_${uid}`;
 }
 
 /**
  * מבקשת הרשאת Push בכניסה ראשונה (לאחר login) ושומרת את ה-FCM token
- * ב-users/{uid}.fcmToken. מוגן ב-flag לכל uid ב-localStorage כדי לא
- * לבצע getToken()+כתיבה מיותרים בכל login חוזר — לא כדי למנוע פופ-אפ
- * חוזר (Notification.requestPermission() עצמו כבר no-op בשקט אם
- * המשתמש כבר ענה). מכשיר משותף (כמה תלמידים) → flag לכל uid בנפרד,
- * לא גלובלי. הדגל נשמר רק אחרי הצלחה אמיתית (token נכתב בפועל) —
- * כל כשל (VAPID חסר, דפדפן לא נתמך, סירוב, שגיאת getToken) משאיר
- * את הדגל לא-מסומן כדי שהניסיון הבא (login הבא) ינסה שוב.
+ * ב-users/{uid}/tokens/{token} (doc ID = הטוקן עצמו — כתיבה חוזרת של
+ * אותו טוקן פשוט מעדכנת את אותו מסמך, לא יוצרת כפילות). מוגן ב-flag
+ * לכל uid ב-localStorage כדי לא לבצע getToken()+כתיבה מיותרים בכל
+ * login חוזר — לא כדי למנוע פופ-אפ חוזר (Notification.requestPermission()
+ * עצמו כבר no-op בשקט אם המשתמש כבר ענה). מכשיר משותף (כמה תלמידים) →
+ * flag לכל uid בנפרד, לא גלובלי. הדגל נשמר רק אחרי הצלחה אמיתית (token
+ * נכתב בפועל) — כל כשל (VAPID חסר, דפדפן לא נתמך, סירוב, שגיאת getToken)
+ * משאיר את הדגל לא-מסומן כדי שהניסיון הבא (login הבא) ינסה שוב.
  */
 export async function requestPushPermissionAndSaveToken(uid) {
   console.log('FCM: init started');
@@ -74,9 +77,13 @@ export async function requestPushPermissionAndSaveToken(uid) {
     console.log('FCM: token = ' + token?.substring(0, 10));
 
     if (token) {
-      await updateDoc(doc(db, 'users', uid), { fcmToken: token });
+      await setDoc(doc(db, 'users', uid, 'tokens', token), {
+        token,
+        device: navigator.userAgent,
+        createdAt: serverTimestamp(),
+      });
       localStorage.setItem(requestedKey(uid), '1');
-      console.log('FCM: token saved to users/' + uid + '.fcmToken');
+      console.log('FCM: token saved to users/' + uid + '/tokens/' + token.substring(0, 10) + '...');
     } else {
       console.log('FCM: error = getToken() resolved with no token');
     }
