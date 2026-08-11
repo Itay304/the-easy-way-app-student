@@ -25,6 +25,7 @@ function requestedKey(uid) {
  * משאיר את הדגל לא-מסומן כדי שהניסיון הבא (login הבא) ינסה שוב.
  */
 export async function requestPushPermissionAndSaveToken(uid) {
+  console.log('push.js version: tokens-subcollection');
   console.log('FCM: init started');
 
   if (typeof window === 'undefined' || typeof Notification === 'undefined') {
