@@ -78,11 +78,19 @@ export async function requestPushPermissionAndSaveToken(uid) {
     console.log('FCM: token = ' + token?.substring(0, 10));
 
     if (token) {
-      await setDoc(doc(db, 'users', uid, 'tokens', token), {
-        token,
-        device: navigator.userAgent,
-        createdAt: serverTimestamp(),
-      });
+      const tokenDocPath = 'users/' + uid + '/tokens/' + token.substring(0, 10) + '...';
+      console.log('FCM: before Firestore write, path = ' + tokenDocPath);
+      try {
+        await setDoc(doc(db, 'users', uid, 'tokens', token), {
+          token,
+          device: navigator.userAgent,
+          createdAt: serverTimestamp(),
+        });
+        console.log('FCM: after Firestore write succeeded, path = ' + tokenDocPath);
+      } catch (writeErr) {
+        console.log('FCM: after Firestore write FAILED, path = ' + tokenDocPath + ', error = ' + writeErr);
+        throw writeErr;
+      }
       localStorage.setItem(requestedKey(uid), '1');
       console.log('FCM: token saved to users/' + uid + '/tokens/' + token.substring(0, 10) + '...');
     } else {
