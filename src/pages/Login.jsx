@@ -61,6 +61,9 @@ export default function Login() {
           // וגם JoinClassFragment.java באפליקציית האנדרואיד, שכבר משתמש בשם הנכון).
           await joinClass({ joinCode: classCode.trim().toUpperCase() });
         } catch (joinErr) {
+          // דיבוג זמני — לראות בדיוק מה joinClass מחזיר בפרודקשן (code/message)
+          // כשהצטרפות לכיתה בהרשמה נכשלת, לפני שמנחשים סיבה.
+          console.error('[signup] joinClass failed:', joinErr.code, joinErr.message, joinErr);
           // הרשמה היא all-or-nothing: קוד כיתה שגוי/הגבלת קצב וכו' לא אמורים
           // להשאיר משתמש "יתום" — מחוברים אבל בלי כיתה, ובלי אפשרות לנסות
           // שוב עם אותו אימייל (auth/email-already-in-use). מוחקים את מה
