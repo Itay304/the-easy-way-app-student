@@ -11,6 +11,7 @@ export default function useAuthRole() {
 
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (firebaseUser) => {
+      console.error('[DEBUG] onAuthStateChanged fired, uid =', firebaseUser?.uid);
       if (!firebaseUser) {
         setUser(null);
         setProfile(null);
@@ -22,13 +23,17 @@ export default function useAuthRole() {
       // יש request.auth.token.institutionId — אם ה-token נשאר cached מלפני
       // סנכרון ה-Custom Claims (syncUserClaims), הקריאה "נכשלת בשקט" ומחזירה
       // assignments ריק, גם כשה-Firestore doc כבר מעודכן.
-      firebaseUser.getIdToken(true).finally(() => setUser(firebaseUser));
+      firebaseUser.getIdToken(true).finally(() => {
+        console.error('[DEBUG] getIdToken(true) resolved, calling setUser, uid =', firebaseUser.uid);
+        setUser(firebaseUser);
+      });
     });
     return unsubAuth;
   }, []);
 
   useEffect(() => {
     if (!user) return undefined;
+    console.error('[DEBUG] subscribing onSnapshot for uid =', user.uid);
 
     setStatus('loading');
     const unsubDoc = onSnapshot(
@@ -36,6 +41,7 @@ export default function useAuthRole() {
       (snap) => {
         const data = snap.data() || {};
         const institutionId = data.institutionId || null;
+        console.error('[DEBUG] onSnapshot delivered, exists =', snap.exists(), 'institutionId =', institutionId, 'fromCache =', snap.metadata.fromCache);
         const emailPrefix = user.email ? user.email.split('@')[0] : '';
         setProfile({
           role: data.role || 'student',
@@ -50,9 +56,15 @@ export default function useAuthRole() {
         });
         setStatus(institutionId ? 'ready' : 'no-institution');
       },
-      () => setStatus('no-institution'),
+      (err) => {
+        console.error('[DEBUG] onSnapshot ERROR:', err.code, err.message);
+        setStatus('no-institution');
+      },
     );
-    return unsubDoc;
+    return () => {
+      console.error('[DEBUG] unsubscribing onSnapshot for uid =', user.uid);
+      unsubDoc();
+    };
   }, [user]);
 
   return { status, user, profile };
