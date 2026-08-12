@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  deleteUser,
 } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { auth, db, functions } from '../firebase.js';
 
@@ -41,21 +42,33 @@ export default function Login() {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
         const { user } = await createUserWithEmailAndPassword(auth, email, password);
-        await setDoc(doc(db, 'users', user.uid), {
-          fullName,
-          email,
-          role: 'student',
-          createdAt: serverTimestamp(),
-          xp: 0,
-          level: 1,
-          streak: 0,
-          totalActiveDays: 0,
-          totalXp: 0,
-          totalAttemptsCount: 0,
-          totalCorrectAttempts: 0,
-        });
-        const joinClass = httpsCallable(functions, 'joinClass');
-        await joinClass({ code: classCode.trim().toUpperCase() });
+        try {
+          await setDoc(doc(db, 'users', user.uid), {
+            fullName,
+            email,
+            role: 'student',
+            createdAt: serverTimestamp(),
+            xp: 0,
+            level: 1,
+            streak: 0,
+            totalActiveDays: 0,
+            totalXp: 0,
+            totalAttemptsCount: 0,
+            totalCorrectAttempts: 0,
+          });
+          const joinClass = httpsCallable(functions, 'joinClass');
+          // הפונקציה קוראת request.data.joinCode — לא code (ר' functions/index.js,
+          // וגם JoinClassFragment.java באפליקציית האנדרואיד, שכבר משתמש בשם הנכון).
+          await joinClass({ joinCode: classCode.trim().toUpperCase() });
+        } catch (joinErr) {
+          // הרשמה היא all-or-nothing: קוד כיתה שגוי/הגבלת קצב וכו' לא אמורים
+          // להשאיר משתמש "יתום" — מחוברים אבל בלי כיתה, ובלי אפשרות לנסות
+          // שוב עם אותו אימייל (auth/email-already-in-use). מוחקים את מה
+          // שכבר נוצר ומעלים את השגיאה המקורית לטיפול ה-catch החיצוני.
+          await deleteDoc(doc(db, 'users', user.uid)).catch(() => {});
+          await deleteUser(user).catch(() => {});
+          throw joinErr;
+        }
       }
     } catch (err) {
       if (mode === 'login') {
@@ -64,8 +77,11 @@ export default function Login() {
         setError('כתובת האימייל כבר רשומה. התחבר במקום זאת.');
       } else if (err.code === 'auth/weak-password') {
         setError('הסיסמה חייבת להכיל לפחות 6 תווים.');
-      } else if (err.message && /class|code/i.test(err.message)) {
-        setError('קוד הכיתה אינו תקין. בקש מהמורה קוד חדש.');
+      } else if (err.code && err.code.startsWith('functions/')) {
+        // joinClass (functions/index.js) זורק HttpsError עם הודעות עברית
+        // מוכנות (קוד לא נמצא / הגבלת קצב וכו') — מציגים אותן ישירות במקום
+        // להתאים תבנית לטקסט אנגלי שלעולם לא מופיע בהודעה בפועל.
+        setError(err.message || 'קוד הכיתה אינו תקין. בקש מהמורה קוד חדש.');
       } else {
         setError('שגיאה בהרשמה. נסו שנית.');
       }
