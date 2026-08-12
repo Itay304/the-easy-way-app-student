@@ -101,3 +101,5 @@ export async function requestPushPermissionAndSaveToken(uid) {
     console.error('[push] בקשת הרשאה/שמירת token נכשלה:', err);
   }
 }
+
+// force rebuild 08/12/2026 16:37:44
