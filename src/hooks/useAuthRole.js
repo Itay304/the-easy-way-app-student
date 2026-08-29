@@ -3,6 +3,27 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase.js';
 
+// syncUserClaims (functions/index.js, onDocumentWritten על users/{uid}) מסנכרן
+// role/institutionId ל-Custom Claims א-סינכרונית, אחרי הכתיבה שקבעה אותם —
+// לא בו-זמנית איתה, ולפעמים עם עיכוב ניכר (cold start של ה-Cloud Function).
+// רענון כפוי בודד מיד עם הופעת institutionId לא מספיק תמיד: אם syncUserClaims
+// עוד לא סיים לרוץ בצד שרת, הרענון עצמו מביא טוקן שעדיין חסר את ה-claim.
+// פונקציה זו בודקת תחילה את הטוקן הקיים (זול, בלי רשת — המקרה הנפוץ:
+// משתמש חוזר שה-claims שלו כבר מסונכרנים מפעם קודמת), ורק אם יש אי-התאמה
+// מנסה שוב עם רענון כפוי ופער זמן גדל, עד שה-claim בפועל תואם את המסמך.
+const CLAIM_RETRY_DELAYS_MS = [300, 800, 1500];
+
+async function ensureInstitutionClaimMatches(user, institutionId) {
+  let result = await user.getIdTokenResult();
+  if (result.claims.institutionId === institutionId) return;
+
+  for (const delayMs of CLAIM_RETRY_DELAYS_MS) {
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+    result = await user.getIdTokenResult(true);
+    if (result.claims.institutionId === institutionId) return;
+  }
+}
+
 // status: 'loading' | 'signed-out' | 'no-institution' | 'ready'
 export default function useAuthRole() {
   const [status, setStatus] = useState('loading');
@@ -17,11 +38,6 @@ export default function useAuthRole() {
         setStatus('signed-out');
         return;
       }
-      // מרעננים בכפייה את ה-ID token לפני כל שימוש בו, בדיוק כמו
-      // UserRoleManager.java ב-Android: ל-getMyAssignments (Cloud Function)
-      // יש request.auth.token.institutionId — אם ה-token נשאר cached מלפני
-      // סנכרון ה-Custom Claims (syncUserClaims), הקריאה "נכשלת בשקט" ומחזירה
-      // assignments ריק, גם כשה-Firestore doc כבר מעודכן.
       firebaseUser.getIdToken(true).finally(() => setUser(firebaseUser));
     });
     return unsubAuth;
@@ -31,11 +47,7 @@ export default function useAuthRole() {
     if (!user) return undefined;
 
     setStatus('loading');
-    // מזהה מעבר "אין institutionId עדיין" → "יש" בתוך אותה subscription (למשל
-    // מיד אחרי הרשמה+joinClass) — לא רק את המצב ההתחלתי. משתמש חוזר שכבר
-    // הצטרף לכיתה בעבר מקבל institutionId כבר ב-snapshot הראשון ולא נכנס
-    // לכאן כלל, כי אין דבר לרענן (ה-token שלו כבר מסונכרן מפעם קודמת).
-    let sawMissingInstitution = false;
+    let cancelled = false;
 
     const unsubDoc = onSnapshot(
       doc(db, 'users', user.uid),
@@ -43,18 +55,9 @@ export default function useAuthRole() {
         const data = snap.data() || {};
         const institutionId = data.institutionId || null;
 
-        if (!institutionId) {
-          sawMissingInstitution = true;
-        } else if (sawMissingInstitution) {
-          sawMissingInstitution = false;
-          // syncUserClaims (functions/index.js, onDocumentWritten על users/{uid})
-          // מסנכרן role/institutionId ל-Custom Claims באופן א-סינכרוני, אחרי
-          // הכתיבה עצמה — לא בו-זמנית איתה. institutionId שכרגע הופיע ב-doc
-          // (למשל דרך joinClass בהרשמה) לא בהכרח כבר השתקף ב-token הנוכחי;
-          // בלי רענון כאן, הדף הבא (Home וכו') שקורא נתונים מסוננים לפי
-          // request.auth.token.institutionId ייכשל ב-permission-denied מיד
-          // אחרי הרשמה, גם כש-status כבר 'ready' וה-Firestore doc כבר נכון.
-          await user.getIdToken(true);
+        if (institutionId) {
+          await ensureInstitutionClaimMatches(user, institutionId);
+          if (cancelled) return;
         }
 
         const emailPrefix = user.email ? user.email.split('@')[0] : '';
@@ -73,7 +76,10 @@ export default function useAuthRole() {
       },
       () => setStatus('no-institution'),
     );
-    return unsubDoc;
+    return () => {
+      cancelled = true;
+      unsubDoc();
+    };
   }, [user]);
 
   return { status, user, profile };

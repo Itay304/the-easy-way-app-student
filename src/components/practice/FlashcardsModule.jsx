@@ -25,7 +25,7 @@ export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBann
 
   function answer(knew) {
     const before = masteryLevel(current.correctAttempts, current.totalAttempts);
-    const updated = { ...current, totalAttempts: current.totalAttempts + 1 };
+    const updated = { ...current, totalAttempts: current.totalAttempts + 1, module: 'flashcards', correct: knew };
     if (knew) {
       updated.correctAttempts = current.correctAttempts + 1;
       setCorrectCount((c) => c + 1);

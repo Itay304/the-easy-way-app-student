@@ -86,7 +86,12 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
     const sessionIdx = session.findIndex((w) => w.englishWord === sentence.englishWord);
     const currentWord = session[sessionIdx];
     const before = masteryLevel(currentWord.correctAttempts, currentWord.totalAttempts);
-    const updatedWord = { ...currentWord, totalAttempts: currentWord.totalAttempts + 1 };
+    const updatedWord = {
+      ...currentWord,
+      totalAttempts: currentWord.totalAttempts + 1,
+      module: 'matching',
+      correct: isCorrect,
+    };
     if (isCorrect) updatedWord.correctAttempts = currentWord.correctAttempts + 1;
     const after = masteryLevel(updatedWord.correctAttempts, updatedWord.totalAttempts);
     const justMastered = isCorrect && before < 5 && after === 5;

@@ -50,7 +50,12 @@ export default function WhatMeans({ words, onFinish, onBack, adaptiveBanner }) {
 
     const isCorrect = choice === current.descriptionSentence;
     const before = masteryLevel(current.correctAttempts, current.totalAttempts);
-    const updated = { ...current, totalAttempts: current.totalAttempts + 1 };
+    const updated = {
+      ...current,
+      totalAttempts: current.totalAttempts + 1,
+      module: 'whatmeans',
+      correct: isCorrect,
+    };
     if (isCorrect) updated.correctAttempts = current.correctAttempts + 1;
     const after = masteryLevel(updated.correctAttempts, updated.totalAttempts);
     const justMastered = isCorrect && before < 5 && after === 5;

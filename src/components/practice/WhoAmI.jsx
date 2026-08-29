@@ -99,6 +99,8 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner }) {
       ...current,
       correctAttempts: current.correctAttempts + 1,
       totalAttempts: current.totalAttempts + 1,
+      module: 'whoami',
+      correct: true,
     };
     const after = masteryLevel(updated.correctAttempts, updated.totalAttempts);
     const justMastered = before < 5 && after === 5;
@@ -121,7 +123,7 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner }) {
   }
 
   function resolveWrongFinal() {
-    const updated = { ...current, totalAttempts: current.totalAttempts + 1 };
+    const updated = { ...current, totalAttempts: current.totalAttempts + 1, module: 'whoami', correct: false };
     const nextSession = [...session];
     nextSession[index] = updated;
     setSession(nextSession);

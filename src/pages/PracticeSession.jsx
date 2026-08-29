@@ -180,7 +180,7 @@ export default function PracticeSession() {
   if (result) {
     return (
       <>
-        <SessionSummary {...result} onDone={() => navigate('/practice', { replace: true })} />
+        <SessionSummary {...result} onDone={() => navigate(`/practice/${assignmentId}`, { replace: true })} />
         {badgeQueue[0] && (
           <BadgeUnlockToast badge={badgeQueue[0]} onDismiss={() => setBadgeQueue((q) => q.slice(1))} />
         )}

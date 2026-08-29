@@ -56,7 +56,12 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
     const sessionIdx = session.findIndex((w) => w.englishWord === round.word.englishWord);
     const currentWord = session[sessionIdx];
     const before = masteryLevel(currentWord.correctAttempts, currentWord.totalAttempts);
-    const updated = { ...currentWord, totalAttempts: currentWord.totalAttempts + 1 };
+    const updated = {
+      ...currentWord,
+      totalAttempts: currentWord.totalAttempts + 1,
+      module: 'truefalse',
+      correct: isCorrect,
+    };
     if (isCorrect) updated.correctAttempts = currentWord.correctAttempts + 1;
     const after = masteryLevel(updated.correctAttempts, updated.totalAttempts);
     const justMastered = isCorrect && before < 5 && after === 5;

@@ -76,6 +76,8 @@ export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner
           ...current,
           correctAttempts: current.correctAttempts + 1,
           totalAttempts: current.totalAttempts + 1,
+          module: 'spelling',
+          correct: true,
         };
         const after = masteryLevel(updated.correctAttempts, updated.totalAttempts);
         nextSession = [...session];
@@ -94,7 +96,7 @@ export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner
     setFeedback('wrong');
     shake();
     if (!wrongOnce) {
-      const updated = { ...current, totalAttempts: current.totalAttempts + 1 };
+      const updated = { ...current, totalAttempts: current.totalAttempts + 1, module: 'spelling', correct: false };
       const nextSession = [...session];
       nextSession[index] = updated;
       setSession(nextSession);

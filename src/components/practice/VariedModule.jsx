@@ -110,7 +110,12 @@ export default function VariedModule({ words, onFinish, onBack }) {
 
   function commitAnswer(isCorrect) {
     const before = masteryLevel(current.correctAttempts, current.totalAttempts);
-    const updated = { ...current, totalAttempts: current.totalAttempts + 1 };
+    const updated = {
+      ...current,
+      totalAttempts: current.totalAttempts + 1,
+      module: currentType,
+      correct: isCorrect,
+    };
     if (isCorrect) updated.correctAttempts = current.correctAttempts + 1;
     const after = masteryLevel(updated.correctAttempts, updated.totalAttempts);
     const justMastered = isCorrect && before < 5 && after === 5;
@@ -186,6 +191,8 @@ export default function VariedModule({ words, onFinish, onBack }) {
           ...current,
           correctAttempts: current.correctAttempts + 1,
           totalAttempts: current.totalAttempts + 1,
+          module: 'spelling',
+          correct: true,
         };
         const after = masteryLevel(updated.correctAttempts, updated.totalAttempts);
         nextSession = [...session];
@@ -207,7 +214,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
     setFeedback('wrong');
     shake();
     if (!wrongOnce) {
-      const updated = { ...current, totalAttempts: current.totalAttempts + 1 };
+      const updated = { ...current, totalAttempts: current.totalAttempts + 1, module: 'spelling', correct: false };
       const nextSession = [...session];
       nextSession[index] = updated;
       setSession(nextSession);

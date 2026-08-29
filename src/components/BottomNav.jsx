@@ -8,7 +8,7 @@ export default function BottomNav() {
         <NavLink
           key={tab.path}
           to={tab.path}
-          end
+          end={tab.end}
           replace
           aria-label={tab.label}
           className={({ isActive }) =>
