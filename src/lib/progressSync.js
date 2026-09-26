@@ -16,8 +16,11 @@ function sanitizeDocumentId(englishWord) {
  * מוקדמת מהסשן) לא יקבלו אותם, ולכן גם לא ייכתבו ל-moduleSessions.
  * ב-VariedModule כל מילה יכולה לקבל module שונה (המודול שהיה פעיל
  * כשהיא נענתה), לכן module נקבע per-word ולא כפרמטר אחד לכל הסשן.
+ * assignmentId: נשלף פעם אחת ברמת הסשן (PracticeSession.jsx, מגיע מ-
+ * useParams) ומצורף לכל מסמכי moduleSessions של הסשן הזה — לא רלוונטי
+ * ל-SprintSession (לא קשור למשימה בודדת, ר' שם), ולכן undefined שם.
  */
-export async function syncSession(uid, sessionWords) {
+export async function syncSession(uid, sessionWords, assignmentId) {
   if (!uid || !sessionWords || sessionWords.length === 0) return;
 
   const batch = writeBatch(db);
@@ -25,7 +28,8 @@ export async function syncSession(uid, sessionWords) {
   const moduleSessionsCol = collection(db, 'users', uid, 'moduleSessions');
 
   sessionWords.forEach((w) => {
-    const ref = doc(progressCol, sanitizeDocumentId(w.englishWord));
+    const wordKey = sanitizeDocumentId(w.englishWord);
+    const ref = doc(progressCol, wordKey);
     const progressDoc = {
       englishWord: w.englishWord,
       sourceListId: w.sourceListId,
@@ -37,11 +41,14 @@ export async function syncSession(uid, sessionWords) {
     batch.set(ref, progressDoc);
 
     if (w.module && typeof w.correct === 'boolean') {
-      batch.set(doc(moduleSessionsCol), {
+      const moduleSessionDoc = {
         module: w.module,
         timestamp: serverTimestamp(),
         correct: w.correct,
-      });
+        wordKey,
+      };
+      if (assignmentId) moduleSessionDoc.assignmentId = assignmentId;
+      batch.set(doc(moduleSessionsCol), moduleSessionDoc);
     }
   });
 

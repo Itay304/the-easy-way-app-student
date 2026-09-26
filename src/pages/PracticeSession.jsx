@@ -113,7 +113,7 @@ export default function PracticeSession() {
     const sessionAccuracy = finalWords.length > 0 ? correctCount / finalWords.length : 0;
     let assignmentMastery = null;
     try {
-      await syncSession(user.uid, finalWords);
+      await syncSession(user.uid, finalWords, assignmentId);
       const gamification = await applySessionGamification(user.uid, {
         xpGained,
         sessionCorrect: correctCount,
