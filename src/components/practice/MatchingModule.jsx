@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, Check, X } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
 import { shuffle } from '../../lib/quizChoices.js';
@@ -45,6 +45,11 @@ function buildRounds(targetWords, distractorPool) {
   return rounds;
 }
 
+// גרירה מותאמת-אישית (לא HTML5 dataTransfer) — כדי שאותו מנגנון יעבוד
+// זהה בעכבר (mousedown/mousemove/mouseup) ובמגע (touchstart/touchmove/
+// touchend), בסגנון בגרות דיגיטלית: "רפאים" (ghost) עוקב אחר האצבע/העכבר,
+// וזיהוי איזו כרטיסיית משפט נמצאת מתחתיו נעשה לפי מיקום (getBoundingClientRect)
+// ולא לפי elementFromPoint, כדי שה-ghost עצמו (pointer-events: none) לא יפריע.
 export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner }) {
   const targetWords = useMemo(() => {
     const withDescription = words.filter((w) => w.descriptionSentence);
@@ -58,7 +63,6 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
   const [roundIndex, setRoundIndex] = useState(0);
   const [round, setRound] = useState(() => rounds[0] || null);
   const [session, setSession] = useState(() => targetWords.map((w) => ({ ...w })));
-  const [selectedIdx, setSelectedIdx] = useState(null);
   const [usedWords, setUsedWords] = useState(() => new Set());
   const [flashWrong, setFlashWrong] = useState(null);
   const [correctCount, setCorrectCount] = useState(0);
@@ -66,10 +70,20 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
   const { confettiKey, xpFlyup, celebrate, shake } = useCelebration();
   const { combo, justBroke, registerAnswer, getMaxCombo } = useCombo();
 
+  // גרירה: dragInfo נקבע פעם אחת בתחילת הגרירה (word/offset/מידות) ולא
+  // משתנה בכל תזוזה — כך שה-effect שמצמיד listeners ל-window לא נרשם
+  // מחדש בכל פיקסל. dragPos/hoverIdx כן מתעדכנים בכל תזוזה, לרינדור בלבד.
+  const [dragInfo, setDragInfo] = useState(null);
+  const [dragPos, setDragPos] = useState(null);
+  const [hoverIdx, setHoverIdx] = useState(null);
+  const sentenceRefs = useRef([]);
+  const roundRef = useRef(round);
+  roundRef.current = round;
+
   useEffect(() => {
     setRound(rounds[roundIndex] || null);
-    setSelectedIdx(null);
     setUsedWords(new Set());
+    sentenceRefs.current = [];
   }, [roundIndex, rounds]);
 
   const totalSentences = targetWords.length;
@@ -78,8 +92,9 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
   const progressPct = totalSentences > 0 ? Math.round((resolvedSoFar / totalSentences) * 100) : 0;
 
   function attemptMatch(sentenceIdx, wordEnglish) {
-    if (!round) return;
-    const sentence = round.sentences[sentenceIdx];
+    const currentRound = roundRef.current;
+    if (!currentRound) return;
+    const sentence = currentRound.sentences[sentenceIdx];
     if (!sentence || sentence.status !== 'pending') return;
 
     const isCorrect = wordEnglish === sentence.englishWord;
@@ -114,10 +129,9 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
       setTimeout(() => setFlashWrong((w) => (w === wordEnglish ? null : w)), WRONG_FLASH_MS);
     }
 
-    const nextSentences = [...round.sentences];
+    const nextSentences = [...currentRound.sentences];
     nextSentences[sentenceIdx] = { ...sentence, status: isCorrect ? 'correct' : 'wrong' };
-    setRound({ ...round, sentences: nextSentences });
-    setSelectedIdx(null);
+    setRound({ ...currentRound, sentences: nextSentences });
     setUsedWords((prev) => new Set(prev).add(sentence.englishWord));
 
     const allResolved = nextSentences.every((s) => s.status !== 'pending');
@@ -138,11 +152,79 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
     }
   }
 
-  function handleDrop(sentenceIdx, e) {
-    e.preventDefault();
-    const wordEnglish = e.dataTransfer.getData('text/plain');
-    if (wordEnglish) attemptMatch(sentenceIdx, wordEnglish);
+  function findSentenceUnderPoint(clientX, clientY) {
+    let found = null;
+    sentenceRefs.current.forEach((el, idx) => {
+      if (!el) return;
+      const sentence = roundRef.current?.sentences[idx];
+      if (!sentence || sentence.status !== 'pending') return;
+      const r = el.getBoundingClientRect();
+      if (clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom) {
+        found = idx;
+      }
+    });
+    return found;
   }
+
+  function beginDrag(wordEnglish, clientX, clientY, rect) {
+    setDragInfo({
+      wordEnglish,
+      offsetX: clientX - rect.left,
+      offsetY: clientY - rect.top,
+      width: rect.width,
+      height: rect.height,
+    });
+    setDragPos({ x: clientX, y: clientY });
+    setHoverIdx(findSentenceUnderPoint(clientX, clientY));
+  }
+
+  // מאזיני window מוצמדים רק כשמתחילה גרירה (תלוי רק ב-wordEnglish, לא
+  // ב-x/y) — כך שהם לא נרשמים/מוסרים מחדש על כל תזוזה, רק בתחילת/סוף גרירה.
+  useEffect(() => {
+    if (!dragInfo) return undefined;
+
+    function onMove(clientX, clientY) {
+      setDragPos({ x: clientX, y: clientY });
+      setHoverIdx(findSentenceUnderPoint(clientX, clientY));
+    }
+
+    function onEnd(clientX, clientY) {
+      const idx = findSentenceUnderPoint(clientX, clientY);
+      const wordEnglish = dragInfo.wordEnglish;
+      setDragInfo(null);
+      setDragPos(null);
+      setHoverIdx(null);
+      if (idx !== null) attemptMatch(idx, wordEnglish);
+    }
+
+    function onMouseMove(e) {
+      onMove(e.clientX, e.clientY);
+    }
+    function onMouseUp(e) {
+      onEnd(e.clientX, e.clientY);
+    }
+    function onTouchMove(e) {
+      if (e.touches.length === 0) return;
+      e.preventDefault();
+      onMove(e.touches[0].clientX, e.touches[0].clientY);
+    }
+    function onTouchEnd(e) {
+      const t = e.changedTouches[0];
+      onEnd(t.clientX, t.clientY);
+    }
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd);
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dragInfo?.wordEnglish]);
 
   if (targetWords.length === 0) {
     return (
@@ -156,6 +238,21 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
     <div className="px-4 pt-6 space-y-5">
       {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
+
+      {dragInfo && dragPos && (
+        <div
+          className="fixed z-50 pointer-events-none rounded-xl shadow-lg bg-white border-2 border-brand-turquoise flex items-center justify-center font-semibold text-brand-text"
+          style={{
+            left: dragPos.x - dragInfo.offsetX,
+            top: dragPos.y - dragInfo.offsetY,
+            width: dragInfo.width,
+            height: dragInfo.height,
+          }}
+          dir="ltr"
+        >
+          {dragInfo.wordEnglish}
+        </div>
+      )}
 
       <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-brand-grey-text hover:text-brand-text">
         <ArrowRight size={16} />
@@ -176,69 +273,82 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
       <p className="text-center text-sm text-brand-grey-text">
         {resolvedSoFar} מתוך {totalSentences}
       </p>
-      <p className="text-center text-sm text-brand-grey-text">חברו כל משפט למילה המתאימה לו</p>
+      <p className="text-center text-sm text-brand-grey-text">גררו כל מילה מימין למשפט המתאים לה</p>
 
-      <div className="space-y-3">
-        {round.sentences.map((sentence, i) => {
-          const isSelected = selectedIdx === i;
-          let style = 'bg-white text-brand-text';
-          if (sentence.status === 'correct') style = 'bg-brand-green/10 text-brand-green';
-          else if (sentence.status === 'wrong') style = 'bg-red-50 text-red-600';
-          else if (isSelected) style = 'ring-2 ring-brand-turquoise bg-brand-turquoise/5';
+      <div className="grid grid-cols-[3fr_2fr] gap-3 items-start">
+        {/* עמודה ימנית (ראשונה ב-DOM, dir=rtl הופך אותה לימין) — משפטי תיאור, ממוספרים וקבועים */}
+        <div className="space-y-3">
+          {round.sentences.map((sentence, i) => {
+            const isHovered = hoverIdx === i && sentence.status === 'pending';
+            let cardStyle = 'bg-white text-brand-text border-2 border-transparent';
+            if (sentence.status === 'correct') cardStyle = 'bg-brand-grey-light/70 text-brand-text/70 border-2 border-transparent';
+            else if (sentence.status === 'wrong') cardStyle = 'bg-red-50 text-red-600 border-2 border-transparent';
+            else if (isHovered) cardStyle = 'bg-brand-turquoise/5 text-brand-text border-2 border-brand-turquoise';
 
-          return (
-            <div
-              key={`${roundIndex}-${i}`}
-              onClick={() => sentence.status === 'pending' && setSelectedIdx(i)}
-              onDragOver={(e) => sentence.status === 'pending' && e.preventDefault()}
-              onDrop={(e) => sentence.status === 'pending' && handleDrop(i, e)}
-              className={`rounded-2xl shadow-md p-4 transition cursor-pointer ${style}`}
-            >
-              <p className="text-base font-semibold" dir="ltr">
-                {sentence.descriptionSentence}
-              </p>
-              {sentence.status === 'correct' && (
-                <p className="flex items-center gap-1 text-sm font-bold mt-2" dir="ltr">
-                  <Check size={16} />
-                  {sentence.englishWord}
-                </p>
-              )}
-              {sentence.status === 'wrong' && (
-                <p className="flex items-center gap-1 text-sm font-bold mt-2" dir="ltr">
-                  <X size={16} />
-                  {sentence.englishWord}
-                </p>
-              )}
-            </div>
-          );
-        })}
-      </div>
+            return (
+              <div
+                key={`${roundIndex}-${i}`}
+                ref={(el) => {
+                  sentenceRefs.current[i] = el;
+                }}
+                className={`rounded-2xl shadow-md p-4 transition select-none ${cardStyle}`}
+              >
+                <div className="flex items-start gap-2">
+                  <span className="shrink-0 w-6 h-6 rounded-full bg-brand-turquoise/10 text-brand-turquoise text-xs font-bold flex items-center justify-center">
+                    {i + 1}
+                  </span>
+                  <p className="text-base font-semibold flex-1" dir="ltr">
+                    {sentence.descriptionSentence}
+                  </p>
+                  {sentence.status === 'correct' && <Check size={20} className="text-brand-turquoise shrink-0" />}
+                  {sentence.status === 'wrong' && <X size={20} className="text-red-500 shrink-0" />}
+                </div>
+                {sentence.status === 'wrong' && (
+                  <p className="text-sm font-bold mt-2 mr-8 text-red-600" dir="ltr">
+                    {sentence.englishWord}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        {round.words.map((wordEnglish) => {
-          const isUsed = usedWords.has(wordEnglish);
-          const isFlashing = flashWrong === wordEnglish;
-          let style = 'bg-white text-brand-text hover:shadow-lg';
-          if (isUsed) style = 'bg-brand-green/10 text-brand-green opacity-60';
-          else if (isFlashing) style = 'bg-red-50 text-red-600';
+        {/* עמודה שמאלית — כרטיסיות מילים לגרירה, קצת יותר קטנות מכרטיסי המשפטים */}
+        <div className="space-y-2">
+          {round.words.map((wordEnglish) => {
+            const isUsed = usedWords.has(wordEnglish);
+            const isFlashing = flashWrong === wordEnglish;
+            const isDragging = dragInfo?.wordEnglish === wordEnglish;
+            let style = 'bg-white text-brand-text shadow-sm';
+            if (isUsed) style = 'bg-brand-turquoise/10 text-brand-turquoise opacity-60';
+            else if (isFlashing) style = 'bg-red-50 text-red-600 shadow-sm';
 
-          return (
-            <button
-              key={wordEnglish}
-              draggable={!isUsed}
-              onDragStart={(e) => e.dataTransfer.setData('text/plain', wordEnglish)}
-              disabled={isUsed}
-              onClick={() => selectedIdx !== null && attemptMatch(selectedIdx, wordEnglish)}
-              className={`rounded-xl shadow-md p-3 font-semibold text-center transition cursor-pointer ${style} ${
-                isFlashing ? 'animate-shake' : ''
-              }`}
-              dir="ltr"
-            >
-              {isUsed && <Check size={14} className="inline ml-1" />}
-              {wordEnglish}
-            </button>
-          );
-        })}
+            return (
+              <div
+                key={wordEnglish}
+                onMouseDown={(e) => {
+                  if (isUsed) return;
+                  e.preventDefault();
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  beginDrag(wordEnglish, e.clientX, e.clientY, rect);
+                }}
+                onTouchStart={(e) => {
+                  if (isUsed) return;
+                  const t = e.touches[0];
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  beginDrag(wordEnglish, t.clientX, t.clientY, rect);
+                }}
+                className={`touch-none select-none rounded-xl p-2.5 font-semibold text-center text-sm transition ${style} ${
+                  isFlashing ? 'animate-shake' : ''
+                } ${isDragging ? 'opacity-0' : ''} ${!isUsed ? 'cursor-grab active:cursor-grabbing' : ''}`}
+                dir="ltr"
+              >
+                {isUsed && <Check size={14} className="inline ml-1" />}
+                {wordEnglish}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
