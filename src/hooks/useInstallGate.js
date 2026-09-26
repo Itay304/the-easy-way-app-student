@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { REQUIRE_PWA_ON_MOBILE } from '../config.js';
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -26,5 +27,5 @@ export default function useInstallGate() {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  return { requiresInstall: isMobile && !isStandalone };
+  return { requiresInstall: REQUIRE_PWA_ON_MOBILE && isMobile && !isStandalone };
 }
