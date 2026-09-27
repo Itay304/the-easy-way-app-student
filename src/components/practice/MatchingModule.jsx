@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, Check, X } from 'lucide-react';
+import { ArrowRight, Check, GripVertical, X } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
 import { shuffle } from '../../lib/quizChoices.js';
 import useCelebration from '../../hooks/useCelebration.js';
@@ -11,6 +11,10 @@ import ComboBar from './ComboBar.jsx';
 const TARGETS_PER_ROUND = 3;
 const ROUND_ADVANCE_DELAY_MS = 1100;
 const WRONG_FLASH_MS = 600;
+// מרחק תזוזה (px) שמעליו לחיצה/מגע נחשבת גרירה בפועל, ומתחתיו נחשבת
+// "הקשה" (בחירת מילה, ר' selectedWord) — כך שאותו pointerdown/up יכול
+// לשמש גם לגרירה וגם לחלופת ההקשה, בלי שני מנגנוני קלט נפרדים.
+const TAP_THRESHOLD_PX = 8;
 
 function dedupeByEnglishWord(list) {
   const seen = new Set();
@@ -50,6 +54,9 @@ function buildRounds(targetWords, distractorPool) {
 // touchend), בסגנון בגרות דיגיטלית: "רפאים" (ghost) עוקב אחר האצבע/העכבר,
 // וזיהוי איזו כרטיסיית משפט נמצאת מתחתיו נעשה לפי מיקום (getBoundingClientRect)
 // ולא לפי elementFromPoint, כדי שה-ghost עצמו (pointer-events: none) לא יפריע.
+// אותו מנגנון pointerdown/up גם מזהה "הקשה" (תזוזה קטנה מ-TAP_THRESHOLD_PX) —
+// חלופה לגרירה: הקשה על מילה בוחרת אותה (selectedWord), הקשה עוקבת על משפט
+// ממתין מבצעת את ההתאמה, בדיוק כמו שחרור גרירה מעל אותו משפט.
 export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner }) {
   const targetWords = useMemo(() => {
     const withDescription = words.filter((w) => w.descriptionSentence);
@@ -65,13 +72,14 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
   const [session, setSession] = useState(() => targetWords.map((w) => ({ ...w })));
   const [usedWords, setUsedWords] = useState(() => new Set());
   const [flashWrong, setFlashWrong] = useState(null);
+  const [selectedWord, setSelectedWord] = useState(null);
   const [correctCount, setCorrectCount] = useState(0);
   const [masteredCount, setMasteredCount] = useState(0);
   const { confettiKey, xpFlyup, celebrate, shake } = useCelebration();
   const { combo, justBroke, registerAnswer, getMaxCombo } = useCombo();
 
-  // גרירה: dragInfo נקבע פעם אחת בתחילת הגרירה (word/offset/מידות) ולא
-  // משתנה בכל תזוזה — כך שה-effect שמצמיד listeners ל-window לא נרשם
+  // גרירה: dragInfo נקבע פעם אחת בתחילת הגרירה (word/offset/מידות/נק' התחלה)
+  // ולא משתנה בכל תזוזה — כך שה-effect שמצמיד listeners ל-window לא נרשם
   // מחדש בכל פיקסל. dragPos/hoverIdx כן מתעדכנים בכל תזוזה, לרינדור בלבד.
   const [dragInfo, setDragInfo] = useState(null);
   const [dragPos, setDragPos] = useState(null);
@@ -83,6 +91,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
   useEffect(() => {
     setRound(rounds[roundIndex] || null);
     setUsedWords(new Set());
+    setSelectedWord(null);
     sentenceRefs.current = [];
   }, [roundIndex, rounds]);
 
@@ -152,6 +161,14 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
     }
   }
 
+  function handleSentenceTap(sentenceIdx) {
+    if (!selectedWord) return;
+    const sentence = roundRef.current?.sentences[sentenceIdx];
+    if (!sentence || sentence.status !== 'pending') return;
+    attemptMatch(sentenceIdx, selectedWord);
+    setSelectedWord(null);
+  }
+
   function findSentenceUnderPoint(clientX, clientY) {
     let found = null;
     sentenceRefs.current.forEach((el, idx) => {
@@ -173,6 +190,8 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
       offsetY: clientY - rect.top,
       width: rect.width,
       height: rect.height,
+      startClientX: clientX,
+      startClientY: clientY,
     });
     setDragPos({ x: clientX, y: clientY });
     setHoverIdx(findSentenceUnderPoint(clientX, clientY));
@@ -189,11 +208,19 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
     }
 
     function onEnd(clientX, clientY) {
-      const idx = findSentenceUnderPoint(clientX, clientY);
+      const dist = Math.hypot(clientX - dragInfo.startClientX, clientY - dragInfo.startClientY);
       const wordEnglish = dragInfo.wordEnglish;
       setDragInfo(null);
       setDragPos(null);
       setHoverIdx(null);
+
+      if (dist <= TAP_THRESHOLD_PX) {
+        // הקשה (בלי תזוזה משמעותית) — בוחרים/מבטלים בחירת המילה, לא גרירה.
+        setSelectedWord((w) => (w === wordEnglish ? null : wordEnglish));
+        return;
+      }
+      setSelectedWord(null);
+      const idx = findSentenceUnderPoint(clientX, clientY);
       if (idx !== null) attemptMatch(idx, wordEnglish);
     }
 
@@ -226,6 +253,10 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dragInfo?.wordEnglish]);
 
+  const dragDistance =
+    dragInfo && dragPos ? Math.hypot(dragPos.x - dragInfo.startClientX, dragPos.y - dragInfo.startClientY) : 0;
+  const isActuallyDragging = dragInfo && dragDistance > TAP_THRESHOLD_PX;
+
   if (targetWords.length === 0) {
     return (
       <div className="px-4 pt-6 text-center py-12">
@@ -235,13 +266,13 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
   }
 
   return (
-    <div className="px-4 pt-6 space-y-5">
+    <div className="px-4 pt-6 space-y-4">
       {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
-      {dragInfo && dragPos && (
+      {isActuallyDragging && dragPos && (
         <div
-          className="fixed z-50 pointer-events-none rounded-xl shadow-lg bg-white border-2 border-brand-turquoise flex items-center justify-center font-semibold text-brand-text"
+          className="fixed z-50 pointer-events-none rounded-xl shadow-lg bg-brand-turquoise border-2 border-brand-turquoise flex items-center justify-center font-semibold text-white"
           style={{
             left: dragPos.x - dragInfo.offsetX,
             top: dragPos.y - dragInfo.offsetY,
@@ -270,20 +301,75 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
-      <p className="text-center text-sm text-brand-grey-text">
-        {resolvedSoFar} מתוך {totalSentences}
-      </p>
-      <p className="text-center text-sm text-brand-grey-text">גררו כל מילה מימין למשפט המתאים לה</p>
+      <div className="flex items-center justify-center gap-2.5">
+        <p className="text-sm text-brand-grey-text">
+          סבב {roundIndex + 1} מתוך {rounds.length}
+        </p>
+        <div className="flex items-center gap-1">
+          {round.sentences.map((s, i) => (
+            <span
+              key={i}
+              className={`w-2 h-2 rounded-full transition ${
+                s.status === 'correct'
+                  ? 'bg-brand-turquoise'
+                  : s.status === 'wrong'
+                    ? 'bg-red-400'
+                    : 'border border-brand-grey-text/40'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+      <p className="text-center text-xs text-brand-grey-text">גררו מילה למשפט המתאים, או הקישו על מילה ואז על משפט</p>
 
-      <div className="grid grid-cols-[3fr_2fr] gap-3 items-start">
+      <div className="grid grid-cols-[62fr_38fr] gap-3">
         {/* עמודה ימנית (ראשונה ב-DOM, dir=rtl הופך אותה לימין) — משפטי תיאור, ממוספרים וקבועים */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           {round.sentences.map((sentence, i) => {
             const isHovered = hoverIdx === i && sentence.status === 'pending';
-            let cardStyle = 'bg-white text-brand-text border-2 border-transparent';
-            if (sentence.status === 'correct') cardStyle = 'bg-brand-grey-light/70 text-brand-text/70 border-2 border-transparent';
-            else if (sentence.status === 'wrong') cardStyle = 'bg-red-50 text-red-600 border-2 border-transparent';
-            else if (isHovered) cardStyle = 'bg-brand-turquoise/5 text-brand-text border-2 border-brand-turquoise';
+            const isTappable = sentence.status === 'pending' && !!selectedWord;
+
+            if (sentence.status === 'correct') {
+              return (
+                <div
+                  key={`${roundIndex}-${i}`}
+                  ref={(el) => {
+                    sentenceRefs.current[i] = el;
+                  }}
+                  className="rounded-xl bg-brand-grey-light/70 px-3 py-1.5 flex items-center gap-2 select-none"
+                >
+                  <Check size={14} className="text-brand-turquoise shrink-0" />
+                  <span className="text-[13px] font-semibold text-brand-text/60 truncate" dir="ltr">
+                    {sentence.englishWord}
+                  </span>
+                </div>
+              );
+            }
+
+            if (sentence.status === 'wrong') {
+              return (
+                <div
+                  key={`${roundIndex}-${i}`}
+                  ref={(el) => {
+                    sentenceRefs.current[i] = el;
+                  }}
+                  className="rounded-xl bg-red-50 text-red-600 p-2.5 select-none"
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="shrink-0 w-5 h-5 rounded-full bg-red-100 text-red-500 text-[10px] font-bold flex items-center justify-center">
+                      {i + 1}
+                    </span>
+                    <p className="text-[14px] leading-[1.35] font-semibold flex-1" dir="ltr">
+                      {sentence.descriptionSentence}
+                    </p>
+                    <X size={16} className="text-red-500 shrink-0" />
+                  </div>
+                  <p className="text-[12px] font-bold mt-1 mr-7" dir="ltr">
+                    {sentence.englishWord}
+                  </p>
+                </div>
+              );
+            }
 
             return (
               <div
@@ -291,37 +377,46 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                 ref={(el) => {
                   sentenceRefs.current[i] = el;
                 }}
-                className={`rounded-2xl shadow-md p-4 transition select-none ${cardStyle}`}
+                onClick={() => handleSentenceTap(i)}
+                className={`rounded-xl border-2 border-dashed p-2.5 transition select-none ${
+                  isHovered
+                    ? 'bg-brand-turquoise/10 border-solid border-brand-turquoise'
+                    : `bg-white border-brand-turquoise/25 ${isTappable ? 'cursor-pointer' : ''}`
+                }`}
               >
                 <div className="flex items-start gap-2">
-                  <span className="shrink-0 w-6 h-6 rounded-full bg-brand-turquoise/10 text-brand-turquoise text-xs font-bold flex items-center justify-center">
+                  <span className="shrink-0 w-5 h-5 rounded-full bg-brand-turquoise/10 text-brand-turquoise text-[10px] font-bold flex items-center justify-center">
                     {i + 1}
                   </span>
-                  <p className="text-base font-semibold flex-1" dir="ltr">
+                  <p className="text-[14px] leading-[1.35] font-semibold flex-1" dir="ltr">
                     {sentence.descriptionSentence}
                   </p>
-                  {sentence.status === 'correct' && <Check size={20} className="text-brand-turquoise shrink-0" />}
-                  {sentence.status === 'wrong' && <X size={20} className="text-red-500 shrink-0" />}
                 </div>
-                {sentence.status === 'wrong' && (
-                  <p className="text-sm font-bold mt-2 mr-8 text-red-600" dir="ltr">
-                    {sentence.englishWord}
-                  </p>
-                )}
+                <p
+                  className={`text-[10px] mt-1 mr-7 font-semibold transition ${
+                    isHovered ? 'text-brand-turquoise' : 'text-brand-grey-text/50'
+                  }`}
+                >
+                  שחרר כאן
+                </p>
               </div>
             );
           })}
         </div>
 
-        {/* עמודה שמאלית — כרטיסיות מילים לגרירה, קצת יותר קטנות מכרטיסי המשפטים */}
-        <div className="space-y-2">
+        {/* עמודה שמאלית — כרטיסיות מילים לגרירה/הקשה, מתפרסות לאורך כל
+        גובה עמודת המשפטים (justify-between) כדי שלא יישאר שטח ריק מתחתן */}
+        <div className="h-full flex flex-col justify-between gap-2">
           {round.words.map((wordEnglish) => {
             const isUsed = usedWords.has(wordEnglish);
             const isFlashing = flashWrong === wordEnglish;
-            const isDragging = dragInfo?.wordEnglish === wordEnglish;
-            let style = 'bg-white text-brand-text shadow-sm';
-            if (isUsed) style = 'bg-brand-turquoise/10 text-brand-turquoise opacity-60';
-            else if (isFlashing) style = 'bg-red-50 text-red-600 shadow-sm';
+            const isDragging = isActuallyDragging && dragInfo?.wordEnglish === wordEnglish;
+            const isSelected = selectedWord === wordEnglish;
+
+            let style = 'bg-brand-turquoise/10 border-brand-turquoise text-brand-text';
+            if (isUsed) style = 'bg-brand-grey-light border-transparent text-brand-grey-text opacity-70';
+            else if (isFlashing) style = 'bg-red-50 border-red-400 text-red-600';
+            else if (isSelected) style = 'bg-brand-turquoise border-brand-turquoise text-white';
 
             return (
               <div
@@ -338,13 +433,17 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                   const rect = e.currentTarget.getBoundingClientRect();
                   beginDrag(wordEnglish, t.clientX, t.clientY, rect);
                 }}
-                className={`touch-none select-none rounded-xl p-2.5 font-semibold text-center text-sm transition ${style} ${
+                className={`touch-none select-none rounded-lg border-2 px-2 py-2 font-semibold text-center text-[13px] flex items-center justify-center gap-1 transition ${style} ${
                   isFlashing ? 'animate-shake' : ''
                 } ${isDragging ? 'opacity-0' : ''} ${!isUsed ? 'cursor-grab active:cursor-grabbing' : ''}`}
                 dir="ltr"
               >
-                {isUsed && <Check size={14} className="inline ml-1" />}
-                {wordEnglish}
+                {isUsed ? (
+                  <Check size={12} className="shrink-0" />
+                ) : (
+                  <GripVertical size={12} className="shrink-0 opacity-60" />
+                )}
+                <span className="truncate">{wordEnglish}</span>
               </div>
             );
           })}
