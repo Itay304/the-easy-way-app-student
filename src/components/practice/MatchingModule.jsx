@@ -311,7 +311,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
               key={i}
               className={`w-2 h-2 rounded-full transition ${
                 s.status === 'correct'
-                  ? 'bg-brand-turquoise'
+                  ? 'bg-brand-green'
                   : s.status === 'wrong'
                     ? 'bg-red-400'
                     : 'border border-brand-grey-text/40'
@@ -338,7 +338,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                   }}
                   className="rounded-xl bg-brand-grey-light/70 px-3 py-1.5 flex items-center gap-2 select-none"
                 >
-                  <Check size={14} className="text-brand-turquoise shrink-0" />
+                  <Check size={14} className="text-brand-green shrink-0" />
                   <span className="text-[13px] font-semibold text-brand-text/60 truncate" dir="ltr">
                     {sentence.englishWord}
                   </span>
