@@ -17,10 +17,10 @@ export default function BottomNav() {
             }`
           }
         >
-          {({ isActive }) => (
+          {() => (
             <>
               <tab.icon size={24} strokeWidth={2.25} />
-              {isActive && <span className="text-[11px] font-medium">{tab.label}</span>}
+              <span className="text-[11px] font-medium">{tab.label}</span>
             </>
           )}
         </NavLink>
