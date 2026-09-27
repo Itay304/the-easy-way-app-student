@@ -22,9 +22,11 @@ import Profile from './pages/Profile.jsx';
 
 function Layout() {
   return (
-    <div className="min-h-dvh flex flex-col">
-      <main className="flex-1 max-w-3xl w-full mx-auto pb-24">
-        <Outlet />
+    <div className="min-h-dvh flex flex-col md:bg-gradient-to-b md:from-brand-grey-light md:to-white">
+      <main className="flex-1 max-w-[480px] w-full mx-auto pb-24 md:py-6">
+        <div className="md:rounded-3xl md:bg-white md:shadow-lg md:min-h-[calc(100dvh-3rem)]">
+          <Outlet />
+        </div>
       </main>
       <BottomNav />
     </div>
