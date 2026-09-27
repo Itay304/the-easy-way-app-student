@@ -73,9 +73,9 @@ export default function LeaderboardCard({ topStudents, myRank, totalStudents, my
               }`}
             >
               <span className="w-6 text-center text-lg shrink-0">{MEDALS[i] || i + 1}</span>
-              <Avatar name={s.displayName} />
+              <Avatar name={s.displayName || s.fullName} />
               <span className="flex-1 min-w-0 truncate font-medium text-brand-text">
-                {s.displayName || 'תלמיד'}
+                {s.displayName || s.fullName || 'תלמיד'}
               </span>
               <span className="text-sm font-bold text-brand-turquoise shrink-0">{s.totalXp} XP</span>
             </li>

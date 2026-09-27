@@ -45,6 +45,7 @@ export default function Login() {
         try {
           await setDoc(doc(db, 'users', user.uid), {
             fullName,
+            displayName: fullName, // ר' audit/REPORT.md #1 — כל קוד קורא מ-displayName
             email,
             role: 'student',
             createdAt: serverTimestamp(),

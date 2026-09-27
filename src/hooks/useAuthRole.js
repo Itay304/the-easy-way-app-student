@@ -64,7 +64,10 @@ export default function useAuthRole() {
         setProfile({
           role: data.role || 'student',
           institutionId,
-          displayName: data.displayName || user.displayName || emailPrefix,
+          // fullName הוא השדה שההרשמה כותבת בפועל (Login.jsx) — displayName
+          // נשמר כ-fallback ראשון רק כי חלק מהמסמכים הישנים/אחרים כן משתמשים
+          // בו (ר' audit/REPORT.md #1: פער fullName/displayName).
+          displayName: data.displayName || data.fullName || user.displayName || emailPrefix,
           classIds: Array.isArray(data.classIds) ? data.classIds : [],
           totalXp: typeof data.totalXp === 'number' ? data.totalXp : 0,
           level: typeof data.level === 'number' ? data.level : 1,
