@@ -7,6 +7,7 @@ import useCombo from '../../hooks/useCombo.js';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
+import Button from '../ui/Button.jsx';
 
 const TARGETS_PER_ROUND = 3;
 const ROUND_ADVANCE_DELAY_MS = 1100;
@@ -285,10 +286,10 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
         </div>
       )}
 
-      <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-brand-grey-text hover:text-brand-text">
+      <Button variant="ghost" size="sm" onClick={onBack}>
         <ArrowRight size={16} />
         חזרה
-      </button>
+      </Button>
 
       {adaptiveBanner && (
         <p className="text-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">

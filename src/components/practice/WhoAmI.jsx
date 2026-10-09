@@ -8,6 +8,7 @@ import useCombo from '../../hooks/useCombo.js';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
+import Button from '../ui/Button.jsx';
 
 // רמז 1 (descriptionSentence בלבד) = 3 נק', רמז 2 (+hebrewTranslation) = 2,
 // רמז 3 (+exampleSentence עם ___) = 1. הניקוד מתורגם ל-XP אמיתי דרך
@@ -181,10 +182,10 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner }) {
       {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
-      <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-brand-grey-text hover:text-brand-text">
+      <Button variant="ghost" size="sm" onClick={onBack}>
         <ArrowRight size={16} />
         חזרה
-      </button>
+      </Button>
 
       {adaptiveBanner && (
         <p className="text-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
@@ -259,13 +260,9 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner }) {
             placeholder="מי אני? הקלד/י באנגלית..."
             className="w-full rounded-xl border-2 border-brand-grey-light focus:border-brand-turquoise p-4 text-lg text-center font-semibold outline-none transition"
           />
-          <button
-            onClick={submitTyping}
-            disabled={status !== 'active' || !input.trim()}
-            className="w-full py-4 rounded-xl bg-gradient-to-r from-turquoise-400 to-turquoise-600 text-white font-bold disabled:opacity-50"
-          >
+          <Button size="lg" onClick={submitTyping} disabled={status !== 'active' || !input.trim()}>
             בדוק/י
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="space-y-3">

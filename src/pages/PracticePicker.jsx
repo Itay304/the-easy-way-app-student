@@ -4,6 +4,7 @@ import { ArrowRight, Layers, ListChecks, PenLine, Link2, Search, Zap, BookOpen, 
 import { callGetMyAssignments } from '../lib/api.js';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
+import Button from '../components/ui/Button.jsx';
 
 const MODULES = [
   { key: 'flashcards', label: 'כרטיסיות', icon: Layers, bg: 'bg-brand-turquoise/10', text: 'text-brand-turquoise' },
@@ -46,13 +47,10 @@ export default function PracticePicker() {
 
   return (
     <div className="px-4 pt-6 space-y-5">
-      <button
-        onClick={goBack}
-        className="inline-flex items-center gap-1 text-sm text-brand-grey-text hover:text-brand-text"
-      >
+      <Button variant="ghost" size="sm" onClick={goBack}>
         <ArrowRight size={16} />
         חזרה לתרגול
-      </button>
+      </Button>
 
       {error && <ErrorBanner message={error} />}
 

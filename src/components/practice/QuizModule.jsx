@@ -10,6 +10,7 @@ import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
 import LoadingSpinner from '../LoadingSpinner.jsx';
 import Card from '../ui/Card.jsx';
+import Button from '../ui/Button.jsx';
 
 // הסדר של words כבר מגיע מעורבב מ-applyAdaptiveOrder (PracticeSession),
 // שם הערבוב נעשה בתוך כל קבוצה (חלשות/שאר) בנפרד — ערבוב נוסף כאן היה
@@ -87,10 +88,10 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
       {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
-      <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-brand-grey-text hover:text-brand-text">
+      <Button variant="ghost" size="sm" onClick={onBack}>
         <ArrowRight size={16} />
         חזרה
-      </button>
+      </Button>
 
       {adaptiveBanner && (
         <p className="text-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">

@@ -8,6 +8,7 @@ import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
 import Card from '../ui/Card.jsx';
+import Button from '../ui/Button.jsx';
 
 const RESOLVE_DELAY_MS = 1400;
 
@@ -103,10 +104,10 @@ export default function WhatMeans({ words, onFinish, onBack, adaptiveBanner }) {
       {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
-      <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-brand-grey-text hover:text-brand-text">
+      <Button variant="ghost" size="sm" onClick={onBack}>
         <ArrowRight size={16} />
         חזרה
-      </button>
+      </Button>
 
       {adaptiveBanner && (
         <p className="text-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">

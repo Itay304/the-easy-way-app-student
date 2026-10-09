@@ -199,9 +199,9 @@ export default function SprintSession() {
     return (
       <div className="px-4 pt-6 text-center py-12 space-y-4">
         <p className="text-brand-grey-text">אין מספיק מילים במשימות הפעילות שלך כדי להתחיל ספרינט.</p>
-        <button onClick={goBack} className="text-brand-turquoise font-semibold">
+        <Button variant="ghost" size="sm" onClick={goBack}>
           חזרה לתרגול
-        </button>
+        </Button>
       </div>
     );
   }
@@ -268,10 +268,10 @@ export default function SprintSession() {
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
       <div className="flex items-center justify-between">
-        <button onClick={goBack} className="inline-flex items-center gap-1 text-sm text-brand-grey-text hover:text-brand-text">
+        <Button variant="ghost" size="sm" onClick={goBack}>
           <ArrowRight size={16} />
           חזרה
-        </button>
+        </Button>
         <span className={`text-2xl font-extrabold tabular-nums ${timerColor(secondsLeft)}`}>{secondsLeft}s</span>
       </div>
 

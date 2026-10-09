@@ -10,6 +10,7 @@ import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
 import LoadingSpinner from '../LoadingSpinner.jsx';
 import Card from '../ui/Card.jsx';
+import Button from '../ui/Button.jsx';
 
 // תרגול מגוון אמיתי: כל 5 מילים עוברים למודול הבא במחזור, וחוזר חלילה —
 // כך כל מילה מתורגלת במודול שונה, בלי שהתלמיד בוחר בעצמו (ר' PracticePicker).
@@ -237,10 +238,10 @@ export default function VariedModule({ words, onFinish, onBack }) {
       {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
-      <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-brand-grey-text hover:text-brand-text">
+      <Button variant="ghost" size="sm" onClick={onBack}>
         <ArrowRight size={16} />
         חזרה
-      </button>
+      </Button>
 
       <p className="text-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
         🎯 תרגול מגוון — עכשיו: {MODULE_LABELS[currentType]}

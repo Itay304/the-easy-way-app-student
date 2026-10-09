@@ -13,6 +13,7 @@ import BadgeGrid from '../components/profile/BadgeGrid.jsx';
 import SettingsSection from '../components/profile/SettingsSection.jsx';
 import StatCard from '../components/ui/StatCard.jsx';
 import Card from '../components/ui/Card.jsx';
+import Button from '../components/ui/Button.jsx';
 
 export default function Profile() {
   const { user, profile } = useAuth();
@@ -116,13 +117,10 @@ export default function Profile() {
 
       <SettingsSection />
 
-      <button
-        onClick={() => signOut(auth)}
-        className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-gradient-to-b from-white to-gray-50 shadow-lg text-brand-error font-bold"
-      >
+      <Button variant="danger" size="lg" onClick={() => signOut(auth)}>
         <LogOut size={16} />
         התנתקות
-      </button>
+      </Button>
     </div>
   );
 }
