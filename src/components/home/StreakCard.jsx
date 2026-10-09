@@ -1,5 +1,6 @@
 import { Flame, Droplet } from 'lucide-react';
 import { toDateKey } from '../../lib/dateUtils.js';
+import StatCard from '../ui/StatCard.jsx';
 
 function computeStreakStatus(streak, lastActiveDate) {
   if (!lastActiveDate) return { status: 'none', displayStreak: 0 };
@@ -25,15 +26,5 @@ export default function StreakCard({ streak, lastActiveDate }) {
   const config = STATUS_CONFIG[status];
   const Icon = config.icon;
 
-  return (
-    <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex items-center gap-3">
-      <div className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 ${config.iconClass}`}>
-        <Icon size={20} strokeWidth={2} />
-      </div>
-      <div className="min-w-0">
-        <p className="text-xl font-bold text-brand-text leading-none">{displayStreak}</p>
-        <p className="text-xs text-brand-grey-text mt-1 truncate">{config.message}</p>
-      </div>
-    </div>
-  );
+  return <StatCard icon={Icon} value={displayStreak} label={config.message} iconClassName={config.iconClass} />;
 }

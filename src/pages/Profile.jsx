@@ -11,6 +11,7 @@ import { Skeleton } from '../components/Skeleton.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
 import BadgeGrid from '../components/profile/BadgeGrid.jsx';
 import SettingsSection from '../components/profile/SettingsSection.jsx';
+import StatCard from '../components/ui/StatCard.jsx';
 
 export default function Profile() {
   const { user, profile } = useAuth();
@@ -96,26 +97,18 @@ export default function Profile() {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex items-center gap-3">
-          <div className="h-11 w-11 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
-            <Flame size={20} strokeWidth={2} />
-          </div>
-          <div>
-            <p className="text-xl font-bold text-brand-text leading-none">{profile.streak}</p>
-            <p className="text-xs text-brand-grey-text mt-1">ימים ברצף</p>
-          </div>
-        </div>
-        <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex items-center gap-3">
-          <div className="h-11 w-11 rounded-xl bg-brand-green/10 text-brand-green flex items-center justify-center shrink-0">
-            <CheckCircle2 size={20} strokeWidth={2} />
-          </div>
-          <div>
-            <p className="text-xl font-bold text-brand-text leading-none">
-              {completedCount === null ? '—' : completedCount}
-            </p>
-            <p className="text-xs text-brand-grey-text mt-1">משימות הושלמו</p>
-          </div>
-        </div>
+        <StatCard
+          icon={Flame}
+          value={profile.streak}
+          label="ימים ברצף"
+          iconClassName="bg-amber-50 text-amber-500"
+        />
+        <StatCard
+          icon={CheckCircle2}
+          value={completedCount === null ? '—' : completedCount}
+          label="משימות הושלמו"
+          accent="success"
+        />
       </div>
 
       <BadgeGrid earnedIds={earnedBadgeIds} />

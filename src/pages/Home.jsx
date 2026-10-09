@@ -7,6 +7,7 @@ import AnnouncementBanner from '../components/home/AnnouncementBanner.jsx';
 import LeaderboardCard from '../components/home/LeaderboardCard.jsx';
 import StreakCard from '../components/home/StreakCard.jsx';
 import DailyChallengeCard from '../components/home/DailyChallengeCard.jsx';
+import StatCard from '../components/ui/StatCard.jsx';
 
 const LEADERBOARD_TOP_N = 5;
 
@@ -73,15 +74,7 @@ export default function Home() {
 
       <div className="grid grid-cols-2 gap-3">
         <StreakCard streak={profile.streak} lastActiveDate={profile.lastActiveDate} />
-        <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex items-center gap-3">
-          <div className="h-11 w-11 rounded-xl bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center shrink-0">
-            <Star size={20} strokeWidth={2} />
-          </div>
-          <div>
-            <p className="text-xl font-bold text-brand-text leading-none">{profile.totalXp}</p>
-            <p className="text-xs text-brand-grey-text mt-1">XP</p>
-          </div>
-        </div>
+        <StatCard icon={Star} value={profile.totalXp} label="XP" accent="primary" />
       </div>
 
       <LeaderboardCard
