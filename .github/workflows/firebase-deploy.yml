@@ -40,4 +40,5 @@ jobs:
           projectId: my-book-club-site
           target: the-easy-way-app-student
           channelId: live
+          firebaseToolsVersion: "15.24.0"
 
