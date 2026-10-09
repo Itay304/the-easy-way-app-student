@@ -19,7 +19,7 @@ export default function SessionSummary({
       <Confetti count={70} durationMs={1500} />
 
       <div className="h-20 w-20 rounded-full bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center">
-        <PartyPopper size={24} strokeWidth={2} />
+        <PartyPopper size={48} strokeWidth={2} />
       </div>
 
       <div>

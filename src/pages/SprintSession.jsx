@@ -217,7 +217,7 @@ export default function SprintSession() {
     return (
       <div className="px-4 pt-10 flex flex-col items-center text-center space-y-6">
         <div className="h-20 w-20 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center">
-          <Zap size={24} strokeWidth={2} />
+          <Zap size={48} strokeWidth={2} />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-brand-text">ספרינט הסתיים!</h1>
