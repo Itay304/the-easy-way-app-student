@@ -20,7 +20,7 @@ export default function BottomNav() {
           {() => (
             <>
               <tab.icon size={24} strokeWidth={2.25} />
-              <span className="text-[11px] font-medium">{tab.label}</span>
+              <span className="text-caption font-medium">{tab.label}</span>
             </>
           )}
         </NavLink>

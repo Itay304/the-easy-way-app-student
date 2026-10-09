@@ -27,6 +27,19 @@
   --color-turquoise-700: #008573;
   --color-turquoise-800: #00695c;
   --color-turquoise-900: #00544a;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 1.3;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.35;
+  --text-body: 15px;
+  --text-body--line-height: 1.5;
+  --text-body-lg: 17px;
+  --text-body-lg--line-height: 1.4;
+  --text-h2: 20px;
+  --text-h2--line-height: 1.3;
+  --text-h1: 26px;
+  --text-h1--line-height: 1.2;
 }
 
 html {

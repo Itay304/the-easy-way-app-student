@@ -339,7 +339,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                   className="rounded-xl bg-brand-grey-light/70 px-3 py-1.5 flex items-center gap-2 select-none"
                 >
                   <Check size={14} className="text-brand-green shrink-0" />
-                  <span className="text-[13px] font-semibold text-brand-text/60 truncate" dir="ltr">
+                  <span className="text-body-sm font-semibold text-brand-text/60 truncate" dir="ltr">
                     {sentence.englishWord}
                   </span>
                 </div>
@@ -356,15 +356,15 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                   className="rounded-xl bg-brand-error-light text-brand-error p-2.5 select-none"
                 >
                   <div className="flex items-start gap-2">
-                    <span className="shrink-0 w-5 h-5 rounded-full bg-brand-error-light text-brand-error text-[10px] font-bold flex items-center justify-center">
+                    <span className="shrink-0 w-5 h-5 rounded-full bg-brand-error-light text-brand-error text-caption font-bold flex items-center justify-center">
                       {i + 1}
                     </span>
-                    <p className="text-[14px] leading-[1.35] font-semibold flex-1" dir="ltr">
+                    <p className="text-body-sm leading-[1.35] font-semibold flex-1" dir="ltr">
                       {sentence.descriptionSentence}
                     </p>
                     <X size={16} className="text-brand-error shrink-0" />
                   </div>
-                  <p className="text-[12px] font-bold mt-1 mr-7" dir="ltr">
+                  <p className="text-caption font-bold mt-1 mr-7" dir="ltr">
                     {sentence.englishWord}
                   </p>
                 </div>
@@ -385,15 +385,15 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                 }`}
               >
                 <div className="flex items-start gap-2">
-                  <span className="shrink-0 w-5 h-5 rounded-full bg-brand-turquoise/10 text-brand-turquoise text-[10px] font-bold flex items-center justify-center">
+                  <span className="shrink-0 w-5 h-5 rounded-full bg-brand-turquoise/10 text-brand-turquoise text-caption font-bold flex items-center justify-center">
                     {i + 1}
                   </span>
-                  <p className="text-[14px] leading-[1.35] font-semibold flex-1" dir="ltr">
+                  <p className="text-body-sm leading-[1.35] font-semibold flex-1" dir="ltr">
                     {sentence.descriptionSentence}
                   </p>
                 </div>
                 <p
-                  className={`text-[10px] mt-1 mr-7 font-semibold transition ${
+                  className={`text-caption mt-1 mr-7 font-semibold transition ${
                     isHovered ? 'text-brand-turquoise' : 'text-brand-grey-text/50'
                   }`}
                 >
@@ -433,7 +433,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                   const rect = e.currentTarget.getBoundingClientRect();
                   beginDrag(wordEnglish, t.clientX, t.clientY, rect);
                 }}
-                className={`touch-none select-none rounded-lg border-2 px-2 py-2 font-semibold text-center text-[13px] flex items-center justify-center gap-1 transition ${style} ${
+                className={`touch-none select-none rounded-lg border-2 px-2 py-2 font-semibold text-center text-body-sm flex items-center justify-center gap-1 transition ${style} ${
                   isFlashing ? 'animate-shake' : ''
                 } ${isDragging ? 'opacity-0' : ''} ${!isUsed ? 'cursor-grab active:cursor-grabbing' : ''}`}
                 dir="ltr"
