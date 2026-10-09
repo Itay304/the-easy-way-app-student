@@ -84,7 +84,7 @@ export default function Statistics() {
 
   return (
     <div className="px-4 pt-6 space-y-5">
-      <h1 className="text-2xl font-bold text-brand-text">סטטיסטיקות</h1>
+      <h1 className="text-h1 font-bold text-brand-text">סטטיסטיקות</h1>
 
       {error && <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />}
 
@@ -106,7 +106,7 @@ export default function Statistics() {
 
           {donuts.length > 0 && (
             <div>
-              <h2 className="text-lg font-bold text-brand-text mb-3">התקדמות לפי משימה</h2>
+              <h2 className="text-body-lg font-bold text-brand-text mb-3">התקדמות לפי משימה</h2>
               <div className="space-y-3">
                 {donuts.map((d) => (
                   <AssignmentDonut key={d.assignmentId} title={d.title} mastered={d.mastered} total={d.total} />

@@ -97,8 +97,8 @@ export default function Login() {
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center px-6 py-12">
       <img src="/icons/icon-192.png" alt="EasyLex" className="h-20 w-20 rounded-2xl shadow-md mb-6" />
-      <h1 className="text-2xl font-bold text-brand-text mb-2">EasyLex — תלמיד</h1>
-      <p className="text-brand-grey-text text-sm mb-8">
+      <h1 className="text-h1 font-bold text-brand-text mb-2">EasyLex — תלמיד</h1>
+      <p className="text-brand-grey-text text-body-sm mb-8">
         {mode === 'login' ? 'ברוך הבא! התחבר כדי להמשיך' : 'צור חשבון חדש'}
       </p>
 
@@ -137,11 +137,11 @@ export default function Login() {
             className="text-center font-mono"
           />
         )}
-        {error && <p className="text-brand-error text-sm text-center">{error}</p>}
+        {error && <p className="text-brand-error text-body-sm text-center">{error}</p>}
         <Button type="submit" size="lg" loading={submitting}>
           {mode === 'login' ? 'כניסה' : 'הרשמה'}
         </Button>
-        <button type="button" onClick={switchMode} className="w-full text-sm text-brand-grey-text hover:text-brand-text underline">
+        <button type="button" onClick={switchMode} className="w-full text-body-sm text-brand-grey-text hover:text-brand-text underline">
           {mode === 'login' ? 'אין לך חשבון? הירשם' : 'כבר יש לך חשבון? התחבר'}
         </button>
       </form>

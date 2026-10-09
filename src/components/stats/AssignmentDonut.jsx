@@ -19,13 +19,13 @@ export default function AssignmentDonut({ title, mastered, total }) {
             </Pie>
           </PieChart>
         </ResponsiveContainer>
-        <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-brand-text">
+        <span className="absolute inset-0 flex items-center justify-center text-caption font-bold text-brand-text">
           {pct}%
         </span>
       </div>
       <div className="min-w-0">
         <p className="font-semibold text-brand-text truncate">{title}</p>
-        <p className="text-sm text-brand-grey-text mt-0.5">
+        <p className="text-body-sm text-brand-grey-text mt-0.5">
           {mastered} מתוך {total} מילים נכבשו
         </p>
       </div>

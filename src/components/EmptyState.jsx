@@ -7,7 +7,7 @@ export default function EmptyState({ icon: Icon, title, subtitle }) {
         </div>
       )}
       <p className="font-semibold text-brand-text">{title}</p>
-      {subtitle && <p className="text-sm text-brand-grey-text mt-1">{subtitle}</p>}
+      {subtitle && <p className="text-body-sm text-brand-grey-text mt-1">{subtitle}</p>}
     </div>
   );
 }

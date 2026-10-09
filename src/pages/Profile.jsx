@@ -66,17 +66,17 @@ export default function Profile() {
 
   return (
     <div className="px-4 pt-6 space-y-5">
-      <h1 className="text-2xl font-bold text-brand-text">פרופיל</h1>
+      <h1 className="text-h1 font-bold text-brand-text">פרופיל</h1>
 
       {error && <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />}
 
       <Card padding="p-6" className="flex flex-col items-center text-center">
-        <div className="h-20 w-20 rounded-full bg-brand-turquoise text-white flex items-center justify-center text-3xl font-bold mb-3">
+        <div className="h-20 w-20 rounded-full bg-brand-turquoise text-white flex items-center justify-center text-display font-bold mb-3">
           {initial}
         </div>
         <p className="text-h2 font-bold text-brand-text">{profile.displayName}</p>
         {className || institutionName ? (
-          <p className="text-sm text-brand-grey-text mt-1">
+          <p className="text-body-sm text-brand-grey-text mt-1">
             {className}
             {className && institutionName ? ' · ' : ''}
             {institutionName}
@@ -89,7 +89,7 @@ export default function Profile() {
       <Card padding="p-5" className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="font-semibold text-brand-text">רמה {level}</span>
-          <span className="text-sm text-brand-grey-text">
+          <span className="text-body-sm text-brand-grey-text">
             {xpWithinLevel} / {xpRangeOfLevel} XP
           </span>
         </div>

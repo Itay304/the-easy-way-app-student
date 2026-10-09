@@ -10,7 +10,7 @@ export default function AnnouncementBanner({ announcement, onDismiss }) {
       <Megaphone size={20} className="text-brand-turquoise shrink-0 mt-0.5" />
       <div className="flex-1 min-w-0">
         <p className="text-brand-text">{announcement.message}</p>
-        <p className="text-xs text-brand-grey-text mt-1">
+        <p className="text-caption text-brand-grey-text mt-1">
           {announcement.createdByName} · {date}
         </p>
       </div>

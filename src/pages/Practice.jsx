@@ -44,7 +44,7 @@ export default function Practice() {
 
   return (
     <div className="px-4 pt-6 space-y-5">
-      <h1 className="text-2xl font-bold text-brand-text">תרגול</h1>
+      <h1 className="text-h1 font-bold text-brand-text">תרגול</h1>
 
       {error && <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />}
 

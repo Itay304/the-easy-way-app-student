@@ -55,7 +55,7 @@ export default function DailyChallengeCard({ uid }) {
           {challenge.completed ? <CheckCircle2 size={16} /> : <Target size={16} />}
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-brand-grey-text">אתגר יומי ⚡</p>
+          <p className="text-caption font-semibold text-brand-grey-text">אתגר יומי ⚡</p>
           <p className="font-bold text-brand-text truncate">{challenge.label}</p>
         </div>
       </div>
@@ -65,7 +65,7 @@ export default function DailyChallengeCard({ uid }) {
           style={{ width: `${pct}%` }}
         />
       </div>
-      <p className="text-xs text-brand-grey-text">{formatProgress(challenge)}</p>
+      <p className="text-caption text-brand-grey-text">{formatProgress(challenge)}</p>
     </Card>
   );
 }

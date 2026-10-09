@@ -110,7 +110,7 @@ export default function WhatMeans({ words, onFinish, onBack, adaptiveBanner }) {
       </Button>
 
       {adaptiveBanner && (
-        <p className="text-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
+        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
           מתאים את הסשן עבורך 🎯
         </p>
       )}
@@ -120,13 +120,13 @@ export default function WhatMeans({ words, onFinish, onBack, adaptiveBanner }) {
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
-      <p className="text-center text-sm text-brand-grey-text">
+      <p className="text-center text-body-sm text-brand-grey-text">
         {index + 1} מתוך {session.length}
       </p>
 
       <Card padding="p-8" className="text-center">
-        <p className="text-xs text-brand-grey-text mb-2">מה המשמעות של המילה? 📖</p>
-        <p className="text-3xl font-bold text-brand-text" dir="ltr">
+        <p className="text-caption text-brand-grey-text mb-2">מה המשמעות של המילה? 📖</p>
+        <p className="text-display font-bold text-brand-text" dir="ltr">
           {current.englishWord}
         </p>
       </Card>
@@ -146,7 +146,7 @@ export default function WhatMeans({ words, onFinish, onBack, adaptiveBanner }) {
               onClick={() => selectAnswer(choice)}
               disabled={selected !== null}
               dir="ltr"
-              className={`w-full rounded-xl shadow-md p-4 text-base font-medium text-right transition ${style}`}
+              className={`w-full rounded-xl shadow-md p-4 text-body font-medium text-right transition ${style}`}
             >
               {choice}
             </button>

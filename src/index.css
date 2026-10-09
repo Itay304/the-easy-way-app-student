@@ -40,6 +40,8 @@
   --text-h2--line-height: 1.3;
   --text-h1: 26px;
   --text-h1--line-height: 1.2;
+  --text-display: 30px;
+  --text-display--line-height: 1.2;
 }
 
 html {

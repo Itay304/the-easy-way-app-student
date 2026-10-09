@@ -41,7 +41,7 @@ export default function SettingsSection() {
 
   return (
     <Card padding="p-5" className="divide-y divide-black/5">
-      <h2 className="text-lg font-bold text-brand-text mb-1">הגדרות</h2>
+      <h2 className="text-body-lg font-bold text-brand-text mb-1">הגדרות</h2>
       <ToggleRow icon={soundEnabled ? Volume2 : VolumeX} label="צלילים" checked={soundEnabled} onChange={toggleSound} />
       <ToggleRow icon={Sparkles} label="אנימציות" checked={animationsEnabled} onChange={toggleAnimations} />
       <ToggleRow icon={Music} label="מוזיקת רקע בתרגול" checked={musicEnabled} onChange={toggleMusic} />

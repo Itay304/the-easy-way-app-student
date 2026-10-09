@@ -292,7 +292,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
       </Button>
 
       {adaptiveBanner && (
-        <p className="text-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
+        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
           מתאים את הסשן עבורך 🎯
         </p>
       )}
@@ -303,7 +303,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
       <div className="flex items-center justify-center gap-2.5">
-        <p className="text-sm text-brand-grey-text">
+        <p className="text-body-sm text-brand-grey-text">
           סבב {roundIndex + 1} מתוך {rounds.length}
         </p>
         <div className="flex items-center gap-1">
@@ -321,7 +321,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
           ))}
         </div>
       </div>
-      <p className="text-center text-xs text-brand-grey-text">גררו מילה למשפט המתאים, או הקישו על מילה ואז על משפט</p>
+      <p className="text-center text-caption text-brand-grey-text">גררו מילה למשפט המתאים, או הקישו על מילה ואז על משפט</p>
 
       <div className="grid grid-cols-[62fr_38fr] gap-3">
         {/* עמודה ימנית (ראשונה ב-DOM, dir=rtl הופך אותה לימין) — משפטי תיאור, ממוספרים וקבועים */}

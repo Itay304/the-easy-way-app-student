@@ -126,7 +126,7 @@ export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner
       </Button>
 
       {adaptiveBanner && (
-        <p className="text-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
+        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
           מתאים את הסשן עבורך 🎯
         </p>
       )}
@@ -136,18 +136,18 @@ export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
-      <p className="text-center text-sm text-brand-grey-text">
+      <p className="text-center text-body-sm text-brand-grey-text">
         {index + 1} מתוך {session.length}
       </p>
 
       <Card padding="p-6" className="space-y-3 text-center">
-        <p className="text-2xl font-bold text-brand-turquoise">{current.hebrewTranslation}</p>
+        <p className="text-h1 font-bold text-brand-turquoise">{current.hebrewTranslation}</p>
         {blanked ? (
-          <p className="text-base text-brand-grey-text" dir="ltr">
+          <p className="text-body text-brand-grey-text" dir="ltr">
             {blanked}
           </p>
         ) : (
-          <p className="text-sm text-brand-grey-text">השלם/י את המילה באנגלית</p>
+          <p className="text-body-sm text-brand-grey-text">השלם/י את המילה באנגלית</p>
         )}
       </Card>
 
@@ -160,7 +160,7 @@ export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner
           onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
           disabled={feedback === 'correct'}
           placeholder="הקלד/י את המילה באנגלית..."
-          className={`w-full rounded-xl border-2 p-4 text-lg text-center font-semibold outline-none transition ${
+          className={`w-full rounded-xl border-2 p-4 text-body-lg text-center font-semibold outline-none transition ${
             feedback === 'correct'
               ? 'border-brand-green bg-brand-green/10 text-brand-green'
               : feedback === 'wrong'
@@ -171,17 +171,17 @@ export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner
 
         {feedback === 'wrong' && (
           <div className="text-center space-y-1">
-            <p className="flex items-center justify-center gap-1 text-sm font-semibold text-brand-error">
+            <p className="flex items-center justify-center gap-1 text-body-sm font-semibold text-brand-error">
               <X size={16} />
               נסה/י שוב
             </p>
-            <p className="text-sm font-bold text-brand-green" dir="ltr">
+            <p className="text-body-sm font-bold text-brand-green" dir="ltr">
               {current.englishWord}
             </p>
           </div>
         )}
         {feedback === 'correct' && (
-          <p className="flex items-center justify-center gap-1 text-sm font-semibold text-brand-green">
+          <p className="flex items-center justify-center gap-1 text-body-sm font-semibold text-brand-green">
             <Check size={16} />
             נכון!
           </p>

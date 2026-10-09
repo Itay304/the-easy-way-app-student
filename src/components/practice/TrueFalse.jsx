@@ -132,7 +132,7 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
       </Button>
 
       {adaptiveBanner && (
-        <p className="text-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
+        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
           מתאים את הסשן עבורך 🎯
         </p>
       )}
@@ -142,7 +142,7 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
-      <p className="text-center text-sm text-brand-grey-text">
+      <p className="text-center text-body-sm text-brand-grey-text">
         {index + 1} מתוך {rounds.length}
       </p>
 
@@ -154,11 +154,11 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
           flyDirection === 'right' ? 'animate-card-fly-right' : flyDirection === 'left' ? 'animate-card-fly-left' : ''
         }`}
       >
-        <p className="text-3xl font-bold text-brand-text" dir="ltr">
+        <p className="text-display font-bold text-brand-text" dir="ltr">
           {round.word.englishWord}
         </p>
-        <p className="text-xl font-semibold text-brand-turquoise">{round.shownTranslation}</p>
-        <p className="text-xs text-brand-grey-text pt-2">החליקו ימינה = נכון, שמאלה = לא נכון</p>
+        <p className="text-h2 font-semibold text-brand-turquoise">{round.shownTranslation}</p>
+        <p className="text-caption text-brand-grey-text pt-2">החליקו ימינה = נכון, שמאלה = לא נכון</p>
       </div>
 
       <div className="flex gap-3">

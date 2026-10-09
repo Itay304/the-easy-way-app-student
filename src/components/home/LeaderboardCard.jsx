@@ -6,7 +6,7 @@ const MEDALS = ['🥇', '🥈', '🥉'];
 function Avatar({ name }) {
   const initial = (name || '?').trim().charAt(0).toUpperCase();
   return (
-    <span className="h-8 w-8 rounded-full bg-brand-turquoise text-white text-sm font-bold flex items-center justify-center shrink-0">
+    <span className="h-8 w-8 rounded-full bg-brand-turquoise text-white text-body-sm font-bold flex items-center justify-center shrink-0">
       {initial}
     </span>
   );
@@ -49,16 +49,16 @@ export default function LeaderboardCard({ topStudents, myRank, totalStudents, my
     <section className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-5">
       <div className="flex items-center gap-2 mb-1">
         <Trophy size={16} className="text-amber-500" />
-        <h2 className="text-lg font-bold text-brand-text">טבלת מובילים</h2>
+        <h2 className="text-body-lg font-bold text-brand-text">טבלת מובילים</h2>
       </div>
       {myRank !== null && totalStudents !== null && (
-        <p className="text-sm text-brand-grey-text mb-4">
+        <p className="text-body-sm text-brand-grey-text mb-4">
           אתה במקום {myRank} מתוך {totalStudents}
         </p>
       )}
 
       {topStudents.length === 0 ? (
-        <p className="text-sm text-brand-grey-text">אין עדיין נתונים.</p>
+        <p className="text-body-sm text-brand-grey-text">אין עדיין נתונים.</p>
       ) : (
         <ul className="space-y-2">
           {topStudents.map((s, i) => (
@@ -72,12 +72,12 @@ export default function LeaderboardCard({ topStudents, myRank, totalStudents, my
                 s.uid === myUid ? 'bg-brand-turquoise/10' : 'bg-brand-grey-light'
               }`}
             >
-              <span className="w-6 text-center text-lg shrink-0">{MEDALS[i] || i + 1}</span>
+              <span className="w-6 text-center text-body-lg shrink-0">{MEDALS[i] || i + 1}</span>
               <Avatar name={s.displayName || s.fullName} />
               <span className="flex-1 min-w-0 truncate font-medium text-brand-text">
                 {s.displayName || s.fullName || 'תלמיד'}
               </span>
-              <span className="text-sm font-bold text-brand-turquoise shrink-0">{s.totalXp} XP</span>
+              <span className="text-body-sm font-bold text-brand-turquoise shrink-0">{s.totalXp} XP</span>
             </li>
           ))}
         </ul>

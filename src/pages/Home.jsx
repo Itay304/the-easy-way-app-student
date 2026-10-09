@@ -63,7 +63,7 @@ export default function Home() {
   return (
     <div className="px-4 pt-6 space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-brand-text">שלום {profile.displayName}!</h1>
+        <h1 className="text-h1 font-bold text-brand-text">שלום {profile.displayName}!</h1>
       </div>
 
       {error && <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />}

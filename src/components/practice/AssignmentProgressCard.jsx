@@ -11,7 +11,7 @@ export default function AssignmentProgressCard({ assignment, mastered, total }) 
     >
       <div className="flex items-center justify-between mb-2">
         <p className="font-semibold text-brand-text truncate">{assignment.title}</p>
-        <span className="text-sm font-bold text-brand-turquoise shrink-0">{pct}%</span>
+        <span className="text-body-sm font-bold text-brand-turquoise shrink-0">{pct}%</span>
       </div>
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div
@@ -20,7 +20,7 @@ export default function AssignmentProgressCard({ assignment, mastered, total }) 
         />
       </div>
       {assignment.dueDateMs && (
-        <p className="flex items-center gap-1 text-xs text-brand-grey-text mt-2">
+        <p className="flex items-center gap-1 text-caption text-brand-grey-text mt-2">
           <CalendarClock size={16} />
           עד {new Date(assignment.dueDateMs).toLocaleDateString('he-IL')}
         </p>

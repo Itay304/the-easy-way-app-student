@@ -25,7 +25,7 @@ export default function SessionSummary({
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold text-brand-text">כל הכבוד! 🎉</h1>
+        <h1 className="text-h1 font-bold text-brand-text">כל הכבוד! 🎉</h1>
         <p className="text-brand-grey-text mt-1">סיימת את התרגול</p>
       </div>
 
@@ -33,12 +33,12 @@ export default function SessionSummary({
         <Card padding="p-5" className="w-full space-y-2">
           <div className="flex items-center justify-between">
             <span className="font-semibold text-brand-text">התקדמות במשימה</span>
-            <span className="text-sm font-bold text-brand-turquoise">{assignmentPct}%</span>
+            <span className="text-body-sm font-bold text-brand-turquoise">{assignmentPct}%</span>
           </div>
           <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
             <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${assignmentPct}%` }} />
           </div>
-          <p className="text-xs text-brand-grey-text">
+          <p className="text-caption text-brand-grey-text">
             {assignmentMastered} מתוך {assignmentTotal} מילים נכבשו
           </p>
         </Card>

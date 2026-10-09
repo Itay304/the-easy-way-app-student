@@ -63,7 +63,7 @@ export default function PracticePicker() {
       {assignment && (
         <>
           <div>
-            <h1 className="text-2xl font-bold text-brand-text">{assignment.title}</h1>
+            <h1 className="text-h1 font-bold text-brand-text">{assignment.title}</h1>
             <p className="text-brand-grey-text mt-1">
               {assignment.practiceMode === 'varied' ? 'המורה הכין לך תרגול מגוון' : 'איך תרצה לתרגל?'}
             </p>
@@ -77,8 +77,8 @@ export default function PracticePicker() {
               <div className="h-16 w-16 rounded-2xl bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center">
                 <Shuffle size={24} strokeWidth={2} />
               </div>
-              <span className="font-bold text-brand-text text-lg">התחל תרגול מגוון 🎯</span>
-              <p className="text-sm text-brand-grey-text text-center">
+              <span className="font-bold text-brand-text text-body-lg">התחל תרגול מגוון 🎯</span>
+              <p className="text-body-sm text-brand-grey-text text-center">
                 כל 5 מילים תעברו למודול תרגול אחר — כרטיסיות, מבחן, נכון/לא נכון ואיות, לסירוגין
               </p>
             </button>
@@ -93,7 +93,7 @@ export default function PracticePicker() {
                   <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 ${m.bg} ${m.text}`}>
                     <m.icon size={24} strokeWidth={2} />
                   </div>
-                  <span className="font-semibold text-brand-text text-sm text-center leading-tight">{m.label}</span>
+                  <span className="font-semibold text-brand-text text-body-sm text-center leading-tight">{m.label}</span>
                 </button>
               ))}
             </div>

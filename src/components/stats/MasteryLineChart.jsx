@@ -4,7 +4,7 @@ import Card from '../ui/Card.jsx';
 export default function MasteryLineChart({ data }) {
   return (
     <Card padding="p-4">
-      <h2 className="text-lg font-bold text-brand-text mb-3">מילים שנכבשו לאורך זמן</h2>
+      <h2 className="text-body-lg font-bold text-brand-text mb-3">מילים שנכבשו לאורך זמן</h2>
       <div className="h-48" dir="ltr">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>

@@ -222,7 +222,7 @@ export default function SprintSession() {
           <Zap size={48} strokeWidth={2} />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-brand-text">ספרינט הסתיים!</h1>
+          <h1 className="text-h1 font-bold text-brand-text">ספרינט הסתיים!</h1>
           <p className="text-brand-grey-text mt-1">
             {result.correctCount} מתוך {result.answered} נכון
           </p>
@@ -246,7 +246,7 @@ export default function SprintSession() {
             <span className="text-brand-grey-text">נקודות שהרווחת</span>
             <span className="font-bold text-brand-turquoise">+{result.xpGained} XP</span>
           </div>
-          {comparisonText && <p className="text-sm font-semibold text-brand-turquoise pt-2">{comparisonText}</p>}
+          {comparisonText && <p className="text-body-sm font-semibold text-brand-turquoise pt-2">{comparisonText}</p>}
         </Card>
 
         <Button size="lg" onClick={goBack}>
@@ -272,18 +272,18 @@ export default function SprintSession() {
           <ArrowRight size={16} />
           חזרה
         </Button>
-        <span className={`text-2xl font-extrabold tabular-nums ${timerColor(secondsLeft)}`}>{secondsLeft}s</span>
+        <span className={`text-h1 font-extrabold tabular-nums ${timerColor(secondsLeft)}`}>{secondsLeft}s</span>
       </div>
 
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-amber-500 rounded-full transition-all" style={{ width: `${(index / pool.length) * 100}%` }} />
       </div>
-      <p className="text-center text-sm text-brand-grey-text">
+      <p className="text-center text-body-sm text-brand-grey-text">
         {index + 1} מתוך {pool.length}
       </p>
 
       <Card padding="p-8" className="text-center">
-        <p className="text-3xl font-bold text-brand-text" dir="ltr">
+        <p className="text-display font-bold text-brand-text" dir="ltr">
           {current.englishWord}
         </p>
       </Card>
@@ -306,7 +306,7 @@ export default function SprintSession() {
               key={choice}
               onClick={() => selectAnswer(choice)}
               disabled={selected !== null}
-              className={`w-full rounded-xl shadow-md p-4 font-semibold text-lg transition ${style} ${shakeClass}`}
+              className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition ${style} ${shakeClass}`}
             >
               {choice}
             </button>

@@ -120,7 +120,7 @@ export default function FillSentence({ words, onFinish, onBack, adaptiveBanner }
       </Button>
 
       {adaptiveBanner && (
-        <p className="text-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
+        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
           מתאים את הסשן עבורך 🎯
         </p>
       )}
@@ -130,13 +130,13 @@ export default function FillSentence({ words, onFinish, onBack, adaptiveBanner }
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
-      <p className="text-center text-sm text-brand-grey-text">
+      <p className="text-center text-body-sm text-brand-grey-text">
         {index + 1} מתוך {session.length}
       </p>
 
       <Card padding="p-6" className="text-center">
-        <p className="text-xs text-brand-grey-text mb-2">השלימו את המשפט ✍️</p>
-        <p className="text-lg font-semibold text-brand-text" dir="ltr">
+        <p className="text-caption text-brand-grey-text mb-2">השלימו את המשפט ✍️</p>
+        <p className="text-body-lg font-semibold text-brand-text" dir="ltr">
           {blanked}
         </p>
       </Card>

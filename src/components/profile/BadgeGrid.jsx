@@ -4,7 +4,7 @@ import Card from '../ui/Card.jsx';
 export default function BadgeGrid({ earnedIds }) {
   return (
     <Card padding="p-5">
-      <h2 className="text-lg font-bold text-brand-text mb-4">תגים</h2>
+      <h2 className="text-body-lg font-bold text-brand-text mb-4">תגים</h2>
       <div className="grid grid-cols-3 gap-3">
         {BADGE_DEFINITIONS.map((badge, i) => {
           const earned = earnedIds.has(badge.id);
@@ -18,8 +18,8 @@ export default function BadgeGrid({ earnedIds }) {
               }`}
               style={{ animationDelay: `${i * 70}ms` }}
             >
-              <span className="text-3xl">{hidden ? '❓' : badge.icon}</span>
-              <span className="text-xs font-semibold text-brand-text leading-tight">
+              <span className="text-display">{hidden ? '❓' : badge.icon}</span>
+              <span className="text-caption font-semibold text-brand-text leading-tight">
                 {hidden ? 'תג סודי' : badge.title}
               </span>
             </div>
