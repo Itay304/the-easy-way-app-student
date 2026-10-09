@@ -313,7 +313,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                 s.status === 'correct'
                   ? 'bg-brand-green'
                   : s.status === 'wrong'
-                    ? 'bg-red-400'
+                    ? 'bg-brand-error'
                     : 'border border-brand-grey-text/40'
               }`}
             />
@@ -353,16 +353,16 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                   ref={(el) => {
                     sentenceRefs.current[i] = el;
                   }}
-                  className="rounded-xl bg-red-50 text-red-600 p-2.5 select-none"
+                  className="rounded-xl bg-brand-error-light text-brand-error p-2.5 select-none"
                 >
                   <div className="flex items-start gap-2">
-                    <span className="shrink-0 w-5 h-5 rounded-full bg-red-100 text-red-500 text-[10px] font-bold flex items-center justify-center">
+                    <span className="shrink-0 w-5 h-5 rounded-full bg-brand-error-light text-brand-error text-[10px] font-bold flex items-center justify-center">
                       {i + 1}
                     </span>
                     <p className="text-[14px] leading-[1.35] font-semibold flex-1" dir="ltr">
                       {sentence.descriptionSentence}
                     </p>
-                    <X size={16} className="text-red-500 shrink-0" />
+                    <X size={16} className="text-brand-error shrink-0" />
                   </div>
                   <p className="text-[12px] font-bold mt-1 mr-7" dir="ltr">
                     {sentence.englishWord}
@@ -415,7 +415,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
 
             let style = 'bg-brand-turquoise/10 border-brand-turquoise text-brand-text';
             if (isUsed) style = 'bg-brand-grey-light border-transparent text-brand-grey-text opacity-70';
-            else if (isFlashing) style = 'bg-red-50 border-red-400 text-red-600';
+            else if (isFlashing) style = 'bg-brand-error-light border-brand-error text-brand-error';
             else if (isSelected) style = 'bg-brand-turquoise border-brand-turquoise text-white';
 
             return (

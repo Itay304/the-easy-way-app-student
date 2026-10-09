@@ -126,7 +126,7 @@ export default function Statistics() {
           <WordRankList
             title="דורש תרגול נוסף"
             icon={TrendingDown}
-            iconClass="text-red-500"
+            iconClass="text-brand-error"
             items={weaknesses}
             valueLabel={(item) => `${item.totalAttempts - item.correctAttempts} שגיאות`}
           />

@@ -293,7 +293,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
               <div className="flex gap-3">
                 <button
                   onClick={() => answerFlashcard(false)}
-                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-red-50 text-red-600 font-bold"
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold"
                 >
                   <X size={18} />
                   לא ידעתי
@@ -325,7 +325,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
                   if (selected !== null) {
                     if (isCorrectChoice) style = 'bg-brand-green/10 text-brand-green';
                     else if (isSelected) {
-                      style = 'bg-red-50 text-red-600';
+                      style = 'bg-brand-error-light text-brand-error';
                       shakeClass = 'animate-shake';
                     }
                   }
@@ -368,7 +368,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
                 <button
                   onClick={() => answerTrueFalse(false)}
                   disabled={!!flyDirection}
-                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-red-50 text-red-600 font-bold disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold disabled:opacity-50"
                 >
                   <X size={18} />
                   לא נכון
@@ -410,13 +410,13 @@ export default function VariedModule({ words, onFinish, onBack }) {
                     feedback === 'correct'
                       ? 'border-brand-green bg-brand-green/10 text-brand-green'
                       : feedback === 'wrong'
-                        ? 'border-red-400 bg-red-50 text-red-600'
+                        ? 'border-brand-error bg-brand-error-light text-brand-error'
                         : 'border-brand-grey-light focus:border-brand-turquoise'
                   }`}
                 />
                 {feedback === 'wrong' && (
                   <div className="text-center space-y-1">
-                    <p className="flex items-center justify-center gap-1 text-sm font-semibold text-red-600">
+                    <p className="flex items-center justify-center gap-1 text-sm font-semibold text-brand-error">
                       <X size={16} />
                       נסה/י שוב
                     </p>

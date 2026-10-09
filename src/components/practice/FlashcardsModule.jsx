@@ -115,7 +115,7 @@ export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBann
       <div className="flex gap-3">
         <button
           onClick={() => answer(false)}
-          className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-red-50 text-red-600 font-bold"
+          className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold"
         >
           <X size={18} />
           לא ידעתי

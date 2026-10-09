@@ -2,7 +2,7 @@ export default function ComboBar({ combo, justBroke }) {
   if (combo < 2 && !justBroke) return null;
 
   if (justBroke) {
-    return <p className="text-center text-sm font-bold text-red-500 animate-shake">הרצף נשבר 💔</p>;
+    return <p className="text-center text-sm font-bold text-brand-error animate-shake">הרצף נשבר 💔</p>;
   }
 
   return (

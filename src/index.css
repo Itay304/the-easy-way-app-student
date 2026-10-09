@@ -10,6 +10,11 @@
   --color-brand-text: #212121;
   --color-brand-grey-text: #757575;
 
+  --color-brand-error-light: #fef2f2;
+  --color-brand-error-border: #fecaca;
+  --color-brand-error: #dc2626;
+  --color-brand-error-dark: #b91c1c;
+
   /* סולם גוונים לטורקיז המותג — בשביל gradient-ים (from-turquoise-400
      to-turquoise-600 וכו'). turquoise-500 שווה בדיוק ל-brand-turquoise. */
   --color-turquoise-50: #ecfdf9;

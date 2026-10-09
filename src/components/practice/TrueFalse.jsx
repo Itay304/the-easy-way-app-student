@@ -164,7 +164,7 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
         <button
           onClick={() => answer(false)}
           disabled={!!flyDirection}
-          className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-red-50 text-red-600 font-bold disabled:opacity-50"
+          className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold disabled:opacity-50"
         >
           <X size={18} />
           לא נכון

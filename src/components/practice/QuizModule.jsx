@@ -124,7 +124,7 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
             if (selected !== null) {
               if (isCorrectChoice) style = 'bg-brand-green/10 text-brand-green';
               else if (isSelected) {
-                style = 'bg-red-50 text-red-600';
+                style = 'bg-brand-error-light text-brand-error';
                 shakeClass = 'animate-shake';
               }
             }

@@ -162,14 +162,14 @@ export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner
             feedback === 'correct'
               ? 'border-brand-green bg-brand-green/10 text-brand-green'
               : feedback === 'wrong'
-                ? 'border-red-400 bg-red-50 text-red-600'
+                ? 'border-brand-error bg-brand-error-light text-brand-error'
                 : 'border-brand-grey-light focus:border-brand-turquoise'
           }`}
         />
 
         {feedback === 'wrong' && (
           <div className="text-center space-y-1">
-            <p className="flex items-center justify-center gap-1 text-sm font-semibold text-red-600">
+            <p className="flex items-center justify-center gap-1 text-sm font-semibold text-brand-error">
               <X size={16} />
               נסה/י שוב
             </p>

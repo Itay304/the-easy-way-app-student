@@ -54,7 +54,7 @@ export default function SessionSummary({
         </div>
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2 text-brand-grey-text">
-            <XCircle size={18} className="text-red-500" />
+            <XCircle size={18} className="text-brand-error" />
             תשובות שגויות
           </span>
           <span className="font-bold text-brand-text">{incorrectCount}</span>

@@ -55,7 +55,7 @@ async function buildSprintPool(uid) {
 function timerColor(secondsLeft) {
   if (secondsLeft > 30) return 'text-brand-green';
   if (secondsLeft > 10) return 'text-amber-500';
-  return 'text-red-600';
+  return 'text-brand-error';
 }
 
 export default function SprintSession() {
@@ -295,7 +295,7 @@ export default function SprintSession() {
           if (selected !== null) {
             if (isCorrectChoice) style = 'bg-brand-green/10 text-brand-green';
             else if (isSelected) {
-              style = 'bg-red-50 text-red-600';
+              style = 'bg-brand-error-light text-brand-error';
               shakeClass = 'animate-shake';
             }
           }

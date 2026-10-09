@@ -136,7 +136,7 @@ export default function WhatMeans({ words, onFinish, onBack, adaptiveBanner }) {
           let style = 'bg-white text-brand-text';
           if (selected !== null) {
             if (isCorrectChoice) style = 'bg-brand-green/10 text-brand-green';
-            else if (isSelected) style = 'bg-red-50 text-red-600 animate-shake';
+            else if (isSelected) style = 'bg-brand-error-light text-brand-error animate-shake';
           }
           return (
             <button
