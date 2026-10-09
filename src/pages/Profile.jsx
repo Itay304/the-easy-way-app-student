@@ -71,7 +71,7 @@ export default function Profile() {
         <div className="h-20 w-20 rounded-full bg-brand-turquoise text-white flex items-center justify-center text-3xl font-bold mb-3">
           {initial}
         </div>
-        <p className="text-xl font-bold text-brand-text">{profile.displayName}</p>
+        <p className="text-h2 font-bold text-brand-text">{profile.displayName}</p>
         {className || institutionName ? (
           <p className="text-sm text-brand-grey-text mt-1">
             {className}
