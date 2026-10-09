@@ -1,4 +1,5 @@
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
+import Card from '../ui/Card.jsx';
 
 export default function AssignmentDonut({ title, mastered, total }) {
   const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
@@ -8,7 +9,7 @@ export default function AssignmentDonut({ title, mastered, total }) {
   ];
 
   return (
-    <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex items-center gap-4">
+    <Card padding="p-4" className="flex items-center gap-4">
       <div className="h-20 w-20 shrink-0 relative">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -28,6 +29,6 @@ export default function AssignmentDonut({ title, mastered, total }) {
           {mastered} מתוך {total} מילים נכבשו
         </p>
       </div>
-    </div>
+    </Card>
   );
 }

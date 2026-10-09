@@ -1,6 +1,8 @@
+import Card from '../ui/Card.jsx';
+
 export default function WordRankList({ title, icon: Icon, iconClass, items, valueLabel }) {
   return (
-    <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4">
+    <Card padding="p-4">
       <h2 className="flex items-center gap-2 text-lg font-bold text-brand-text mb-3">
         <Icon size={20} className={iconClass} />
         {title}
@@ -22,6 +24,6 @@ export default function WordRankList({ title, icon: Icon, iconClass, items, valu
           ))}
         </ul>
       )}
-    </div>
+    </Card>
   );
 }

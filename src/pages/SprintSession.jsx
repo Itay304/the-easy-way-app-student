@@ -20,6 +20,8 @@ import ErrorBanner from '../components/ErrorBanner.jsx';
 import Confetti from '../components/practice/Confetti.jsx';
 import XpFlyup from '../components/practice/XpFlyup.jsx';
 import BadgeUnlockToast from '../components/practice/BadgeUnlockToast.jsx';
+import Card from '../components/ui/Card.jsx';
+import Button from '../components/ui/Button.jsx';
 
 const SPRINT_DURATION_SEC = 60;
 const SPRINT_WORD_COUNT = 10;
@@ -226,7 +228,7 @@ export default function SprintSession() {
           </p>
         </div>
 
-        <div className="w-full rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-6 space-y-4">
+        <Card padding="p-6" className="w-full space-y-4">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2 text-brand-grey-text">
               <Trophy size={16} className="text-amber-500" />
@@ -245,11 +247,11 @@ export default function SprintSession() {
             <span className="font-bold text-brand-turquoise">+{result.xpGained} XP</span>
           </div>
           {comparisonText && <p className="text-sm font-semibold text-brand-turquoise pt-2">{comparisonText}</p>}
-        </div>
+        </Card>
 
-        <button onClick={goBack} className="w-full py-4 rounded-xl bg-gradient-to-r from-turquoise-400 to-turquoise-600 text-white font-bold">
+        <Button size="lg" onClick={goBack}>
           סיום
-        </button>
+        </Button>
 
         {badgeQueue[0] && (
           <BadgeUnlockToast badge={badgeQueue[0]} onDismiss={() => setBadgeQueue((q) => q.slice(1))} />
@@ -280,11 +282,11 @@ export default function SprintSession() {
         {index + 1} מתוך {pool.length}
       </p>
 
-      <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 text-center">
+      <Card padding="p-8" className="text-center">
         <p className="text-3xl font-bold text-brand-text" dir="ltr">
           {current.englishWord}
         </p>
-      </div>
+      </Card>
 
       <div className="space-y-3">
         {choices.map((choice) => {

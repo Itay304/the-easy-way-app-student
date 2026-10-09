@@ -7,6 +7,7 @@ import useCombo from '../../hooks/useCombo.js';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
+import Card from '../ui/Card.jsx';
 
 const RESOLVE_DELAY_MS = 900;
 
@@ -132,12 +133,12 @@ export default function FillSentence({ words, onFinish, onBack, adaptiveBanner }
         {index + 1} מתוך {session.length}
       </p>
 
-      <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-6 text-center">
+      <Card padding="p-6" className="text-center">
         <p className="text-xs text-brand-grey-text mb-2">השלימו את המשפט ✍️</p>
         <p className="text-lg font-semibold text-brand-text" dir="ltr">
           {blanked}
         </p>
-      </div>
+      </Card>
 
       <div className="grid grid-cols-2 gap-3">
         {choices.map((choice) => {

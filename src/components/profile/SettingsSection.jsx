@@ -1,5 +1,6 @@
 import { Volume2, VolumeX, Sparkles, Music, Keyboard } from 'lucide-react';
 import useSettings from '../../hooks/useSettings.js';
+import Card from '../ui/Card.jsx';
 
 function ToggleRow({ icon: Icon, label, checked, onChange }) {
   return (
@@ -39,7 +40,7 @@ export default function SettingsSection() {
   } = useSettings();
 
   return (
-    <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-5 divide-y divide-black/5">
+    <Card padding="p-5" className="divide-y divide-black/5">
       <h2 className="text-lg font-bold text-brand-text mb-1">הגדרות</h2>
       <ToggleRow icon={soundEnabled ? Volume2 : VolumeX} label="צלילים" checked={soundEnabled} onChange={toggleSound} />
       <ToggleRow icon={Sparkles} label="אנימציות" checked={animationsEnabled} onChange={toggleAnimations} />
@@ -50,6 +51,6 @@ export default function SettingsSection() {
         checked={whoAmITypingMode}
         onChange={toggleWhoAmITypingMode}
       />
-    </div>
+    </Card>
   );
 }

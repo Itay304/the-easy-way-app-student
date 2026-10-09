@@ -9,6 +9,7 @@ import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
 import LoadingSpinner from '../LoadingSpinner.jsx';
+import Card from '../ui/Card.jsx';
 
 // הסדר של words כבר מגיע מעורבב מ-applyAdaptiveOrder (PracticeSession),
 // שם הערבוב נעשה בתוך כל קבוצה (חלשות/שאר) בנפרד — ערבוב נוסף כאן היה
@@ -106,11 +107,11 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
         {index + 1} מתוך {session.length}
       </p>
 
-      <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 text-center">
+      <Card padding="p-8" className="text-center">
         <p className="text-3xl font-bold text-brand-text" dir="ltr">
           {current.englishWord}
         </p>
-      </div>
+      </Card>
 
       {globalPool === null ? (
         <LoadingSpinner />

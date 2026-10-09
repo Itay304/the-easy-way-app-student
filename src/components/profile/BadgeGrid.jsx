@@ -1,8 +1,9 @@
 import { BADGE_DEFINITIONS } from '../../lib/badges.js';
+import Card from '../ui/Card.jsx';
 
 export default function BadgeGrid({ earnedIds }) {
   return (
-    <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-5">
+    <Card padding="p-5">
       <h2 className="text-lg font-bold text-brand-text mb-4">תגים</h2>
       <div className="grid grid-cols-3 gap-3">
         {BADGE_DEFINITIONS.map((badge, i) => {
@@ -25,6 +26,6 @@ export default function BadgeGrid({ earnedIds }) {
           );
         })}
       </div>
-    </div>
+    </Card>
   );
 }

@@ -9,6 +9,7 @@ import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
 import LoadingSpinner from '../LoadingSpinner.jsx';
+import Card from '../ui/Card.jsx';
 
 // תרגול מגוון אמיתי: כל 5 מילים עוברים למודול הבא במחזור, וחוזר חלילה —
 // כך כל מילה מתורגלת במודול שונה, בלי שהתלמיד בוחר בעצמו (ר' PracticePicker).
@@ -311,11 +312,11 @@ export default function VariedModule({ words, onFinish, onBack }) {
 
           {currentType === 'quiz' && (
             <>
-              <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 text-center">
+              <Card padding="p-8" className="text-center">
                 <p className="text-3xl font-bold text-brand-text" dir="ltr">
                   {current.englishWord}
                 </p>
-              </div>
+              </Card>
               <div className="space-y-3">
                 {quizChoices.map((choice) => {
                   const isSelected = selected === choice;
@@ -387,7 +388,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
 
           {currentType === 'spelling' && (
             <>
-              <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-6 space-y-3 text-center">
+              <Card padding="p-6" className="space-y-3 text-center">
                 <p className="text-2xl font-bold text-brand-turquoise">{current.hebrewTranslation}</p>
                 {blanked ? (
                   <p className="text-base text-brand-grey-text" dir="ltr">
@@ -396,7 +397,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
                 ) : (
                   <p className="text-sm text-brand-grey-text">השלם/י את המילה באנגלית</p>
                 )}
-              </div>
+              </Card>
               <div className={`space-y-3 ${shaking ? 'animate-shake' : ''}`} onAnimationEnd={stopShake}>
                 <input
                   type="text"

@@ -1,3 +1,5 @@
+import Card from './ui/Card.jsx';
+
 export default function InstallRequired() {
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center px-6 py-12 text-center">
@@ -5,14 +7,14 @@ export default function InstallRequired() {
       <h1 className="text-2xl font-bold text-brand-text mb-8">התקן את האפליקציה לחוויה מלאה</h1>
 
       <div className="w-full max-w-sm space-y-4 text-right">
-        <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg border border-black/5 p-5">
+        <Card padding="p-5" className="border border-black/5">
           <p className="font-bold text-brand-text mb-1">🤖 אנדרואיד (Chrome)</p>
           <p className="text-brand-grey-text">לחץ על ⋮ ← הוסף למסך הבית</p>
-        </div>
-        <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg border border-black/5 p-5">
+        </Card>
+        <Card padding="p-5" className="border border-black/5">
           <p className="font-bold text-brand-text mb-1">🍎 אייפון (Safari)</p>
           <p className="text-brand-grey-text">לחץ על □↑ ← הוסף למסך הבית</p>
-        </div>
+        </Card>
       </div>
     </div>
   );

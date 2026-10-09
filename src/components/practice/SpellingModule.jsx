@@ -7,6 +7,7 @@ import useCombo from '../../hooks/useCombo.js';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
+import Card from '../ui/Card.jsx';
 
 function blankSentence(sentence, word) {
   if (!sentence) return null;
@@ -138,7 +139,7 @@ export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner
         {index + 1} מתוך {session.length}
       </p>
 
-      <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-6 space-y-3 text-center">
+      <Card padding="p-6" className="space-y-3 text-center">
         <p className="text-2xl font-bold text-brand-turquoise">{current.hebrewTranslation}</p>
         {blanked ? (
           <p className="text-base text-brand-grey-text" dir="ltr">
@@ -147,7 +148,7 @@ export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner
         ) : (
           <p className="text-sm text-brand-grey-text">השלם/י את המילה באנגלית</p>
         )}
-      </div>
+      </Card>
 
       <div className={`space-y-3 ${shaking ? 'animate-shake' : ''}`} onAnimationEnd={stopShake}>
         <input

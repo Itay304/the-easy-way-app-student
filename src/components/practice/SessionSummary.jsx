@@ -1,5 +1,7 @@
 import { PartyPopper, Star, CheckCircle2, XCircle, Award } from 'lucide-react';
 import Confetti from './Confetti.jsx';
+import Card from '../ui/Card.jsx';
+import Button from '../ui/Button.jsx';
 
 export default function SessionSummary({
   correctCount,
@@ -28,7 +30,7 @@ export default function SessionSummary({
       </div>
 
       {assignmentPct !== null && (
-        <div className="w-full rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-5 space-y-2">
+        <Card padding="p-5" className="w-full space-y-2">
           <div className="flex items-center justify-between">
             <span className="font-semibold text-brand-text">התקדמות במשימה</span>
             <span className="text-sm font-bold text-brand-turquoise">{assignmentPct}%</span>
@@ -39,10 +41,10 @@ export default function SessionSummary({
           <p className="text-xs text-brand-grey-text">
             {assignmentMastered} מתוך {assignmentTotal} מילים נכבשו
           </p>
-        </div>
+        </Card>
       )}
 
-      <div className="w-full rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-6 space-y-4">
+      <Card padding="p-6" className="w-full space-y-4">
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2 text-brand-grey-text">
             <CheckCircle2 size={16} className="text-brand-green" />
@@ -74,11 +76,11 @@ export default function SessionSummary({
             <Star size={16} className="fill-brand-turquoise" />+{xpGained} XP
           </span>
         </div>
-      </div>
+      </Card>
 
-      <button onClick={onDone} className="w-full py-4 rounded-xl bg-gradient-to-r from-turquoise-400 to-turquoise-600 text-white font-bold">
+      <Button size="lg" onClick={onDone}>
         סיום
-      </button>
+      </Button>
     </div>
   );
 }

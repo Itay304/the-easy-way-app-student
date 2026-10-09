@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Target, CheckCircle2 } from 'lucide-react';
 import { getOrCreateDailyChallenge } from '../../lib/dailyChallenge.js';
 import { Skeleton } from '../Skeleton.jsx';
+import Card from '../ui/Card.jsx';
 
 function formatProgress(challenge) {
   if (challenge.metric === 'secondsPracticed') {
@@ -44,7 +45,7 @@ export default function DailyChallengeCard({ uid }) {
       : Math.min(100, Math.round((challenge.progress / challenge.target) * 100));
 
   return (
-    <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 space-y-2">
+    <Card padding="p-4" className="space-y-2">
       <div className="flex items-center gap-2">
         <div
           className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 ${
@@ -65,6 +66,6 @@ export default function DailyChallengeCard({ uid }) {
         />
       </div>
       <p className="text-xs text-brand-grey-text">{formatProgress(challenge)}</p>
-    </div>
+    </Card>
   );
 }

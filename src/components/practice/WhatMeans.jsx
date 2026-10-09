@@ -7,6 +7,7 @@ import useCombo from '../../hooks/useCombo.js';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
+import Card from '../ui/Card.jsx';
 
 const RESOLVE_DELAY_MS = 1400;
 
@@ -122,12 +123,12 @@ export default function WhatMeans({ words, onFinish, onBack, adaptiveBanner }) {
         {index + 1} מתוך {session.length}
       </p>
 
-      <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 text-center">
+      <Card padding="p-8" className="text-center">
         <p className="text-xs text-brand-grey-text mb-2">מה המשמעות של המילה? 📖</p>
         <p className="text-3xl font-bold text-brand-text" dir="ltr">
           {current.englishWord}
         </p>
-      </div>
+      </Card>
 
       <div className="space-y-3">
         {choices.map((choice) => {

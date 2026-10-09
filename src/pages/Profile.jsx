@@ -12,6 +12,7 @@ import ErrorBanner from '../components/ErrorBanner.jsx';
 import BadgeGrid from '../components/profile/BadgeGrid.jsx';
 import SettingsSection from '../components/profile/SettingsSection.jsx';
 import StatCard from '../components/ui/StatCard.jsx';
+import Card from '../components/ui/Card.jsx';
 
 export default function Profile() {
   const { user, profile } = useAuth();
@@ -68,7 +69,7 @@ export default function Profile() {
 
       {error && <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />}
 
-      <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-6 flex flex-col items-center text-center">
+      <Card padding="p-6" className="flex flex-col items-center text-center">
         <div className="h-20 w-20 rounded-full bg-brand-turquoise text-white flex items-center justify-center text-3xl font-bold mb-3">
           {initial}
         </div>
@@ -82,9 +83,9 @@ export default function Profile() {
         ) : (
           <Skeleton className="h-4 w-32 mt-2" />
         )}
-      </div>
+      </Card>
 
-      <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-5 space-y-2">
+      <Card padding="p-5" className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="font-semibold text-brand-text">רמה {level}</span>
           <span className="text-sm text-brand-grey-text">
@@ -94,7 +95,7 @@ export default function Profile() {
         <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
           <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${levelPct}%` }} />
         </div>
-      </div>
+      </Card>
 
       <div className="grid grid-cols-2 gap-3">
         <StatCard
