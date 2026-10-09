@@ -34,7 +34,7 @@ export default function DailyChallengeCard({ uid }) {
     };
   }, [uid]);
 
-  if (challenge === undefined) return <Skeleton className="h-20 w-full rounded-2xl" />;
+  if (challenge === undefined) return <Skeleton className="h-20 w-full !rounded-2xl" />;
   if (!challenge) return null;
 
   const pct =

@@ -90,9 +90,9 @@ export default function Statistics() {
 
       {loading && !error && (
         <div className="space-y-4">
-          <Skeleton className="h-56 rounded-2xl" />
-          <Skeleton className="h-24 rounded-2xl" />
-          <Skeleton className="h-56 rounded-2xl" />
+          <Skeleton className="h-56 !rounded-2xl" />
+          <Skeleton className="h-24 !rounded-2xl" />
+          <Skeleton className="h-56 !rounded-2xl" />
         </div>
       )}
 
