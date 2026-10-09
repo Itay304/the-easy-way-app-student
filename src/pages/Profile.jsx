@@ -98,7 +98,7 @@ export default function Profile() {
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex items-center gap-3">
           <div className="h-11 w-11 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
-            <Flame size={22} strokeWidth={2.25} />
+            <Flame size={20} strokeWidth={2} />
           </div>
           <div>
             <p className="text-xl font-bold text-brand-text leading-none">{profile.streak}</p>
@@ -107,7 +107,7 @@ export default function Profile() {
         </div>
         <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex items-center gap-3">
           <div className="h-11 w-11 rounded-xl bg-brand-green/10 text-brand-green flex items-center justify-center shrink-0">
-            <CheckCircle2 size={22} strokeWidth={2.25} />
+            <CheckCircle2 size={20} strokeWidth={2} />
           </div>
           <div>
             <p className="text-xl font-bold text-brand-text leading-none">
@@ -126,7 +126,7 @@ export default function Profile() {
         onClick={() => signOut(auth)}
         className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-gradient-to-b from-white to-gray-50 shadow-lg text-brand-error font-bold"
       >
-        <LogOut size={18} />
+        <LogOut size={16} />
         התנתקות
       </button>
     </div>

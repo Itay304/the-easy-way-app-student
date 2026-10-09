@@ -5,7 +5,7 @@ function ToggleRow({ icon: Icon, label, checked, onChange }) {
   return (
     <div className="flex items-center justify-between py-3">
       <span className="flex items-center gap-2 text-brand-text font-medium">
-        <Icon size={18} className="text-brand-grey-text" />
+        <Icon size={16} className="text-brand-grey-text" />
         {label}
       </span>
       <button

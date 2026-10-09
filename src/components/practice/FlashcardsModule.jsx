@@ -117,14 +117,14 @@ export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBann
           onClick={() => answer(false)}
           className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold"
         >
-          <X size={18} />
+          <X size={16} />
           לא ידעתי
         </button>
         <button
           onClick={() => answer(true)}
           className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold"
         >
-          <Check size={18} />
+          <Check size={16} />
           ידעתי
         </button>
       </div>

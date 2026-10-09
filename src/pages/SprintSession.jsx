@@ -217,7 +217,7 @@ export default function SprintSession() {
     return (
       <div className="px-4 pt-10 flex flex-col items-center text-center space-y-6">
         <div className="h-20 w-20 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center">
-          <Zap size={40} strokeWidth={2} />
+          <Zap size={24} strokeWidth={2} />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-brand-text">ספרינט הסתיים!</h1>
@@ -229,7 +229,7 @@ export default function SprintSession() {
         <div className="w-full rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-6 space-y-4">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2 text-brand-grey-text">
-              <Trophy size={18} className="text-amber-500" />
+              <Trophy size={16} className="text-amber-500" />
               הדיוק שלך
             </span>
             <span className="font-bold text-brand-text">{Math.round(myAccuracy * 100)}%</span>

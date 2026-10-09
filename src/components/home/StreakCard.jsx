@@ -28,7 +28,7 @@ export default function StreakCard({ streak, lastActiveDate }) {
   return (
     <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 flex items-center gap-3">
       <div className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 ${config.iconClass}`}>
-        <Icon size={22} strokeWidth={2.25} />
+        <Icon size={20} strokeWidth={2} />
       </div>
       <div className="min-w-0">
         <p className="text-xl font-bold text-brand-text leading-none">{displayStreak}</p>

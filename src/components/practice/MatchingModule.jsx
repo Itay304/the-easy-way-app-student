@@ -338,7 +338,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                   }}
                   className="rounded-xl bg-brand-grey-light/70 px-3 py-1.5 flex items-center gap-2 select-none"
                 >
-                  <Check size={14} className="text-brand-green shrink-0" />
+                  <Check size={16} className="text-brand-green shrink-0" />
                   <span className="text-body-sm font-semibold text-brand-text/60 truncate" dir="ltr">
                     {sentence.englishWord}
                   </span>
@@ -439,9 +439,9 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                 dir="ltr"
               >
                 {isUsed ? (
-                  <Check size={12} className="shrink-0" />
+                  <Check size={16} className="shrink-0" />
                 ) : (
-                  <GripVertical size={12} className="shrink-0 opacity-60" />
+                  <GripVertical size={16} className="shrink-0 opacity-60" />
                 )}
                 <span className="truncate">{wordEnglish}</span>
               </div>

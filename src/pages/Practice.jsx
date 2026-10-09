@@ -53,7 +53,7 @@ export default function Practice() {
           to="/sprint"
           className="flex items-center justify-center gap-2 rounded-2xl bg-amber-500 text-white font-bold py-4 shadow-md hover:opacity-90 transition"
         >
-          <Zap size={20} strokeWidth={2.5} />
+          <Zap size={20} strokeWidth={2} />
           ספרינט ⚡ — 10 מילים, 60 שניות
         </Link>
       )}

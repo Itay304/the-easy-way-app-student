@@ -295,14 +295,14 @@ export default function VariedModule({ words, onFinish, onBack }) {
                   onClick={() => answerFlashcard(false)}
                   className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold"
                 >
-                  <X size={18} />
+                  <X size={16} />
                   לא ידעתי
                 </button>
                 <button
                   onClick={() => answerFlashcard(true)}
                   className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold"
                 >
-                  <Check size={18} />
+                  <Check size={16} />
                   ידעתי
                 </button>
               </div>
@@ -370,7 +370,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
                   disabled={!!flyDirection}
                   className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold disabled:opacity-50"
                 >
-                  <X size={18} />
+                  <X size={16} />
                   לא נכון
                 </button>
                 <button
@@ -378,7 +378,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
                   disabled={!!flyDirection}
                   className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold disabled:opacity-50"
                 >
-                  <Check size={18} />
+                  <Check size={16} />
                   נכון
                 </button>
               </div>

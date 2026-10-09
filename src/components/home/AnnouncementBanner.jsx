@@ -15,7 +15,7 @@ export default function AnnouncementBanner({ announcement, onDismiss }) {
         </p>
       </div>
       <button onClick={onDismiss} className="text-brand-grey-text hover:text-brand-text shrink-0">
-        <X size={18} />
+        <X size={16} />
       </button>
     </div>
   );

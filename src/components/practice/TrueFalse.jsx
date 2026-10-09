@@ -166,7 +166,7 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
           disabled={!!flyDirection}
           className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold disabled:opacity-50"
         >
-          <X size={18} />
+          <X size={16} />
           לא נכון
         </button>
         <button
@@ -174,7 +174,7 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
           disabled={!!flyDirection}
           className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold disabled:opacity-50"
         >
-          <Check size={18} />
+          <Check size={16} />
           נכון
         </button>
       </div>

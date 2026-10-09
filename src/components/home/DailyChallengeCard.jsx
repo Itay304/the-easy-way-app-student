@@ -51,7 +51,7 @@ export default function DailyChallengeCard({ uid }) {
             challenge.completed ? 'bg-brand-green/10 text-brand-green' : 'bg-amber-50 text-amber-500'
           }`}
         >
-          {challenge.completed ? <CheckCircle2 size={18} /> : <Target size={18} />}
+          {challenge.completed ? <CheckCircle2 size={16} /> : <Target size={16} />}
         </div>
         <div className="min-w-0">
           <p className="text-xs font-semibold text-brand-grey-text">אתגר יומי ⚡</p>

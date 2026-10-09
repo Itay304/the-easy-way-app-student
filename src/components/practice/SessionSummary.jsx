@@ -19,7 +19,7 @@ export default function SessionSummary({
       <Confetti count={70} durationMs={1500} />
 
       <div className="h-20 w-20 rounded-full bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center">
-        <PartyPopper size={40} strokeWidth={2} />
+        <PartyPopper size={24} strokeWidth={2} />
       </div>
 
       <div>
@@ -45,7 +45,7 @@ export default function SessionSummary({
       <div className="w-full rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-6 space-y-4">
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2 text-brand-grey-text">
-            <CheckCircle2 size={18} className="text-brand-green" />
+            <CheckCircle2 size={16} className="text-brand-green" />
             תשובות נכונות
           </span>
           <span className="font-bold text-brand-text">
@@ -54,7 +54,7 @@ export default function SessionSummary({
         </div>
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2 text-brand-grey-text">
-            <XCircle size={18} className="text-brand-error" />
+            <XCircle size={16} className="text-brand-error" />
             תשובות שגויות
           </span>
           <span className="font-bold text-brand-text">{incorrectCount}</span>
@@ -62,7 +62,7 @@ export default function SessionSummary({
         {wordsMasteredCount > 0 && (
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2 text-brand-grey-text">
-              <Award size={18} className="text-amber-500" />
+              <Award size={16} className="text-amber-500" />
               מילים שנכבשו
             </span>
             <span className="font-bold text-brand-text">{wordsMasteredCount}</span>
@@ -71,7 +71,7 @@ export default function SessionSummary({
         <div className="flex items-center justify-between">
           <span className="text-brand-grey-text">נקודות שהרווחת</span>
           <span className="flex items-center gap-1 font-bold text-brand-turquoise">
-            <Star size={18} className="fill-brand-turquoise" />+{xpGained} XP
+            <Star size={16} className="fill-brand-turquoise" />+{xpGained} XP
           </span>
         </div>
       </div>

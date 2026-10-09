@@ -21,7 +21,7 @@ export default function AssignmentProgressCard({ assignment, mastered, total }) 
       </div>
       {assignment.dueDateMs && (
         <p className="flex items-center gap-1 text-xs text-brand-grey-text mt-2">
-          <CalendarClock size={13} />
+          <CalendarClock size={16} />
           עד {new Date(assignment.dueDateMs).toLocaleDateString('he-IL')}
         </p>
       )}

@@ -77,7 +77,7 @@ export default function PracticePicker() {
               className="w-full flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 hover:shadow-lg transition"
             >
               <div className="h-16 w-16 rounded-2xl bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center">
-                <Shuffle size={32} strokeWidth={2.25} />
+                <Shuffle size={24} strokeWidth={2} />
               </div>
               <span className="font-bold text-brand-text text-lg">התחל תרגול מגוון 🎯</span>
               <p className="text-sm text-brand-grey-text text-center">
@@ -93,7 +93,7 @@ export default function PracticePicker() {
                   className="aspect-square flex flex-col items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 hover:shadow-lg transition"
                 >
                   <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 ${m.bg} ${m.text}`}>
-                    <m.icon size={28} strokeWidth={2.25} />
+                    <m.icon size={24} strokeWidth={2} />
                   </div>
                   <span className="font-semibold text-brand-text text-sm text-center leading-tight">{m.label}</span>
                 </button>
