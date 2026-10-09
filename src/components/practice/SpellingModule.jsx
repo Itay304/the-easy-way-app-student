@@ -187,13 +187,9 @@ export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner
           </p>
         )}
 
-        <button
-          onClick={checkAnswer}
-          disabled={feedback === 'correct' || !input.trim()}
-          className="w-full py-4 rounded-xl bg-gradient-to-r from-turquoise-400 to-turquoise-600 text-white font-bold disabled:opacity-50"
-        >
+        <Button size="lg" onClick={checkAnswer} disabled={feedback === 'correct' || !input.trim()}>
           בדוק/י
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -433,13 +433,9 @@ export default function VariedModule({ words, onFinish, onBack }) {
                     נכון!
                   </p>
                 )}
-                <button
-                  onClick={submitSpelling}
-                  disabled={feedback === 'correct' || !input.trim()}
-                  className="w-full py-4 rounded-xl bg-gradient-to-r from-turquoise-400 to-turquoise-600 text-white font-bold disabled:opacity-50"
-                >
+                <Button size="lg" onClick={submitSpelling} disabled={feedback === 'correct' || !input.trim()}>
                   בדוק/י
-                </button>
+                </Button>
               </div>
             </>
           )}
