@@ -1,7 +1,9 @@
 import { useLayoutEffect, useRef } from 'react';
-import { Trophy } from 'lucide-react';
+import { Trophy, Medal } from 'lucide-react';
 
-const MEDALS = ['🥇', '🥈', '🥉'];
+// אמוג'י מדליה מוצג שונה בכל מכשיר/גופן — רכיב קבוע כמו דירוג מובילים
+// צריך להיראות זהה אצל כולם, ולכן lucide במקום 🥇🥈🥉.
+const MEDAL_COLORS = ['text-yellow-500', 'text-gray-400', 'text-amber-700'];
 
 function Avatar({ name }) {
   const initial = (name || '?').trim().charAt(0).toUpperCase();
@@ -72,7 +74,9 @@ export default function LeaderboardCard({ topStudents, myRank, totalStudents, my
                 s.uid === myUid ? 'bg-brand-turquoise/10' : 'bg-brand-grey-light'
               }`}
             >
-              <span className="w-6 text-center text-body-lg shrink-0">{MEDALS[i] || i + 1}</span>
+              <span className="w-6 flex items-center justify-center shrink-0">
+                {i < 3 ? <Medal size={20} className={MEDAL_COLORS[i]} /> : <span className="text-body-lg">{i + 1}</span>}
+              </span>
               <Avatar name={s.displayName || s.fullName} />
               <span className="flex-1 min-w-0 truncate font-medium text-brand-text">
                 {s.displayName || s.fullName || 'תלמיד'}

@@ -1,3 +1,4 @@
+import { Smartphone } from 'lucide-react';
 import Card from './ui/Card.jsx';
 
 export default function InstallRequired() {
@@ -8,11 +9,17 @@ export default function InstallRequired() {
 
       <div className="w-full max-w-sm space-y-4 text-right">
         <Card padding="p-5" className="border border-black/5">
-          <p className="font-bold text-brand-text mb-1">🤖 אנדרואיד (Chrome)</p>
+          <p className="font-bold text-brand-text mb-1 flex items-center gap-2">
+            <Smartphone size={20} className="text-brand-turquoise shrink-0" />
+            אנדרואיד (Chrome)
+          </p>
           <p className="text-brand-grey-text">לחץ על ⋮ ← הוסף למסך הבית</p>
         </Card>
         <Card padding="p-5" className="border border-black/5">
-          <p className="font-bold text-brand-text mb-1">🍎 אייפון (Safari)</p>
+          <p className="font-bold text-brand-text mb-1 flex items-center gap-2">
+            <Smartphone size={20} className="text-brand-turquoise shrink-0" />
+            אייפון (Safari)
+          </p>
           <p className="text-brand-grey-text">לחץ על □↑ ← הוסף למסך הבית</p>
         </Card>
       </div>

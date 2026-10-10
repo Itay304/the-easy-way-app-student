@@ -1,18 +1,24 @@
 import { collection, doc, getDocs, serverTimestamp, setDoc } from 'firebase/firestore';
+import { Flame, BookOpen, Brain, Trophy, Star, Rocket, Moon, Zap, Target } from 'lucide-react';
 import { db } from '../firebase.js';
 import { isMastered } from './gamification.js';
 
+// icon/accent זוג לכל תג — צבע ייחודי לכל אחד (מצבעי המותג או צבעים חמים,
+// לא אפור), כדי שתגים יהיו מובחנים זה מזה גם בלי לקרוא את הכותרת.
+// שני תגים חולקים משמעותית "ברק" (⚡ בעבר): hundred-words מקבל BookOpen
+// (זה על נפח אוצר מילים, לא מהירות); lightning (20 תשובות נכונות ברצף
+// בסשן אחד) שומר על Zap כי זה ממש על קצב/מהירות — השם "ברק" מתאים אליו.
 export const BADGE_DEFINITIONS = [
-  { id: 'week-streak', icon: '🔥', title: 'שבוע ברצף', description: '7 ימים ברצף' },
-  { id: 'hundred-words', icon: '⚡', title: 'מאה מילים', description: '100 מילים עם ניסיון תרגול' },
-  { id: 'expert', icon: '🧠', title: 'מומחה', description: '50 מילים נכבשות' },
-  { id: 'first-place', icon: '🏆', title: 'מקום ראשון', description: 'הגעת למקום 1 בטבלת המובילים' },
-  { id: 'diligent', icon: '🌟', title: 'שקדן', description: 'תרגלת 30 ימים סה"כ' },
-  { id: 'first-daily-challenge', icon: '🚀', title: 'אתגר ראשון', description: 'השלמת אתגר יומי בפעם הראשונה' },
-  // תגים סודיים — מוצגים כ-"?" ב-BadgeGrid עד שנפתחים.
-  { id: 'night-owl', icon: '🌙', title: 'ינשוף לילה', description: 'תרגלת אחרי השעה 22:00', secret: true },
-  { id: 'lightning', icon: '⚡', title: 'ברק', description: '20 תשובות נכונות ברצף בסשן אחד', secret: true },
-  { id: 'precise', icon: '🎯', title: 'מדויק', description: '100% הצלחה בסשן של 20 מילים ומעלה', secret: true },
+  { id: 'week-streak', icon: Flame, accent: 'bg-amber-50 text-amber-500', title: 'שבוע ברצף', description: '7 ימים ברצף' },
+  { id: 'hundred-words', icon: BookOpen, accent: 'bg-blue-50 text-blue-600', title: 'מאה מילים', description: '100 מילים עם ניסיון תרגול' },
+  { id: 'expert', icon: Brain, accent: 'bg-purple-50 text-purple-600', title: 'מומחה', description: '50 מילים נכבשות' },
+  { id: 'first-place', icon: Trophy, accent: 'bg-yellow-50 text-yellow-600', title: 'מקום ראשון', description: 'הגעת למקום 1 בטבלת המובילים' },
+  { id: 'diligent', icon: Star, accent: 'bg-cyan-50 text-cyan-600', title: 'שקדן', description: 'תרגלת 30 ימים סה"כ' },
+  { id: 'first-daily-challenge', icon: Rocket, accent: 'bg-brand-green/10 text-brand-green', title: 'אתגר ראשון', description: 'השלמת אתגר יומי בפעם הראשונה' },
+  // תגים סודיים — מוצגים עם אייקון HelpCircle ב-BadgeGrid עד שנפתחים.
+  { id: 'night-owl', icon: Moon, accent: 'bg-indigo-50 text-indigo-600', title: 'ינשוף לילה', description: 'תרגלת אחרי השעה 22:00', secret: true },
+  { id: 'lightning', icon: Zap, accent: 'bg-pink-50 text-pink-600', title: 'ברק', description: '20 תשובות נכונות ברצף בסשן אחד', secret: true },
+  { id: 'precise', icon: Target, accent: 'bg-brand-turquoise/10 text-brand-turquoise', title: 'מדויק', description: '100% הצלחה בסשן של 20 מילים ומעלה', secret: true },
 ];
 
 export async function getEarnedBadges(uid) {
@@ -62,8 +68,11 @@ export async function checkAndAwardBadges(uid, params) {
   const newlyEarned = [];
   for (const def of BADGE_DEFINITIONS) {
     if (existingIds.has(def.id) || !eligibility[def.id]) continue;
+    // icon לא נכתב כאן בכוונה: הוא עכשיו קומפוננטת lucide (פונקציה), ו-
+    // Firestore לא יכול לשמור ערך כזה. שום דבר לא קרא בחזרה את השדה הזה
+    // ממילא — Profile.jsx/getEarnedBadges משתמשים רק ב-id (ר' BadgeGrid,
+    // שמציג אייקון/כותרת מ-BADGE_DEFINITIONS המקומי, לא מה-doc ב-Firestore).
     await setDoc(doc(db, 'users', uid, 'badges', def.id), {
-      icon: def.icon,
       title: def.title,
       description: def.description,
       earnedAt: serverTimestamp(),
