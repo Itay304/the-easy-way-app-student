@@ -117,7 +117,7 @@ export default function Profile() {
 
       <SettingsSection />
 
-      <Button variant="danger" size="lg" onClick={() => signOut(auth)}>
+      <Button variant="danger-subtle" size="lg" onClick={() => signOut(auth)}>
         <LogOut size={16} />
         התנתקות
       </Button>
