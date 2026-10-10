@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { REQUIRE_PWA_ON_MOBILE } from '../config.js';
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -10,10 +9,10 @@ function computeIsStandalone() {
 }
 
 /**
- * חוסם גישה לאפליקציה בדפדפן מובייל רגיל (לא PWA מותקנת) — רק מסך
- * "התקן את האפליקציה". isStandalone לא אמור להשתנות תוך כדי session
- * (רק אחרי התקנה מחדש), לכן נקבע פעם אחת; isMobile כן יכול להשתנות
- * (סיבוב מסך/שינוי חלון) ולכן מאזין ל-resize.
+ * מזהה דפדפן מובייל רגיל (לא PWA מותקנת) — לשימוש באנר ההתקנה
+ * (InstallBanner.jsx), לא חוסם גישה לאפליקציה. isStandalone לא אמור
+ * להשתנות תוך כדי session (רק אחרי התקנה מחדש), לכן נקבע פעם אחת;
+ * isMobile כן יכול להשתנות (סיבוב מסך/שינוי חלון) ולכן מאזין ל-resize.
  */
 export default function useInstallGate() {
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < MOBILE_BREAKPOINT);
@@ -27,5 +26,5 @@ export default function useInstallGate() {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  return { requiresInstall: REQUIRE_PWA_ON_MOBILE && isMobile && !isStandalone };
+  return { isMobile, isStandalone };
 }

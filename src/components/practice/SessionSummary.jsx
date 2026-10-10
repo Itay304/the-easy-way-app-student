@@ -2,6 +2,7 @@ import { PartyPopper, Star, CheckCircle2, XCircle, Award } from 'lucide-react';
 import Confetti from './Confetti.jsx';
 import Card from '../ui/Card.jsx';
 import Button from '../ui/Button.jsx';
+import InstallBanner from '../InstallBanner.jsx';
 
 export default function SessionSummary({
   correctCount,
@@ -81,6 +82,8 @@ export default function SessionSummary({
       <Button size="lg" onClick={onDone}>
         סיום
       </Button>
+
+      <InstallBanner />
     </div>
   );
 }

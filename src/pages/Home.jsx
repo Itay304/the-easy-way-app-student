@@ -3,6 +3,7 @@ import { Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { getRankAndTotal, listenTopLeaderboard, getLatestAnnouncement, isAnnouncementRead, markAnnouncementRead } from '../lib/api.js';
 import ErrorBanner from '../components/ErrorBanner.jsx';
+import InstallBanner from '../components/InstallBanner.jsx';
 import AnnouncementBanner from '../components/home/AnnouncementBanner.jsx';
 import LeaderboardCard from '../components/home/LeaderboardCard.jsx';
 import StreakCard from '../components/home/StreakCard.jsx';
@@ -83,6 +84,8 @@ export default function Home() {
         totalStudents={rankInfo?.total ?? null}
         myUid={user.uid}
       />
+
+      <InstallBanner />
     </div>
   );
 }

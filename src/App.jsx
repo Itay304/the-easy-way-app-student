@@ -3,11 +3,9 @@ import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom
 import useAuthRole from './hooks/useAuthRole.js';
 import useBackButtonGuard from './hooks/useBackButtonGuard.js';
 import useSettings from './hooks/useSettings.js';
-import useInstallGate from './hooks/useInstallGate.js';
 import { requestPushPermissionAndSaveToken } from './lib/push.js';
 import { AuthProvider } from './context/AuthContext.jsx';
 import LoadingSpinner from './components/LoadingSpinner.jsx';
-import InstallRequired from './components/InstallRequired.jsx';
 import SplashScreen from './components/SplashScreen.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import Login from './pages/Login.jsx';
@@ -35,7 +33,6 @@ function Layout() {
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
-  const { requiresInstall } = useInstallGate();
   const { status, user, profile } = useAuthRole();
   const { animationsEnabled } = useSettings();
   useBackButtonGuard();
@@ -56,10 +53,6 @@ export default function App() {
   // ואין צורך ב-sessionStorage.
   if (showSplash) {
     return <SplashScreen onDone={() => setShowSplash(false)} />;
-  }
-
-  if (requiresInstall) {
-    return <InstallRequired />;
   }
 
   if (status === 'loading') {
