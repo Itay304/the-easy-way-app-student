@@ -67,6 +67,8 @@ export default function Home() {
         <h1 className="text-h1 font-bold text-brand-text">שלום {profile.displayName}!</h1>
       </div>
 
+      <InstallBanner />
+
       {error && <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />}
 
       <DailyChallengeCard uid={user.uid} />
@@ -84,8 +86,6 @@ export default function Home() {
         totalStudents={rankInfo?.total ?? null}
         myUid={user.uid}
       />
-
-      <InstallBanner />
     </div>
   );
 }
