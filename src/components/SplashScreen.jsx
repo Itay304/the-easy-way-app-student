@@ -17,15 +17,11 @@ export default function SplashScreen({ onDone }) {
 
   return (
     <div
-      className={`fixed inset-0 z-[200] flex items-center justify-center bg-brand-turquoise transition-opacity duration-[400ms] ${
+      className={`fixed inset-0 z-[200] flex items-center justify-center bg-[#E1F3EF] transition-opacity duration-[400ms] ${
         fadingOut ? 'opacity-0' : 'opacity-100'
       }`}
     >
-      <img
-        src="/icons/icon-192.png"
-        alt="EasyLex"
-        className="w-[120px] h-[120px] rounded-3xl shadow-xl animate-splash-logo"
-      />
+      <img src="/logo.svg" alt="Easylex" className="w-[240px] h-auto animate-splash-logo" />
     </div>
   );
 }

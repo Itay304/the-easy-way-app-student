@@ -20,14 +20,15 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
   const { title, body } = payload.notification || {};
-  self.registration.showNotification(title || 'EasyLex', {
+  self.registration.showNotification(title || 'Easylex', {
     body: body || '',
     icon: '/icons/icon-192.png',
     badge: '/icons/icon-192.png',
   });
 });
 
-const CACHE_NAME = 'easylex-student-v1';
+// v2: לוגו Easylex חדש — מחליף אייקונים/manifest שנשמרו ב-cache
+const CACHE_NAME = 'easylex-student-v2';
 const APP_SHELL = ['/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {

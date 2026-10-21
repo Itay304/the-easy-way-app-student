@@ -96,8 +96,8 @@ export default function Login() {
 
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center px-6 py-12">
-      <img src="/icons/icon-192.png" alt="EasyLex" className="h-20 w-20 rounded-2xl shadow-md mb-6" />
-      <h1 className="text-h1 font-bold text-brand-text mb-2">EasyLex — תלמיד</h1>
+      <img src="/logo.svg" alt="Easylex" className="w-56 h-auto mb-6" />
+      <h1 className="text-h1 font-bold text-brand-text mb-2">Easylex — תלמיד</h1>
       <p className="text-brand-grey-text text-body-sm mb-8">
         {mode === 'login' ? 'ברוך הבא! התחבר כדי להמשיך' : 'צור חשבון חדש'}
       </p>

@@ -30,7 +30,7 @@ export default function InstallBanner() {
     <div className="w-full rounded-2xl bg-brand-turquoise/10 border border-brand-turquoise/20 p-4 flex items-start gap-3">
       <Smartphone size={20} className="text-brand-turquoise shrink-0 mt-0.5" />
       <div className="flex-1 min-w-0 space-y-2">
-        <p className="text-brand-text">התקן את EasyLex כדי לשמור על הרצף ולקבל תזכורות</p>
+        <p className="text-brand-text">התקן את Easylex כדי לשמור על הרצף ולקבל תזכורות</p>
         {isIOS ? (
           <p className="text-caption text-brand-grey-text flex items-center gap-1.5">
             <Share size={14} className="shrink-0" />
