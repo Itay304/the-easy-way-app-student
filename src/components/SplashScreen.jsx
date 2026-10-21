@@ -11,11 +11,18 @@ function shouldPlayFull() {
   try {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
     const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD בשעון המקומי
-    if (localStorage.getItem(LAST_FULL_KEY) === today) return false;
-    localStorage.setItem(LAST_FULL_KEY, today);
-    return true;
+    return localStorage.getItem(LAST_FULL_KEY) !== today;
   } catch {
     return false;
+  }
+}
+
+// נשמר רק כשהאנימציה רצה עד הסוף — אם הדף נטען מחדש באמצע (למשל התקנת service worker), היא תרוץ שוב
+function markPlayedFull() {
+  try {
+    localStorage.setItem(LAST_FULL_KEY, new Date().toLocaleDateString('en-CA'));
+  } catch {
+    // localStorage חסום — פשוט ננגן שוב בפעם הבאה
   }
 }
 
@@ -33,9 +40,12 @@ export default function SplashScreen({ ready = false, onDone }) {
   }, [onDone]);
 
   useEffect(() => {
-    const animTimer = setTimeout(() => setFadingOut(true), ANIM_MS);
+    const animTimer = setTimeout(() => {
+      if (playFull) markPlayedFull();
+      setFadingOut(true);
+    }, ANIM_MS);
     return () => clearTimeout(animTimer);
-  }, []);
+  }, [playFull]);
 
   useEffect(() => {
     if (ready && !fadingOut && !playFull) {
