@@ -185,7 +185,7 @@ export default function SprintSession() {
 
   if (error) {
     return (
-      <div className="px-4 pt-6">
+      <div className="px-4 pt-6 lg:px-10">
         <ErrorBanner message={error} />
       </div>
     );
@@ -197,7 +197,7 @@ export default function SprintSession() {
 
   if (pool.length < MIN_POOL_SIZE) {
     return (
-      <div className="px-4 pt-6 text-center py-12 space-y-4">
+      <div className="px-4 pt-6 text-center py-12 space-y-4 lg:px-10">
         <p className="text-brand-grey-text">אין מספיק מילים במשימות הפעילות שלך כדי להתחיל ספרינט.</p>
         <Button variant="ghost" size="sm" onClick={goBack}>
           חזרה לתרגול
@@ -217,20 +217,20 @@ export default function SprintSession() {
           : 'מתחת לממוצע הכיתתי — עוד קצת תרגול!';
 
     return (
-      <div className="px-4 pt-10 flex flex-col items-center text-center space-y-6">
+      <div className="px-4 pt-10 flex flex-col items-center text-center space-y-6 lg:px-10">
         <div className="h-20 w-20 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center">
           <Zap size={48} strokeWidth={2} />
         </div>
         <div>
-          <h1 className="text-h1 font-bold text-brand-text">ספרינט הסתיים!</h1>
+          <h1 className="text-h1 font-bold text-brand-text lg:text-display">ספרינט הסתיים!</h1>
           <p className="text-brand-grey-text mt-1">
             {result.correctCount} מתוך {result.answered} נכון
           </p>
         </div>
 
-        <Card padding="p-6" className="w-full space-y-4">
+        <Card padding="p-6 lg:px-10" className="w-full space-y-4">
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-2 text-brand-grey-text">
+            <span className="flex items-center gap-2 text-brand-grey-text lg:gap-3">
               <Trophy size={16} className="text-amber-500" />
               הדיוק שלך
             </span>
@@ -246,7 +246,7 @@ export default function SprintSession() {
             <span className="text-brand-grey-text">נקודות שהרווחת</span>
             <span className="font-bold text-brand-turquoise">+{result.xpGained} XP</span>
           </div>
-          {comparisonText && <p className="text-body-sm font-semibold text-brand-turquoise pt-2">{comparisonText}</p>}
+          {comparisonText && <p className="text-body-sm font-semibold text-brand-turquoise pt-2 lg:text-body-lg">{comparisonText}</p>}
         </Card>
 
         <Button size="lg" onClick={goBack}>
@@ -263,7 +263,7 @@ export default function SprintSession() {
   const current = pool[index];
 
   return (
-    <div className="px-4 pt-6 space-y-5">
+    <div className="px-4 pt-6 space-y-5 lg:px-10">
       {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
@@ -272,18 +272,18 @@ export default function SprintSession() {
           <ArrowRight size={16} />
           חזרה
         </Button>
-        <span className={`text-h1 font-extrabold tabular-nums ${timerColor(secondsLeft)}`}>{secondsLeft}s</span>
+        <span className={`text-h1 font-extrabold tabular-nums lg:text-display ${timerColor(secondsLeft)}`}>{secondsLeft}s</span>
       </div>
 
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-amber-500 rounded-full transition-all" style={{ width: `${(index / pool.length) * 100}%` }} />
       </div>
-      <p className="text-center text-body-sm text-brand-grey-text">
+      <p className="text-center text-body-sm text-brand-grey-text lg:text-body-lg">
         {index + 1} מתוך {pool.length}
       </p>
 
-      <Card padding="p-8" className="text-center">
-        <p className="text-display font-bold text-brand-text" dir="ltr">
+      <Card padding="p-8 lg:px-12" className="text-center">
+        <p className="text-display font-bold text-brand-text lg:text-display-lg" dir="ltr">
           {current.englishWord}
         </p>
       </Card>
@@ -306,7 +306,7 @@ export default function SprintSession() {
               key={choice}
               onClick={() => selectAnswer(choice)}
               disabled={selected !== null}
-              className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition ${style} ${shakeClass}`}
+              className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition lg:px-6 lg:text-h2 ${style} ${shakeClass}`}
             >
               {choice}
             </button>

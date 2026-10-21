@@ -227,14 +227,14 @@ export default function VariedModule({ words, onFinish, onBack }) {
 
   if (session.length === 0) {
     return (
-      <div className="px-4 pt-6 text-center py-12">
+      <div className="px-4 pt-6 text-center py-12 lg:px-10">
         <p className="text-brand-grey-text">אין מילים זמינות לתרגול המגוון הזה.</p>
       </div>
     );
   }
 
   return (
-    <div className="px-4 pt-6 space-y-5">
+    <div className="px-4 pt-6 space-y-5 lg:px-10">
       {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
@@ -243,7 +243,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
         חזרה
       </Button>
 
-      <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
+      <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center lg:text-body-lg">
         🎯 תרגול מגוון — עכשיו: {MODULE_LABELS[currentType]}
       </p>
 
@@ -252,7 +252,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
-      <p className="text-center text-body-sm text-brand-grey-text">
+      <p className="text-center text-body-sm text-brand-grey-text lg:text-body-lg">
         {index + 1} מתוך {session.length}
       </p>
 
@@ -276,33 +276,33 @@ export default function VariedModule({ words, onFinish, onBack }) {
                 }}
               >
                 <div className={`flip-card-inner ${flipped ? 'is-flipped' : ''}`}>
-                  <div className="flip-card-face rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 flex flex-col items-center justify-center text-center">
-                    <p className="text-display font-bold text-brand-text" dir="ltr">
+                  <div className="flip-card-face rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 flex flex-col items-center justify-center text-center lg:px-12">
+                    <p className="text-display font-bold text-brand-text lg:text-display-lg" dir="ltr">
                       {current.englishWord}
                     </p>
-                    <p className="text-caption text-brand-grey-text mt-4">הקש להיפוך</p>
+                    <p className="text-caption text-brand-grey-text mt-4 lg:text-body-sm">הקש להיפוך</p>
                   </div>
-                  <div className="flip-card-face flip-card-back rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 flex flex-col items-center justify-center text-center">
-                    <p className="text-h1 font-bold text-brand-turquoise mb-3">{current.hebrewTranslation}</p>
+                  <div className="flip-card-face flip-card-back rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 flex flex-col items-center justify-center text-center lg:px-12">
+                    <p className="text-h1 font-bold text-brand-turquoise mb-3 lg:text-display">{current.hebrewTranslation}</p>
                     {current.exampleSentence && (
-                      <p className="text-body-sm text-brand-grey-text" dir="ltr">
+                      <p className="text-body-sm text-brand-grey-text lg:text-body-lg" dir="ltr">
                         {current.exampleSentence}
                       </p>
                     )}
                   </div>
                 </div>
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-3 lg:gap-5">
                 <button
                   onClick={() => answerFlashcard(false)}
-                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold"
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold lg:gap-3"
                 >
                   <X size={16} />
                   לא ידעתי
                 </button>
                 <button
                   onClick={() => answerFlashcard(true)}
-                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold"
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold lg:gap-3"
                 >
                   <Check size={16} />
                   ידעתי
@@ -313,12 +313,12 @@ export default function VariedModule({ words, onFinish, onBack }) {
 
           {currentType === 'quiz' && (
             <>
-              <Card padding="p-8" className="text-center">
-                <p className="text-display font-bold text-brand-text" dir="ltr">
+              <Card padding="p-8 lg:px-12" className="text-center">
+                <p className="text-display font-bold text-brand-text lg:text-display-lg" dir="ltr">
                   {current.englishWord}
                 </p>
               </Card>
-              <div className="space-y-3">
+              <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4">
                 {quizChoices.map((choice) => {
                   const isSelected = selected === choice;
                   const isCorrectChoice = choice === current.hebrewTranslation;
@@ -336,7 +336,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
                       key={choice}
                       onClick={() => answerQuiz(choice)}
                       disabled={selected !== null}
-                      className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition ${style} ${shakeClass}`}
+                      className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition lg:px-6 lg:text-h2 ${style} ${shakeClass}`}
                     >
                       {choice}
                     </button>
@@ -352,7 +352,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
                 key={index}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
-                className={`rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 text-center space-y-3 select-none ${
+                className={`rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 text-center space-y-3 select-none lg:px-12 ${
                   flyDirection === 'right'
                     ? 'animate-card-fly-right'
                     : flyDirection === 'left'
@@ -360,17 +360,17 @@ export default function VariedModule({ words, onFinish, onBack }) {
                       : ''
                 }`}
               >
-                <p className="text-display font-bold text-brand-text" dir="ltr">
+                <p className="text-display font-bold text-brand-text lg:text-display-lg" dir="ltr">
                   {current.englishWord}
                 </p>
-                <p className="text-h2 font-semibold text-brand-turquoise">{trueFalseRound.shownTranslation}</p>
-                <p className="text-caption text-brand-grey-text pt-2">החליקו ימינה = נכון, שמאלה = לא נכון</p>
+                <p className="text-h2 font-semibold text-brand-turquoise lg:text-h1">{trueFalseRound.shownTranslation}</p>
+                <p className="text-caption text-brand-grey-text pt-2 lg:text-body-sm">החליקו ימינה = נכון, שמאלה = לא נכון</p>
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-3 lg:gap-5">
                 <button
                   onClick={() => answerTrueFalse(false)}
                   disabled={!!flyDirection}
-                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold disabled:opacity-50 lg:gap-3"
                 >
                   <X size={16} />
                   לא נכון
@@ -378,7 +378,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
                 <button
                   onClick={() => answerTrueFalse(true)}
                   disabled={!!flyDirection}
-                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold disabled:opacity-50 lg:gap-3"
                 >
                   <Check size={16} />
                   נכון
@@ -389,14 +389,14 @@ export default function VariedModule({ words, onFinish, onBack }) {
 
           {currentType === 'spelling' && (
             <>
-              <Card padding="p-6" className="space-y-3 text-center">
-                <p className="text-h1 font-bold text-brand-turquoise">{current.hebrewTranslation}</p>
+              <Card padding="p-6 lg:px-10" className="space-y-3 text-center">
+                <p className="text-h1 font-bold text-brand-turquoise lg:text-display-lg">{current.hebrewTranslation}</p>
                 {blanked ? (
-                  <p className="text-body text-brand-grey-text" dir="ltr">
+                  <p className="text-body text-brand-grey-text lg:text-body-lg" dir="ltr">
                     {blanked}
                   </p>
                 ) : (
-                  <p className="text-body-sm text-brand-grey-text">השלם/י את המילה באנגלית</p>
+                  <p className="text-body-sm text-brand-grey-text lg:text-body-lg">השלם/י את המילה באנגלית</p>
                 )}
               </Card>
               <div className={`space-y-3 ${shaking ? 'animate-shake' : ''}`} onAnimationEnd={stopShake}>
@@ -408,7 +408,7 @@ export default function VariedModule({ words, onFinish, onBack }) {
                   onKeyDown={(e) => e.key === 'Enter' && submitSpelling()}
                   disabled={feedback === 'correct'}
                   placeholder="הקלד/י את המילה באנגלית..."
-                  className={`w-full rounded-xl border-2 p-4 text-body-lg text-center font-semibold outline-none transition ${
+                  className={`w-full rounded-xl border-2 p-4 text-body-lg text-center font-semibold outline-none transition lg:px-6 lg:text-h2 ${
                     feedback === 'correct'
                       ? 'border-brand-green bg-brand-green/10 text-brand-green'
                       : feedback === 'wrong'
@@ -418,17 +418,17 @@ export default function VariedModule({ words, onFinish, onBack }) {
                 />
                 {feedback === 'wrong' && (
                   <div className="text-center space-y-1">
-                    <p className="flex items-center justify-center gap-1 text-body-sm font-semibold text-brand-error">
+                    <p className="flex items-center justify-center gap-1 text-body-sm font-semibold text-brand-error lg:text-body-lg">
                       <X size={16} />
                       נסה/י שוב
                     </p>
-                    <p className="text-body-sm font-bold text-brand-green" dir="ltr">
+                    <p className="text-body-sm font-bold text-brand-green lg:text-body-lg" dir="ltr">
                       {current.englishWord}
                     </p>
                   </div>
                 )}
                 {feedback === 'correct' && (
-                  <p className="flex items-center justify-center gap-1 text-body-sm font-semibold text-brand-green">
+                  <p className="flex items-center justify-center gap-1 text-body-sm font-semibold text-brand-green lg:text-body-lg">
                     <Check size={16} />
                     נכון!
                   </p>

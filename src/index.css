@@ -43,6 +43,9 @@
   --text-h1--line-height: 1.2;
   --text-display: 30px;
   --text-display--line-height: 1.2;
+  /* מילה ראשית בתרגול במחשב בלבד (lg:text-display-lg, 1024px ומעלה) */
+  --text-display-lg: 46px;
+  --text-display-lg--line-height: 1.15;
 }
 
 html {

@@ -103,14 +103,14 @@ export default function FillSentence({ words, onFinish, onBack, adaptiveBanner }
 
   if (eligibleWords.length < 4) {
     return (
-      <div className="px-4 pt-6 text-center py-12">
+      <div className="px-4 pt-6 text-center py-12 lg:px-10">
         <p className="text-brand-grey-text">אין מספיק משפטי דוגמה לתרגול "השלמת משפט" במשימה זו.</p>
       </div>
     );
   }
 
   return (
-    <div className="px-4 pt-6 space-y-5">
+    <div className="px-4 pt-6 space-y-5 lg:px-10">
       {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
@@ -120,7 +120,7 @@ export default function FillSentence({ words, onFinish, onBack, adaptiveBanner }
       </Button>
 
       {adaptiveBanner && (
-        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
+        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center lg:text-body-lg">
           מתאים את הסשן עבורך 🎯
         </p>
       )}
@@ -130,18 +130,18 @@ export default function FillSentence({ words, onFinish, onBack, adaptiveBanner }
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
-      <p className="text-center text-body-sm text-brand-grey-text">
+      <p className="text-center text-body-sm text-brand-grey-text lg:text-body-lg">
         {index + 1} מתוך {session.length}
       </p>
 
-      <Card padding="p-6" className="text-center">
-        <p className="text-caption text-brand-grey-text mb-2">השלימו את המשפט ✍️</p>
-        <p className="text-body-lg font-semibold text-brand-text" dir="ltr">
+      <Card padding="p-6 lg:px-10" className="text-center">
+        <p className="text-caption text-brand-grey-text mb-2 lg:text-body-sm">השלימו את המשפט ✍️</p>
+        <p className="text-body-lg font-semibold text-brand-text lg:text-h2" dir="ltr">
           {blanked}
         </p>
       </Card>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 lg:gap-5">
         {choices.map((choice) => {
           const isSelected = selected === choice;
           const isCorrectChoice = choice === current.englishWord;
@@ -160,7 +160,7 @@ export default function FillSentence({ words, onFinish, onBack, adaptiveBanner }
               onClick={() => selectAnswer(choice)}
               disabled={selected !== null}
               dir="ltr"
-              className={`rounded-xl shadow-md p-4 font-semibold transition ${style} ${shakeClass}`}
+              className={`rounded-xl shadow-md p-4 font-semibold transition lg:px-6 ${style} ${shakeClass}`}
             >
               {choice}
             </button>

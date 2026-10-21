@@ -18,7 +18,7 @@ export default function SessionSummary({
   const assignmentPct = assignmentTotal > 0 ? Math.round((assignmentMastered / assignmentTotal) * 100) : null;
 
   return (
-    <div className="px-4 pt-10 flex flex-col items-center text-center space-y-6">
+    <div className="px-4 pt-10 flex flex-col items-center text-center space-y-6 lg:px-10">
       <Confetti count={70} durationMs={1500} />
 
       <div className="h-20 w-20 rounded-full bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center">
@@ -26,28 +26,28 @@ export default function SessionSummary({
       </div>
 
       <div>
-        <h1 className="text-h1 font-bold text-brand-text">כל הכבוד! 🎉</h1>
+        <h1 className="text-h1 font-bold text-brand-text lg:text-display">כל הכבוד! 🎉</h1>
         <p className="text-brand-grey-text mt-1">סיימת את התרגול</p>
       </div>
 
       {assignmentPct !== null && (
-        <Card padding="p-5" className="w-full space-y-2">
+        <Card padding="p-5 lg:px-8" className="w-full space-y-2">
           <div className="flex items-center justify-between">
             <span className="font-semibold text-brand-text">התקדמות במשימה</span>
-            <span className="text-body-sm font-bold text-brand-turquoise">{assignmentPct}%</span>
+            <span className="text-body-sm font-bold text-brand-turquoise lg:text-body-lg">{assignmentPct}%</span>
           </div>
           <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
             <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${assignmentPct}%` }} />
           </div>
-          <p className="text-caption text-brand-grey-text">
+          <p className="text-caption text-brand-grey-text lg:text-body-sm">
             {assignmentMastered} מתוך {assignmentTotal} מילים נכבשו
           </p>
         </Card>
       )}
 
-      <Card padding="p-6" className="w-full space-y-4">
+      <Card padding="p-6 lg:px-10" className="w-full space-y-4">
         <div className="flex items-center justify-between">
-          <span className="flex items-center gap-2 text-brand-grey-text">
+          <span className="flex items-center gap-2 text-brand-grey-text lg:gap-3">
             <CheckCircle2 size={16} className="text-brand-green" />
             תשובות נכונות
           </span>
@@ -56,7 +56,7 @@ export default function SessionSummary({
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="flex items-center gap-2 text-brand-grey-text">
+          <span className="flex items-center gap-2 text-brand-grey-text lg:gap-3">
             <XCircle size={16} className="text-brand-error" />
             תשובות שגויות
           </span>
@@ -64,7 +64,7 @@ export default function SessionSummary({
         </div>
         {wordsMasteredCount > 0 && (
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-2 text-brand-grey-text">
+            <span className="flex items-center gap-2 text-brand-grey-text lg:gap-3">
               <Award size={16} className="text-amber-500" />
               מילים שנכבשו
             </span>

@@ -84,7 +84,7 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
   }
 
   return (
-    <div className="px-4 pt-6 space-y-5">
+    <div className="px-4 pt-6 space-y-5 lg:px-10">
       {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
@@ -94,7 +94,7 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
       </Button>
 
       {adaptiveBanner && (
-        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
+        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center lg:text-body-lg">
           מתאים את הסשן עבורך 🎯
         </p>
       )}
@@ -104,12 +104,12 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
-      <p className="text-center text-body-sm text-brand-grey-text">
+      <p className="text-center text-body-sm text-brand-grey-text lg:text-body-lg">
         {index + 1} מתוך {session.length}
       </p>
 
-      <Card padding="p-8" className="text-center">
-        <p className="text-display font-bold text-brand-text" dir="ltr">
+      <Card padding="p-8 lg:px-12" className="text-center">
+        <p className="text-display font-bold text-brand-text lg:text-display-lg" dir="ltr">
           {current.englishWord}
         </p>
       </Card>
@@ -117,7 +117,7 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
       {globalPool === null ? (
         <LoadingSpinner />
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4">
           {choices.map((choice) => {
             const isSelected = selected === choice;
             const isCorrectChoice = choice === current.hebrewTranslation;
@@ -135,7 +135,7 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) 
                 key={choice}
                 onClick={() => selectAnswer(choice)}
                 disabled={selected !== null}
-                className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition ${style} ${shakeClass}`}
+                className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition lg:px-6 lg:text-h2 ${style} ${shakeClass}`}
               >
                 {choice}
               </button>

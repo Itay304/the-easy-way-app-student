@@ -167,7 +167,7 @@ export default function PracticeSession() {
 
   if (error) {
     return (
-      <div className="px-4 pt-6">
+      <div className="px-4 pt-6 lg:px-10">
         <ErrorBanner message={error} />
       </div>
     );
@@ -190,7 +190,7 @@ export default function PracticeSession() {
 
   if (words.length === 0) {
     return (
-      <div className="px-4 pt-6 text-center py-12">
+      <div className="px-4 pt-6 text-center py-12 lg:px-10">
         <p className="text-brand-grey-text">אין מילים זמינות למשימה הזו.</p>
       </div>
     );

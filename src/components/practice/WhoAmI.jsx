@@ -169,7 +169,7 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner }) {
 
   if (eligibleWords.length === 0) {
     return (
-      <div className="px-4 pt-6 text-center py-12">
+      <div className="px-4 pt-6 text-center py-12 lg:px-10">
         <p className="text-brand-grey-text">אין מספיק מידע על מילים לתרגול "מי אני?" במשימה זו.</p>
       </div>
     );
@@ -178,7 +178,7 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner }) {
   const clue3Text = blankSentence(current.exampleSentence, current.englishWord);
 
   return (
-    <div className="px-4 pt-6 space-y-5">
+    <div className="px-4 pt-6 space-y-5 lg:px-10">
       {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
@@ -188,7 +188,7 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner }) {
       </Button>
 
       {adaptiveBanner && (
-        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
+        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center lg:text-body-lg">
           מתאים את הסשן עבורך 🎯
         </p>
       )}
@@ -198,41 +198,41 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner }) {
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
-      <p className="text-center text-body-sm text-brand-grey-text">
+      <p className="text-center text-body-sm text-brand-grey-text lg:text-body-lg">
         {index + 1} מתוך {session.length}
       </p>
 
       <div
-        className={`rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-6 space-y-3 ${shaking ? 'animate-shake' : ''}`}
+        className={`rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-6 space-y-3 lg:px-10 ${shaking ? 'animate-shake' : ''}`}
         onAnimationEnd={stopShake}
       >
-        <p className="text-caption font-semibold text-brand-turquoise text-center">מי אני? 🕵️</p>
+        <p className="text-caption font-semibold text-brand-turquoise text-center lg:text-body-sm">מי אני? 🕵️</p>
 
         <div key={`clue1-${index}`} className="text-center animate-reveal-down">
-          <p className="text-caption text-brand-grey-text mb-1">רמז 1 (3 נק')</p>
-          <p className="text-body font-semibold text-brand-text" dir="ltr">
+          <p className="text-caption text-brand-grey-text mb-1 lg:text-body-sm">רמז 1 (3 נק')</p>
+          <p className="text-body font-semibold text-brand-text lg:text-body-lg" dir="ltr">
             {current.descriptionSentence}
           </p>
         </div>
 
         {clueLevel >= 2 && (
           <div className="text-center animate-reveal-down">
-            <p className="text-caption text-brand-grey-text mb-1">רמז 2 (2 נק')</p>
-            <p className="text-body-lg font-bold text-brand-turquoise">{current.hebrewTranslation}</p>
+            <p className="text-caption text-brand-grey-text mb-1 lg:text-body-sm">רמז 2 (2 נק')</p>
+            <p className="text-body-lg font-bold text-brand-turquoise lg:text-h2">{current.hebrewTranslation}</p>
           </div>
         )}
 
         {clueLevel >= 3 && clue3Text && (
           <div className="text-center animate-reveal-down">
-            <p className="text-caption text-brand-grey-text mb-1">רמז 3 (1 נק')</p>
-            <p className="text-body-sm text-brand-grey-text" dir="ltr">
+            <p className="text-caption text-brand-grey-text mb-1 lg:text-body-sm">רמז 3 (1 נק')</p>
+            <p className="text-body-sm text-brand-grey-text lg:text-body-lg" dir="ltr">
               {clue3Text}
             </p>
           </div>
         )}
 
         {status === 'wrong' && (
-          <p className="text-center text-body-sm font-bold text-brand-green" dir="ltr">
+          <p className="text-center text-body-sm font-bold text-brand-green lg:text-body-lg" dir="ltr">
             {current.englishWord}
           </p>
         )}
@@ -241,7 +241,7 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner }) {
       {status === 'active' && clueLevel < 3 && (
         <button
           onClick={revealNextClue}
-          className="w-full flex items-center justify-center gap-2 py-2 text-body-sm font-semibold text-brand-turquoise"
+          className="w-full flex items-center justify-center gap-2 py-2 text-body-sm font-semibold text-brand-turquoise lg:gap-3 lg:text-body-lg"
         >
           <Lightbulb size={16} />
           רמז נוסף
@@ -258,7 +258,7 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner }) {
             onKeyDown={(e) => e.key === 'Enter' && submitTyping()}
             disabled={status !== 'active'}
             placeholder="מי אני? הקלד/י באנגלית..."
-            className="w-full rounded-xl border-2 border-brand-grey-light focus:border-brand-turquoise p-4 text-body-lg text-center font-semibold outline-none transition"
+            className="w-full rounded-xl border-2 border-brand-grey-light focus:border-brand-turquoise p-4 text-body-lg text-center font-semibold outline-none transition lg:px-6 lg:text-h2"
           />
           <Button size="lg" onClick={submitTyping} disabled={status !== 'active' || !input.trim()}>
             בדוק/י
@@ -276,7 +276,7 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner }) {
                 onClick={() => selectChoice(choice)}
                 disabled={status !== 'active'}
                 dir="ltr"
-                className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition ${style}`}
+                className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition lg:px-6 lg:text-h2 ${style}`}
               >
                 {choice}
               </button>

@@ -111,7 +111,7 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
 
   if (words.length === 0) {
     return (
-      <div className="px-4 pt-6 text-center py-12">
+      <div className="px-4 pt-6 text-center py-12 lg:px-10">
         <p className="text-brand-grey-text">אין מילים זמינות לתרגול נכון/לא נכון במשימה זו.</p>
       </div>
     );
@@ -122,7 +122,7 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
   }
 
   return (
-    <div className="px-4 pt-6 space-y-5">
+    <div className="px-4 pt-6 space-y-5 lg:px-10">
       {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
@@ -132,7 +132,7 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
       </Button>
 
       {adaptiveBanner && (
-        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
+        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center lg:text-body-lg">
           מתאים את הסשן עבורך 🎯
         </p>
       )}
@@ -142,7 +142,7 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
-      <p className="text-center text-body-sm text-brand-grey-text">
+      <p className="text-center text-body-sm text-brand-grey-text lg:text-body-lg">
         {index + 1} מתוך {rounds.length}
       </p>
 
@@ -150,22 +150,22 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
         key={index}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        className={`rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 text-center space-y-3 select-none ${
+        className={`rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 text-center space-y-3 select-none lg:px-12 ${
           flyDirection === 'right' ? 'animate-card-fly-right' : flyDirection === 'left' ? 'animate-card-fly-left' : ''
         }`}
       >
-        <p className="text-display font-bold text-brand-text" dir="ltr">
+        <p className="text-display font-bold text-brand-text lg:text-display-lg" dir="ltr">
           {round.word.englishWord}
         </p>
-        <p className="text-h2 font-semibold text-brand-turquoise">{round.shownTranslation}</p>
-        <p className="text-caption text-brand-grey-text pt-2">החליקו ימינה = נכון, שמאלה = לא נכון</p>
+        <p className="text-h2 font-semibold text-brand-turquoise lg:text-h1">{round.shownTranslation}</p>
+        <p className="text-caption text-brand-grey-text pt-2 lg:text-body-sm">החליקו ימינה = נכון, שמאלה = לא נכון</p>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-3 lg:gap-5">
         <button
           onClick={() => answer(false)}
           disabled={!!flyDirection}
-          className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold disabled:opacity-50"
+          className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold disabled:opacity-50 lg:gap-3"
         >
           <X size={16} />
           לא נכון
@@ -173,7 +173,7 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
         <button
           onClick={() => answer(true)}
           disabled={!!flyDirection}
-          className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold disabled:opacity-50"
+          className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold disabled:opacity-50 lg:gap-3"
         >
           <Check size={16} />
           נכון

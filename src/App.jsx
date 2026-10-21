@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
 import useAuthRole from './hooks/useAuthRole.js';
 import useBackButtonGuard from './hooks/useBackButtonGuard.js';
 import useSettings from './hooks/useSettings.js';
@@ -18,10 +18,17 @@ import SprintSession from './pages/SprintSession.jsx';
 import Statistics from './pages/Statistics.jsx';
 import Profile from './pages/Profile.jsx';
 
+// מסכי תרגול (סשן מודול/ספרינט + סיכום) מקבלים פריסה רחבה במחשב (lg = 1024px ומעלה), כדי
+// שהתרגול ימלא את המסך ולא ייראה כמו מסך טלפון. מתחת ל-1024px — ללא שינוי (480px כמו תמיד).
+// שאר האפליקציה (בית, פרופיל, בחירת מודול, ניווט) נשארת ברוחב 480px גם במחשב.
+const WIDE_PRACTICE_ROUTE = /^\/(practice\/[^/]+\/[^/]+|sprint)\/?$/;
+
 function Layout() {
+  const { pathname } = useLocation();
+  const widePractice = WIDE_PRACTICE_ROUTE.test(pathname);
   return (
     <div className="min-h-dvh flex flex-col md:bg-gradient-to-b md:from-brand-grey-light md:to-white">
-      <main className="flex-1 max-w-[480px] w-full mx-auto pb-24 md:py-6">
+      <main className={`flex-1 max-w-[480px] w-full mx-auto pb-24 md:py-6 ${widePractice ? 'lg:max-w-4xl' : ''}`}>
         <div className="md:rounded-3xl md:bg-white md:shadow-lg md:min-h-[calc(100dvh-3rem)]">
           <Outlet />
         </div>

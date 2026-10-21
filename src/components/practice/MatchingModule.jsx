@@ -260,14 +260,14 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
 
   if (targetWords.length === 0) {
     return (
-      <div className="px-4 pt-6 text-center py-12">
+      <div className="px-4 pt-6 text-center py-12 lg:px-10">
         <p className="text-brand-grey-text">אין משפטי תיאור זמינים לתרגול התאמה במשימה זו.</p>
       </div>
     );
   }
 
   return (
-    <div className="px-4 pt-6 space-y-4">
+    <div className="px-4 pt-6 space-y-4 lg:px-10">
       {confettiKey && <Confetti key={confettiKey} count={30} durationMs={1000} />}
       {xpFlyup && <XpFlyup amount={xpFlyup.amount} flyKey={xpFlyup.key} />}
 
@@ -292,7 +292,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
       </Button>
 
       {adaptiveBanner && (
-        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center">
+        <p className="text-body-sm font-semibold text-brand-turquoise bg-brand-turquoise/10 rounded-xl px-3 py-2 text-center lg:text-body-lg">
           מתאים את הסשן עבורך 🎯
         </p>
       )}
@@ -303,7 +303,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
         <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
       <div className="flex items-center justify-center gap-2.5">
-        <p className="text-body-sm text-brand-grey-text">
+        <p className="text-body-sm text-brand-grey-text lg:text-body-lg">
           סבב {roundIndex + 1} מתוך {rounds.length}
         </p>
         <div className="flex items-center gap-1">
@@ -321,9 +321,9 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
           ))}
         </div>
       </div>
-      <p className="text-center text-caption text-brand-grey-text">גררו מילה למשפט המתאים, או הקישו על מילה ואז על משפט</p>
+      <p className="text-center text-caption text-brand-grey-text lg:text-body-sm">גררו מילה למשפט המתאים, או הקישו על מילה ואז על משפט</p>
 
-      <div className="grid grid-cols-[62fr_38fr] gap-3">
+      <div className="grid grid-cols-[62fr_38fr] gap-3 lg:gap-5">
         {/* עמודה ימנית (ראשונה ב-DOM, dir=rtl הופך אותה לימין) — משפטי תיאור, ממוספרים וקבועים */}
         <div className="space-y-2">
           {round.sentences.map((sentence, i) => {
@@ -337,10 +337,10 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                   ref={(el) => {
                     sentenceRefs.current[i] = el;
                   }}
-                  className="rounded-xl bg-brand-grey-light/70 px-3 py-1.5 flex items-center gap-2 select-none"
+                  className="rounded-xl bg-brand-grey-light/70 px-3 py-1.5 flex items-center gap-2 select-none lg:gap-3"
                 >
                   <Check size={16} className="text-brand-green shrink-0" />
-                  <span className="text-body-sm font-semibold text-brand-text/60 truncate" dir="ltr">
+                  <span className="text-body-sm font-semibold text-brand-text/60 truncate lg:text-body-lg" dir="ltr">
                     {sentence.englishWord}
                   </span>
                 </div>
@@ -354,18 +354,18 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                   ref={(el) => {
                     sentenceRefs.current[i] = el;
                   }}
-                  className="rounded-xl bg-brand-error-light text-brand-error p-2.5 select-none"
+                  className="rounded-xl bg-brand-error-light text-brand-error p-2.5 select-none lg:px-4"
                 >
-                  <div className="flex items-start gap-2">
-                    <span className="shrink-0 w-5 h-5 rounded-full bg-brand-error-light text-brand-error text-caption font-bold flex items-center justify-center">
+                  <div className="flex items-start gap-2 lg:gap-3">
+                    <span className="shrink-0 w-5 h-5 rounded-full bg-brand-error-light text-brand-error text-caption font-bold flex items-center justify-center lg:text-body-sm">
                       {i + 1}
                     </span>
-                    <p className="text-body-sm leading-[1.35] font-semibold flex-1" dir="ltr">
+                    <p className="text-body-sm leading-[1.35] font-semibold flex-1 lg:text-body-lg" dir="ltr">
                       {sentence.descriptionSentence}
                     </p>
                     <X size={16} className="text-brand-error shrink-0" />
                   </div>
-                  <p className="text-caption font-bold mt-1 mr-7" dir="ltr">
+                  <p className="text-caption font-bold mt-1 mr-7 lg:text-body-sm" dir="ltr">
                     {sentence.englishWord}
                   </p>
                 </div>
@@ -379,22 +379,22 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                   sentenceRefs.current[i] = el;
                 }}
                 onClick={() => handleSentenceTap(i)}
-                className={`rounded-xl border-2 border-dashed p-2.5 transition select-none ${
+                className={`rounded-xl border-2 border-dashed p-2.5 lg:px-4 transition select-none ${
                   isHovered
                     ? 'bg-brand-turquoise/10 border-solid border-brand-turquoise'
                     : `bg-white border-brand-turquoise/25 ${isTappable ? 'cursor-pointer' : ''}`
                 }`}
               >
-                <div className="flex items-start gap-2">
-                  <span className="shrink-0 w-5 h-5 rounded-full bg-brand-turquoise/10 text-brand-turquoise text-caption font-bold flex items-center justify-center">
+                <div className="flex items-start gap-2 lg:gap-3">
+                  <span className="shrink-0 w-5 h-5 rounded-full bg-brand-turquoise/10 text-brand-turquoise text-caption font-bold flex items-center justify-center lg:text-body-sm">
                     {i + 1}
                   </span>
-                  <p className="text-body-sm leading-[1.35] font-semibold flex-1" dir="ltr">
+                  <p className="text-body-sm leading-[1.35] font-semibold flex-1 lg:text-body-lg" dir="ltr">
                     {sentence.descriptionSentence}
                   </p>
                 </div>
                 <p
-                  className={`text-caption mt-1 mr-7 font-semibold transition ${
+                  className={`text-caption mt-1 mr-7 font-semibold transition lg:text-body-sm ${
                     isHovered ? 'text-brand-turquoise' : 'text-brand-grey-text/50'
                   }`}
                 >
@@ -407,7 +407,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
 
         {/* עמודה שמאלית — כרטיסיות מילים לגרירה/הקשה, מתפרסות לאורך כל
         גובה עמודת המשפטים (justify-between) כדי שלא יישאר שטח ריק מתחתן */}
-        <div className="h-full flex flex-col justify-between gap-2">
+        <div className="h-full flex flex-col justify-between gap-2 lg:gap-3">
           {round.words.map((wordEnglish) => {
             const isUsed = usedWords.has(wordEnglish);
             const isFlashing = flashWrong === wordEnglish;
@@ -434,7 +434,7 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
                   const rect = e.currentTarget.getBoundingClientRect();
                   beginDrag(wordEnglish, t.clientX, t.clientY, rect);
                 }}
-                className={`touch-none select-none rounded-lg border-2 px-2 py-2 font-semibold text-center text-body-sm flex items-center justify-center gap-1 transition ${style} ${
+                className={`touch-none select-none rounded-lg border-2 px-2 py-2 font-semibold text-center text-body-sm flex items-center justify-center gap-1 transition lg:text-body-lg ${style} ${
                   isFlashing ? 'animate-shake' : ''
                 } ${isDragging ? 'opacity-0' : ''} ${!isUsed ? 'cursor-grab active:cursor-grabbing' : ''}`}
                 dir="ltr"
