@@ -59,7 +59,7 @@ export default function App() {
   // Router client-side), רק ב-reload/כניסה מחדש, כך ש-state רגיל מספיק
   // ואין צורך ב-sessionStorage.
   if (showSplash) {
-    return <SplashScreen onDone={() => setShowSplash(false)} />;
+    return <SplashScreen ready={status !== 'loading'} onDone={() => setShowSplash(false)} />;
   }
 
   if (status === 'loading') {

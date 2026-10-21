@@ -210,18 +210,111 @@ h3 {
   animation: card-fly-left 0.5s ease-in forwards;
 }
 
-@keyframes splash-logo {
+/* אנימציית הלוגו במסך הטעינה (SplashLogo.jsx) — סה"כ 1.2 שניות:
+   0–0.48s העמודים והכריכות נפתחים מהשדרה לצדדים, 0.35–0.74s הסמן נוחת ו"לוחץ",
+   0.62–0.9s קווי הלחיצה, 0.55–1.2s האותיות E→x אחת אחרי השנייה.
+   .is-skipped = האפליקציה מוכנה לפני הסוף: קופצים ישר ללוגו הסופי. */
+.splash-logo #book > *,
+.splash-logo #cursor,
+.splash-logo #wordmark > * {
+  transform-box: fill-box;
+}
+.splash-logo #page-left,
+.splash-logo #cover-left {
+  transform-origin: right center;
+  animation: splash-open 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.splash-logo #page-right,
+.splash-logo #cover-right {
+  transform-origin: left center;
+  animation: splash-open 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.splash-logo #cover-left,
+.splash-logo #cover-right {
+  animation-delay: 0.08s;
+}
+@keyframes splash-open {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* קצה הסמן בפינה השמאלית-עליונה שלו — הלחיצה מתכווצת לכיוונו */
+.splash-logo #cursor {
+  transform-origin: left top;
+  animation: splash-cursor 0.39s ease-out 0.35s both;
+}
+@keyframes splash-cursor {
   0% {
-    transform: scale(0);
+    transform: translate(-8px, -20px) scale(1);
     opacity: 0;
   }
+  64% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  80% {
+    transform: translate(0, 0) scale(0.88);
+  }
   100% {
-    transform: scale(1);
+    transform: translate(0, 0) scale(1);
     opacity: 1;
   }
 }
-.animate-splash-logo {
-  animation: splash-logo 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+.splash-logo #click-lines {
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 302px 133px;
+  animation: splash-click 0.28s ease-out 0.62s both;
+}
+@keyframes splash-click {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  35% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+.splash-logo #wordmark > * {
+  animation: splash-letter 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.splash-logo #letter-E { animation-delay: 0.55s; }
+.splash-logo #letter-a { animation-delay: 0.615s; }
+.splash-logo #letter-s { animation-delay: 0.68s; }
+.splash-logo #letter-y { animation-delay: 0.745s; }
+.splash-logo #letter-l { animation-delay: 0.81s; }
+.splash-logo #letter-e { animation-delay: 0.875s; }
+.splash-logo #letter-x { animation-delay: 0.94s; }
+@keyframes splash-letter {
+  from {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.splash-logo.is-skipped *,
+.splash-logo.is-skipped {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .splash-logo * {
+    animation: none !important;
+  }
 }
 
 .no-animations * {
