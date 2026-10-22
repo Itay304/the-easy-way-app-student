@@ -10,6 +10,7 @@ import {
 } from '../lib/api.js';
 import { withBaseline } from '../lib/progressSync.js';
 import { createSessionRecorder } from '../lib/sessionRecorder.js';
+import { createAssignmentTracker, loadStudentProgress } from '../lib/assignmentProgress.js';
 import { applyAdaptiveOrder } from '../lib/adaptivePractice.js';
 import { computeAssignmentMastery } from '../lib/assignmentMastery.js';
 import { checkAndAwardBadges } from '../lib/badges.js';
@@ -73,6 +74,7 @@ export default function PracticeSession() {
   const [badgeQueue, setBadgeQueue] = useState([]);
   const sessionStartRef = useRef(Date.now());
   const recorderRef = useRef(null);
+  const trackerRef = useRef(null); // התקדמות במשימה (שלבים) — רק בתרגול המגוון של המשימה, לא בתרגול חופשי
   const sessionRef = useRef([]);
   const finishedRef = useRef(false);
   useBackgroundMusic();
@@ -109,7 +111,20 @@ export default function PracticeSession() {
           return;
         }
         if (!cancelled) setAssignment(found);
-        recorderRef.current = createSessionRecorder({ uid: user.uid, assignmentId });
+        if (module === 'varied' && profile?.institutionId) {
+          const initial = await loadStudentProgress(profile.institutionId, found.assignmentId, user.uid);
+          trackerRef.current = createAssignmentTracker({
+            institutionId: profile.institutionId,
+            assignment: found,
+            uid: user.uid,
+            initialWords: initial.words,
+          });
+        }
+        recorderRef.current = createSessionRecorder({
+          uid: user.uid,
+          assignmentId,
+          extraWritesFor: trackerRef.current ? (deltas) => trackerRef.current.extraWritesFor(deltas) : undefined,
+        });
         let sessionWords = await buildSessionWords(found, user.uid, profile?.institutionId);
         let adaptive = false;
         if (ADAPTIVE_MODULES.has(module)) {
@@ -144,6 +159,7 @@ export default function PracticeSession() {
     try {
       recorderRef.current.update(finalWords);
       await recorderRef.current.flush();
+      await trackerRef.current?.markSessionComplete();
       const gamification =
         (finishBonusXp > 0 ? await applySessionGamification(user.uid, { xpGained: finishBonusXp }) : null) ||
         recorderRef.current.gamification();
