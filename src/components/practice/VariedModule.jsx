@@ -36,8 +36,13 @@ function blankSentence(sentence, word) {
   return sentence.replace(re, '_____');
 }
 
-export default function VariedModule({ words, onFinish, onBack, onProgress }) {
-  const [session, setSession] = useState(() => shuffle(words).map((w) => ({ ...w })));
+// ordered — סדר שנקבע מראש (בונה הסבב של המשימה: חדשות קודם, כך שהן נופלות על הכרטיסיות).
+// requeueMistakes — מילה שנענתה בטעות חוזרת פעם אחת נוספת בסוף הסבב (עד MAX_REPEATS בסבב).
+const MAX_REPEATS = 4;
+
+export default function VariedModule({ words, onFinish, onBack, onProgress, ordered = false, requeueMistakes = false }) {
+  const [session, setSession] = useState(() => (ordered ? words : shuffle(words)).map((w) => ({ ...w })));
+  const repeatsRef = useRef(0);
   // התקדמות מצטברת לכל מילה → PracticeSession שומר תוך כדי (גם ביציאה באמצע), לא רק בסוף
   useEffect(() => onProgress?.(session), [session, onProgress]);
   const [globalPool, setGlobalPool] = useState(null);
@@ -88,13 +93,20 @@ export default function VariedModule({ words, onFinish, onBack, onProgress }) {
 
   const blanked = currentType === 'spelling' && current ? blankSentence(current.exampleSentence, current.englishWord) : null;
 
+  // מוסיף עותק של המילה לסוף הסבב — פעם אחת לכל מילה, עד MAX_REPEATS בסבב
+  function requeue(nextSession, entry) {
+    if (!requeueMistakes || entry._repeat || repeatsRef.current >= MAX_REPEATS) return nextSession;
+    repeatsRef.current += 1;
+    return [...nextSession, { ...entry, _repeat: true }];
+  }
+
   function finishIfDone(nextSession, nextCorrectCount, nextMasteredCount) {
-    if (index + 1 >= session.length) {
+    if (index + 1 >= nextSession.length) {
       onFinish({
         finalWords: nextSession,
         correctCount: nextCorrectCount,
         wordsMasteredCount: nextMasteredCount,
-        moduleComplete: nextCorrectCount / session.length >= 0.6,
+        moduleComplete: nextCorrectCount / nextSession.length >= 0.6,
         maxCombo: getMaxCombo(),
       });
       return true;
@@ -124,8 +136,9 @@ export default function VariedModule({ words, onFinish, onBack, onProgress }) {
     const after = masteryLevel(updated.correctAttempts, updated.totalAttempts);
     const justMastered = isCorrect && before < 5 && after === 5;
 
-    const nextSession = [...session];
+    let nextSession = [...session];
     nextSession[index] = updated;
+    if (!isCorrect) nextSession = requeue(nextSession, updated);
     setSession(nextSession);
 
     const nextCorrectCount = correctCount + (isCorrect ? 1 : 0);
@@ -219,8 +232,9 @@ export default function VariedModule({ words, onFinish, onBack, onProgress }) {
     shake();
     if (!wrongOnce) {
       const updated = { ...current, totalAttempts: current.totalAttempts + 1, module: 'spelling', correct: false };
-      const nextSession = [...session];
+      let nextSession = [...session];
       nextSession[index] = updated;
+      nextSession = requeue(nextSession, updated);
       setSession(nextSession);
       setWrongOnce(true);
       registerAnswer(false);

@@ -12,7 +12,8 @@ import { withBaseline } from '../lib/progressSync.js';
 import { createSessionRecorder } from '../lib/sessionRecorder.js';
 import { createAssignmentTracker, loadStudentProgress } from '../lib/assignmentProgress.js';
 import { applyAdaptiveOrder } from '../lib/adaptivePractice.js';
-import { computeAssignmentMastery } from '../lib/assignmentMastery.js';
+import { buildSession, dayKey, daySummary, stagesFor } from '../lib/stages.js';
+import { statusFrom } from '../lib/assignmentStatus.js';
 import { checkAndAwardBadges } from '../lib/badges.js';
 import { updateDailyChallengeProgress } from '../lib/dailyChallenge.js';
 import useBackgroundMusic from '../hooks/useBackgroundMusic.js';
@@ -34,6 +35,7 @@ import BadgeUnlockToast from '../components/practice/BadgeUnlockToast.jsx';
 // לא spelling — לפי הבקשה המפורשת.
 const ADAPTIVE_MODULES = new Set(['flashcards', 'quiz']);
 const NIGHT_OWL_HOUR = 22;
+const EXTRA_SESSION_XP = 30; // סבב נוסף מעבר ליעד היומי
 
 async function buildSessionWords(assignment, uid, institutionId) {
   const allWords = await getWordsForAssignment(assignment, institutionId);
@@ -75,6 +77,7 @@ export default function PracticeSession() {
   const sessionStartRef = useRef(Date.now());
   const recorderRef = useRef(null);
   const trackerRef = useRef(null); // התקדמות במשימה (שלבים) — רק בתרגול המגוון של המשימה, לא בתרגול חופשי
+  const stageRef = useRef(null); // { stages, before, sessions, today } — לבניית הסבב ולסיכום היום
   const sessionRef = useRef([]);
   const finishedRef = useRef(false);
   useBackgroundMusic();
@@ -111,7 +114,8 @@ export default function PracticeSession() {
           return;
         }
         if (!cancelled) setAssignment(found);
-        if (module === 'varied' && profile?.institutionId) {
+        const stageMode = module === 'varied' && Boolean(profile?.institutionId);
+        if (stageMode) {
           const initial = await loadStudentProgress(profile.institutionId, found.assignmentId, user.uid);
           trackerRef.current = createAssignmentTracker({
             institutionId: profile.institutionId,
@@ -119,6 +123,7 @@ export default function PracticeSession() {
             uid: user.uid,
             initialWords: initial.words,
           });
+          stageRef.current = { before: structuredClone(initial.words), sessions: initial.sessions, today: dayKey() };
         }
         recorderRef.current = createSessionRecorder({
           uid: user.uid,
@@ -126,6 +131,14 @@ export default function PracticeSession() {
           extraWritesFor: trackerRef.current ? (deltas) => trackerRef.current.extraWritesFor(deltas) : undefined,
         });
         let sessionWords = await buildSessionWords(found, user.uid, profile?.institutionId);
+        if (stageMode) {
+          // סבב של המשימה: מילים חדשות מהשלב הנוכחי + חזרה, עד 16 (lib/stages.js), בסדר שנקבע
+          const stages = stagesFor(found.wordIds?.length ? found.wordIds : sessionWords.map((w) => w.wordId), found.stagePlan);
+          stageRef.current.stages = stages;
+          const byId = new Map(sessionWords.map((w) => [w.wordId, w]));
+          const items = buildSession({ stages, words: stageRef.current.before, today: stageRef.current.today });
+          sessionWords = items.map((it) => byId.get(it.wordId)).filter(Boolean);
+        }
         let adaptive = false;
         if (ADAPTIVE_MODULES.has(module)) {
           const ordered = applyAdaptiveOrder(sessionWords);
@@ -151,11 +164,15 @@ export default function PracticeSession() {
   async function handleFinish({ finalWords, correctCount, wordsMasteredCount, moduleComplete, bonusXp = 0, maxCombo = 0 }) {
     finishedRef.current = true;
     // ה-XP על תשובות נכונות (10 לכל אחת) כבר נכתב בשמירות הביניים; כאן רק הבונוסים של סוף הסבב
-    const finishBonusXp = wordsMasteredCount * 100 + (moduleComplete ? 50 : 0) + bonusXp;
+    // סבב נוסף אחרי שהיעד היומי כבר הושג → בונוס
+    const st = stageRef.current;
+    const goalBefore = st ? statusFrom({ assignment, stages: st.stages, words: st.before, sessions: st.sessions }) : null;
+    const extraSessionXp = goalBefore && goalBefore.sessionsToday >= goalBefore.goal.sessions ? EXTRA_SESSION_XP : 0;
+    const finishBonusXp = wordsMasteredCount * 100 + (moduleComplete ? 50 : 0) + bonusXp + extraSessionXp;
     const xpGained = correctCount * 10 + finishBonusXp;
     const secondsPracticed = Math.round((Date.now() - sessionStartRef.current) / 1000);
     const sessionAccuracy = finalWords.length > 0 ? correctCount / finalWords.length : 0;
-    let assignmentMastery = null;
+    let stageSummary = null;
     try {
       recorderRef.current.update(finalWords);
       await recorderRef.current.flush();
@@ -170,10 +187,25 @@ export default function PracticeSession() {
         sessionAccuracy,
       });
 
-      // allProgress נטען אחרי syncSession כדי לשקף את התוצאות המעודכנות של
-      // הסשן הזה — גם ל-badges וגם להתקדמות-במשימה שמוצגת ב-SessionSummary.
+      // allProgress נטען אחרי השמירה כדי לשקף את הסבב הזה (לתגים)
       const allProgress = await getAllProgress(user.uid);
-      assignmentMastery = await computeAssignmentMastery(allProgress, assignment, profile?.institutionId);
+
+      // סיכום היום במשימה: מה נלמד, מה חוזר מחר, השלב והיעד היומי אחרי הסבב
+      if (st && trackerRef.current) {
+        const after = trackerRef.current.words();
+        const sessions = { ...st.sessions, [st.today]: (st.sessions[st.today] || 0) + 1 };
+        const statusAfter = statusFrom({ assignment, stages: st.stages, words: after, sessions });
+        const day = daySummary(st.stages, st.before, after, st.today);
+        stageSummary = {
+          learned: day.becameKnown.map((id) => after[id]?.en).filter(Boolean),
+          firstSeen: day.firstSeen.length,
+          tomorrowReview: day.tomorrowReview,
+          progress: statusAfter.progress,
+          sessionsToday: statusAfter.sessionsToday,
+          goalSessions: statusAfter.goal.sessions,
+          extraSessionXp,
+        };
+      }
 
       if (gamification && profile?.institutionId) {
         const rankInfo = await getRankAndTotal(profile.institutionId, gamification.totalXp);
@@ -199,8 +231,7 @@ export default function PracticeSession() {
       total: finalWords.length,
       xpGained,
       wordsMasteredCount,
-      assignmentMastered: assignmentMastery?.mastered ?? null,
-      assignmentTotal: assignmentMastery?.total ?? null,
+      stageSummary,
     });
   }
 
@@ -271,7 +302,7 @@ export default function PracticeSession() {
   if (module === 'fillsentence')
     return <FillSentence words={words} onFinish={handleFinish} onBack={goBack} onProgress={handleProgress} />;
   if (module === 'varied')
-    return <VariedModule words={words} onFinish={handleFinish} onBack={goBack} onProgress={handleProgress} />;
+    return <VariedModule words={words} onFinish={handleFinish} onBack={goBack} onProgress={handleProgress} ordered={Boolean(stageRef.current)} requeueMistakes={Boolean(stageRef.current)} />;
 
   return null;
 }

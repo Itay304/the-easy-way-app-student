@@ -1,11 +1,13 @@
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
 import Card from '../ui/Card.jsx';
 
-export default function AssignmentDonut({ title, mastered, total }) {
-  const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
+// משימה בסטטיסטיקה: עיגול של מילים ידועות מתוך כל מילות המשימה — במרכז מספר המילים הידועות,
+// לא אחוז. progress מ-stageProgress (lib/stages.js).
+export default function AssignmentDonut({ title, progress }) {
+  const { knownWords, totalWords, current, perStage, complete } = progress;
   const data = [
-    { name: 'mastered', value: mastered },
-    { name: 'remaining', value: Math.max(total - mastered, 0) },
+    { name: 'known', value: knownWords },
+    { name: 'remaining', value: Math.max(totalWords - knownWords, 0) },
   ];
 
   return (
@@ -19,14 +21,17 @@ export default function AssignmentDonut({ title, mastered, total }) {
             </Pie>
           </PieChart>
         </ResponsiveContainer>
-        <span className="absolute inset-0 flex items-center justify-center text-caption font-bold text-brand-text">
-          {pct}%
+        <span className="absolute inset-0 flex items-center justify-center text-body-sm font-bold text-brand-text">
+          {knownWords}
         </span>
       </div>
       <div className="min-w-0">
         <p className="font-semibold text-brand-text truncate">{title}</p>
         <p className="text-body-sm text-brand-grey-text mt-0.5">
-          {mastered} מתוך {total} מילים נכבשו
+          {knownWords} מילים ידועות מתוך {totalWords}
+        </p>
+        <p className="text-caption text-brand-grey-text">
+          {complete ? 'כל המילים ידועות! 🎉' : `שלב ${current + 1} מתוך ${perStage.length}`}
         </p>
       </div>
     </Card>

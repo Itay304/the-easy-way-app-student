@@ -3,8 +3,8 @@ import { signOut } from 'firebase/auth';
 import { LogOut, Flame, CheckCircle2 } from 'lucide-react';
 import { auth } from '../firebase.js';
 import { useAuth } from '../context/AuthContext.jsx';
-import { callGetMyAssignments, getAllProgress, getClass, getInstitution } from '../lib/api.js';
-import { computeAssignmentMastery } from '../lib/assignmentMastery.js';
+import { callGetMyAssignments, getClass, getInstitution } from '../lib/api.js';
+import { loadAssignmentStatus } from '../lib/assignmentStatus.js';
 import { levelProgress } from '../lib/gamification.js';
 import { getEarnedBadges } from '../lib/badges.js';
 import { Skeleton } from '../components/Skeleton.jsx';
@@ -30,17 +30,17 @@ export default function Profile() {
     async function load() {
       setError('');
       try {
-        const [classDoc, institutionDoc, assignmentsRes, allProgress, badges] = await Promise.all([
+        const [classDoc, institutionDoc, assignmentsRes, badges] = await Promise.all([
           profile.classIds.length > 0 ? getClass(profile.institutionId, profile.classIds[0]) : Promise.resolve(null),
           getInstitution(profile.institutionId),
           callGetMyAssignments(),
-          getAllProgress(user.uid),
           getEarnedBadges(user.uid),
         ]);
 
         const active = assignmentsRes.data.assignments.filter((a) => a.status === 'active');
-        const results = await Promise.all(active.map((a) => computeAssignmentMastery(allProgress, a, profile?.institutionId)));
-        const completed = results.filter((r) => r.total > 0 && r.mastered >= r.total).length;
+        // משימה שהושלמה = כל המילים בה ידועות (ברמת המשימה)
+        const results = await Promise.all(active.map((a) => loadAssignmentStatus(a, profile?.institutionId, user.uid)));
+        const completed = results.filter((r) => r.progress.complete).length;
 
         if (!cancelled) {
           setClassName(classDoc?.name || null);
