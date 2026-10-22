@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowRight, Check, X } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
 import useCelebration from '../../hooks/useCelebration.js';
@@ -8,10 +8,12 @@ import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
 import Button from '../ui/Button.jsx';
 
-export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBanner }) {
+export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBanner, onProgress }) {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [session, setSession] = useState(() => words.map((w) => ({ ...w })));
+  // התקדמות מצטברת לכל מילה → PracticeSession שומר תוך כדי (גם ביציאה באמצע), לא רק בסוף
+  useEffect(() => onProgress?.(session), [session, onProgress]);
   const [correctCount, setCorrectCount] = useState(0);
   const [masteredCount, setMasteredCount] = useState(0);
   const { confettiKey, xpFlyup, shaking, celebrate, shake, stopShake } = useCelebration();

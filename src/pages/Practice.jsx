@@ -10,7 +10,7 @@ import EmptyState from '../components/EmptyState.jsx';
 import AssignmentProgressCard from '../components/practice/AssignmentProgressCard.jsx';
 
 export default function Practice() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [assignments, setAssignments] = useState(null);
   const [error, setError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
@@ -27,7 +27,7 @@ export default function Practice() {
         ]);
         const active = assignmentsRes.data.assignments.filter((a) => a.status === 'active');
         const withProgress = await Promise.all(
-          active.map(async (a) => ({ assignment: a, ...(await computeAssignmentMastery(allProgress, a)) })),
+          active.map(async (a) => ({ assignment: a, ...(await computeAssignmentMastery(allProgress, a, profile?.institutionId)) })),
         );
         if (!cancelled) setAssignments(withProgress);
       } catch (err) {
@@ -40,7 +40,7 @@ export default function Practice() {
     return () => {
       cancelled = true;
     };
-  }, [user, reloadKey]);
+  }, [user, reloadKey, profile?.institutionId]);
 
   return (
     <div className="px-4 pt-6 space-y-5">

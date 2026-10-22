@@ -4,13 +4,13 @@ import { Zap, ArrowRight, Trophy } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import {
   callGetMyAssignments,
-  getWordsForList,
+  getWordsForAssignment,
   getAllProgress,
   applySessionGamification,
   getRankAndTotal,
   getClassAverageAccuracy,
 } from '../lib/api.js';
-import { syncSession } from '../lib/progressSync.js';
+import { syncSession, withBaseline } from '../lib/progressSync.js';
 import { checkAndAwardBadges } from '../lib/badges.js';
 import { buildChoices, shuffle } from '../lib/quizChoices.js';
 import useCelebration from '../hooks/useCelebration.js';
@@ -28,27 +28,29 @@ const SPRINT_WORD_COUNT = 10;
 const MIN_POOL_SIZE = 4;
 const NIGHT_OWL_HOUR = 22;
 
-async function buildSprintPool(uid) {
+async function buildSprintPool(uid, institutionId) {
   const res = await callGetMyAssignments();
   const active = res.data.assignments.filter((a) => a.status === 'active');
   if (active.length === 0) return [];
 
-  const uniqueListIds = [...new Set(active.map((a) => a.listId).filter(Boolean))];
+  // רשימה אחת לכל listId (גלובלית או מוסדית — getWordsForAssignment)
+  const byList = new Map(active.filter((a) => a.listId).map((a) => [a.listId, a]));
   const [wordLists, allProgress] = await Promise.all([
-    Promise.all(uniqueListIds.map((listId) => getWordsForList(listId))),
+    Promise.all([...byList.values()].map((a) => getWordsForAssignment(a, institutionId))),
     getAllProgress(uid),
   ]);
   const progressByKey = new Map(allProgress.map((p) => [`${p.sourceListId}::${p.englishWord}`, p]));
 
   const allWords = wordLists.flat().map((w) => {
     const baseline = progressByKey.get(`${w.sourceListId}::${w.englishWord}`);
-    return {
+    // withBaseline: הבסיס נשמר על המילה, כדי שהכתיבה בסוף תהיה increment של מה שהשתנה בלבד
+    return withBaseline({
       englishWord: w.englishWord,
       hebrewTranslation: w.hebrewTranslation,
       sourceListId: w.sourceListId,
       correctAttempts: baseline?.correctAttempts || 0,
       totalAttempts: baseline?.totalAttempts || 0,
-    };
+    });
   });
 
   return shuffle(allWords).slice(0, SPRINT_WORD_COUNT);
@@ -78,7 +80,7 @@ export default function SprintSession() {
 
   useEffect(() => {
     let cancelled = false;
-    buildSprintPool(user.uid)
+    buildSprintPool(user.uid, profile?.institutionId)
       .then((words) => {
         if (!cancelled) {
           setPool(words);
@@ -92,7 +94,7 @@ export default function SprintSession() {
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, profile?.institutionId]);
 
   const choices = useMemo(() => {
     if (!pool || pool.length < MIN_POOL_SIZE || index >= pool.length) return [];

@@ -36,8 +36,10 @@ function blankSentence(sentence, word) {
   return sentence.replace(re, '_____');
 }
 
-export default function VariedModule({ words, onFinish, onBack }) {
+export default function VariedModule({ words, onFinish, onBack, onProgress }) {
   const [session, setSession] = useState(() => shuffle(words).map((w) => ({ ...w })));
+  // התקדמות מצטברת לכל מילה → PracticeSession שומר תוך כדי (גם ביציאה באמצע), לא רק בסוף
+  useEffect(() => onProgress?.(session), [session, onProgress]);
   const [globalPool, setGlobalPool] = useState(null);
   const [index, setIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);

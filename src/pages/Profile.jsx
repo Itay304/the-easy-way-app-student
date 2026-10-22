@@ -39,7 +39,7 @@ export default function Profile() {
         ]);
 
         const active = assignmentsRes.data.assignments.filter((a) => a.status === 'active');
-        const results = await Promise.all(active.map((a) => computeAssignmentMastery(allProgress, a)));
+        const results = await Promise.all(active.map((a) => computeAssignmentMastery(allProgress, a, profile?.institutionId)));
         const completed = results.filter((r) => r.total > 0 && r.mastered >= r.total).length;
 
         if (!cancelled) {

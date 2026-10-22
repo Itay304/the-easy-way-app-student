@@ -15,9 +15,11 @@ import Button from '../ui/Button.jsx';
 // הסדר של words כבר מגיע מעורבב מ-applyAdaptiveOrder (PracticeSession),
 // שם הערבוב נעשה בתוך כל קבוצה (חלשות/שאר) בנפרד — ערבוב נוסף כאן היה
 // הורס את סדר "מילים חלשות קודם" המכוון. ר' lib/adaptivePractice.js.
-export default function QuizModule({ words, onFinish, onBack, adaptiveBanner }) {
+export default function QuizModule({ words, onFinish, onBack, adaptiveBanner, onProgress }) {
   const [index, setIndex] = useState(0);
   const [session, setSession] = useState(() => words.map((w) => ({ ...w })));
+  // התקדמות מצטברת לכל מילה → PracticeSession שומר תוך כדי (גם ביציאה באמצע), לא רק בסוף
+  useEffect(() => onProgress?.(session), [session, onProgress]);
   const [correctCount, setCorrectCount] = useState(0);
   const [masteredCount, setMasteredCount] = useState(0);
   const [selected, setSelected] = useState(null);

@@ -1,14 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import {
   callGetMyAssignments,
-  getWordsForList,
+  getWordsForAssignment,
   getAllProgress,
   applySessionGamification,
   getRankAndTotal,
 } from '../lib/api.js';
-import { syncSession } from '../lib/progressSync.js';
+import { withBaseline } from '../lib/progressSync.js';
+import { createSessionRecorder } from '../lib/sessionRecorder.js';
 import { applyAdaptiveOrder } from '../lib/adaptivePractice.js';
 import { computeAssignmentMastery } from '../lib/assignmentMastery.js';
 import { checkAndAwardBadges } from '../lib/badges.js';
@@ -33,8 +34,8 @@ import BadgeUnlockToast from '../components/practice/BadgeUnlockToast.jsx';
 const ADAPTIVE_MODULES = new Set(['flashcards', 'quiz']);
 const NIGHT_OWL_HOUR = 22;
 
-async function buildSessionWords(assignment, uid) {
-  const allWords = await getWordsForList(assignment.listId);
+async function buildSessionWords(assignment, uid, institutionId) {
+  const allWords = await getWordsForAssignment(assignment, institutionId);
   const scoped =
     assignment.wordIds && assignment.wordIds.length > 0
       ? allWords.filter((w) => assignment.wordIds.includes(w.id))
@@ -45,7 +46,8 @@ async function buildSessionWords(assignment, uid) {
 
   return scoped.map((w) => {
     const baseline = progressByWord.get(`${assignment.listId}::${w.englishWord}`);
-    return {
+    return withBaseline({
+      wordId: w.id,
       englishWord: w.englishWord,
       hebrewTranslation: w.hebrewTranslation,
       partOfSpeech: w.partOfSpeech,
@@ -55,7 +57,7 @@ async function buildSessionWords(assignment, uid) {
       sourceListId: assignment.listId,
       correctAttempts: baseline?.correctAttempts || 0,
       totalAttempts: baseline?.totalAttempts || 0,
-    };
+    });
   });
 }
 
@@ -70,7 +72,30 @@ export default function PracticeSession() {
   const [result, setResult] = useState(null);
   const [badgeQueue, setBadgeQueue] = useState([]);
   const sessionStartRef = useRef(Date.now());
+  const recorderRef = useRef(null);
+  const sessionRef = useRef([]);
+  const finishedRef = useRef(false);
   useBackgroundMusic();
+
+  // כל עדכון מהמודול → שמירת ביניים כל כמה תשובות (sessionRecorder)
+  const handleProgress = useCallback((session) => {
+    sessionRef.current = session;
+    recorderRef.current?.update(session);
+  }, []);
+
+  // מעבר לרקע / סגירת הלשונית / יציאה מהעמוד — שומרים מה שנענה עד עכשיו
+  useEffect(() => {
+    const onHide = () => {
+      if (document.visibilityState === 'hidden') recorderRef.current?.flush();
+    };
+    document.addEventListener('visibilitychange', onHide);
+    window.addEventListener('pagehide', onHide);
+    return () => {
+      document.removeEventListener('visibilitychange', onHide);
+      window.removeEventListener('pagehide', onHide);
+      if (!finishedRef.current) recorderRef.current?.flush();
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,7 +109,8 @@ export default function PracticeSession() {
           return;
         }
         if (!cancelled) setAssignment(found);
-        let sessionWords = await buildSessionWords(found, user.uid);
+        recorderRef.current = createSessionRecorder({ uid: user.uid, assignmentId });
+        let sessionWords = await buildSessionWords(found, user.uid, profile?.institutionId);
         let adaptive = false;
         if (ADAPTIVE_MODULES.has(module)) {
           const ordered = applyAdaptiveOrder(sessionWords);
@@ -105,20 +131,22 @@ export default function PracticeSession() {
     return () => {
       cancelled = true;
     };
-  }, [assignmentId, module, user]);
+  }, [assignmentId, module, user, profile?.institutionId]);
 
   async function handleFinish({ finalWords, correctCount, wordsMasteredCount, moduleComplete, bonusXp = 0, maxCombo = 0 }) {
-    const xpGained = correctCount * 10 + wordsMasteredCount * 100 + (moduleComplete ? 50 : 0) + bonusXp;
+    finishedRef.current = true;
+    // ה-XP על תשובות נכונות (10 לכל אחת) כבר נכתב בשמירות הביניים; כאן רק הבונוסים של סוף הסבב
+    const finishBonusXp = wordsMasteredCount * 100 + (moduleComplete ? 50 : 0) + bonusXp;
+    const xpGained = correctCount * 10 + finishBonusXp;
     const secondsPracticed = Math.round((Date.now() - sessionStartRef.current) / 1000);
     const sessionAccuracy = finalWords.length > 0 ? correctCount / finalWords.length : 0;
     let assignmentMastery = null;
     try {
-      await syncSession(user.uid, finalWords, assignmentId);
-      const gamification = await applySessionGamification(user.uid, {
-        xpGained,
-        sessionCorrect: correctCount,
-        sessionTotal: finalWords.length,
-      });
+      recorderRef.current.update(finalWords);
+      await recorderRef.current.flush();
+      const gamification =
+        (finishBonusXp > 0 ? await applySessionGamification(user.uid, { xpGained: finishBonusXp }) : null) ||
+        recorderRef.current.gamification();
 
       const { justCompleted } = await updateDailyChallengeProgress(user.uid, {
         wordsPracticed: finalWords.length,
@@ -129,7 +157,7 @@ export default function PracticeSession() {
       // allProgress נטען אחרי syncSession כדי לשקף את התוצאות המעודכנות של
       // הסשן הזה — גם ל-badges וגם להתקדמות-במשימה שמוצגת ב-SessionSummary.
       const allProgress = await getAllProgress(user.uid);
-      assignmentMastery = await computeAssignmentMastery(allProgress, assignment);
+      assignmentMastery = await computeAssignmentMastery(allProgress, assignment, profile?.institutionId);
 
       if (gamification && profile?.institutionId) {
         const rankInfo = await getRankAndTotal(profile.institutionId, gamification.totalXp);
@@ -160,7 +188,21 @@ export default function PracticeSession() {
     });
   }
 
-  function goBack() {
+  // יציאה באמצע הסבב: שומרים מה שנענה (התקדמות, XP, רצף) ומעדכנים את אתגר היום — ורק אז יוצאים
+  async function goBack() {
+    if (!finishedRef.current && recorderRef.current) {
+      finishedRef.current = true;
+      recorderRef.current.update(sessionRef.current);
+      await recorderRef.current.flush();
+      const { total } = recorderRef.current.totals();
+      if (total > 0) {
+        await updateDailyChallengeProgress(user.uid, {
+          wordsPracticed: total,
+          secondsPracticed: Math.round((Date.now() - sessionStartRef.current) / 1000),
+          sessionAccuracy: 0,
+        }).catch((err) => console.error('[PracticeSession] daily challenge on exit failed:', err));
+      }
+    }
     if (window.history.state && window.history.state.idx > 0) navigate(-1);
     else navigate('/practice', { replace: true });
   }
@@ -197,23 +239,23 @@ export default function PracticeSession() {
   }
 
   if (module === 'flashcards')
-    return <FlashcardsModule words={words} onFinish={handleFinish} onBack={goBack} adaptiveBanner={isAdaptive} />;
+    return <FlashcardsModule words={words} onFinish={handleFinish} onBack={goBack} onProgress={handleProgress} adaptiveBanner={isAdaptive} />;
   if (module === 'quiz')
-    return <QuizModule words={words} onFinish={handleFinish} onBack={goBack} adaptiveBanner={isAdaptive} />;
+    return <QuizModule words={words} onFinish={handleFinish} onBack={goBack} onProgress={handleProgress} adaptiveBanner={isAdaptive} />;
   if (module === 'spelling')
-    return <SpellingModule words={words} onFinish={handleFinish} onBack={goBack} />;
+    return <SpellingModule words={words} onFinish={handleFinish} onBack={goBack} onProgress={handleProgress} />;
   if (module === 'matching')
-    return <MatchingModule words={words} onFinish={handleFinish} onBack={goBack} />;
+    return <MatchingModule words={words} onFinish={handleFinish} onBack={goBack} onProgress={handleProgress} />;
   if (module === 'whoami')
-    return <WhoAmI words={words} onFinish={handleFinish} onBack={goBack} />;
+    return <WhoAmI words={words} onFinish={handleFinish} onBack={goBack} onProgress={handleProgress} />;
   if (module === 'truefalse')
-    return <TrueFalse words={words} onFinish={handleFinish} onBack={goBack} />;
+    return <TrueFalse words={words} onFinish={handleFinish} onBack={goBack} onProgress={handleProgress} />;
   if (module === 'whatmeans')
-    return <WhatMeans words={words} onFinish={handleFinish} onBack={goBack} />;
+    return <WhatMeans words={words} onFinish={handleFinish} onBack={goBack} onProgress={handleProgress} />;
   if (module === 'fillsentence')
-    return <FillSentence words={words} onFinish={handleFinish} onBack={goBack} />;
+    return <FillSentence words={words} onFinish={handleFinish} onBack={goBack} onProgress={handleProgress} />;
   if (module === 'varied')
-    return <VariedModule words={words} onFinish={handleFinish} onBack={goBack} />;
+    return <VariedModule words={words} onFinish={handleFinish} onBack={goBack} onProgress={handleProgress} />;
 
   return null;
 }

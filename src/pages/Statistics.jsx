@@ -15,7 +15,7 @@ import WordRankList from '../components/stats/WordRankList.jsx';
 const STRENGTHS_WEAKNESSES_LIMIT = 5;
 
 export default function Statistics() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [chartData, setChartData] = useState(null);
@@ -47,7 +47,7 @@ export default function Statistics() {
           activeAssignments.map(async (a) => ({
             assignmentId: a.assignmentId,
             title: a.title,
-            ...(await computeAssignmentMastery(allProgress, a)),
+            ...(await computeAssignmentMastery(allProgress, a, profile?.institutionId)),
           })),
         );
 
@@ -80,7 +80,7 @@ export default function Statistics() {
     return () => {
       cancelled = true;
     };
-  }, [user, reloadKey]);
+  }, [user, reloadKey, profile?.institutionId]);
 
   return (
     <div className="px-4 pt-6 space-y-5">
