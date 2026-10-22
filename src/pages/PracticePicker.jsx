@@ -82,7 +82,7 @@ export default function PracticePicker() {
               {!status.progress.complete && (
                 <Button size="lg" className="w-full" onClick={() => navigate(`/practice/${assignmentId}/varied`)}>
                   <Play size={18} className="fill-current" />
-                  {status.sessionsToday >= status.goal.sessions ? 'סבב נוסף — בונוס XP' : 'התחל סבב'}
+                  {status.sessionsToday >= status.goal.sessions ? 'סבב נוסף — בונוס XP' : 'מתחילים סבב'}
                 </Button>
               )}
             </div>

@@ -49,10 +49,11 @@ export default function SessionSummary({
           {stageSummary.firstSeen > 0 && (
             <p className="flex items-center gap-2 text-brand-text">
               <BookOpenCheck size={18} className="shrink-0 text-brand-turquoise" />
-              {stageSummary.firstSeen} מילים חדשות
+              למדת היום {stageSummary.firstSeen} מילים חדשות · מחר נבדוק אותן
             </p>
           )}
-          {stageSummary.tomorrowReview > 0 && (
+          {/* "מחר חוזרות" רק כשחוזרות גם מילים מעבר לחדשות של היום (אחרת זה בדיוק "מחר נבדוק אותן") */}
+          {stageSummary.tomorrowReview > stageSummary.firstSeen && (
             <p className="flex items-center gap-2 text-brand-text">
               <RotateCcw size={18} className="shrink-0 text-brand-turquoise" />
               מחר חוזרות {stageSummary.tomorrowReview} מילים לבדיקה
@@ -65,9 +66,11 @@ export default function SessionSummary({
                 : `שלב ${stageSummary.progress.current + 1} מתוך ${stageSummary.progress.perStage.length}`}
             </p>
             <StageBar progress={stageSummary.progress} />
-            <p className="text-body-sm text-brand-grey-text">
-              {stageSummary.progress.knownWords} מילים ידועות מתוך {stageSummary.progress.totalWords}
-            </p>
+            {stageSummary.progress.knownWords > 0 && (
+              <p className="text-body-sm text-brand-grey-text">
+                {stageSummary.progress.knownWords} מילים ידועות מתוך {stageSummary.progress.totalWords}
+              </p>
+            )}
             <p className="text-body-sm font-semibold text-brand-green">
               היום: סבב {Math.min(stageSummary.sessionsToday, stageSummary.goalSessions)} מתוך {stageSummary.goalSessions}
               {stageSummary.sessionsToday >= stageSummary.goalSessions ? ' ✓' : ''}

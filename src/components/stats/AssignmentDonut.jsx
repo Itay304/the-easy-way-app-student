@@ -21,15 +21,19 @@ export default function AssignmentDonut({ title, progress }) {
             </Pie>
           </PieChart>
         </ResponsiveContainer>
-        <span className="absolute inset-0 flex items-center justify-center text-body-sm font-bold text-brand-text">
-          {knownWords}
-        </span>
+        {knownWords > 0 && (
+          <span className="absolute inset-0 flex items-center justify-center text-body-sm font-bold text-brand-text">
+            {knownWords}
+          </span>
+        )}
       </div>
       <div className="min-w-0">
         <p className="font-semibold text-brand-text truncate">{title}</p>
-        <p className="text-body-sm text-brand-grey-text mt-0.5">
-          {knownWords} מילים ידועות מתוך {totalWords}
-        </p>
+        {knownWords > 0 && (
+          <p className="text-body-sm text-brand-grey-text mt-0.5">
+            {knownWords} מילים ידועות מתוך {totalWords}
+          </p>
+        )}
         <p className="text-caption text-brand-grey-text">
           {complete ? 'כל המילים ידועות! 🎉' : `שלב ${current + 1} מתוך ${perStage.length}`}
         </p>

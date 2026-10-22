@@ -18,9 +18,12 @@ export default function AssignmentStatus({ assignment, status, compact = false }
         </p>
       )}
       <StageBar progress={progress} />
-      <p className="text-body-sm text-brand-grey-text">
-        {progress.knownWords} מילים ידועות מתוך {progress.totalWords}
-      </p>
+      {/* "X מילים ידועות" רק כשיש לפחות אחת — ביום הראשון הפס עצמו מראה את ההתקדמות */}
+      {progress.knownWords > 0 && (
+        <p className="text-body-sm text-brand-grey-text">
+          {progress.knownWords} מילים ידועות מתוך {progress.totalWords}
+        </p>
+      )}
       {!progress.complete && (
         <p className={`flex items-center gap-1.5 text-body-sm font-semibold ${goalDone ? 'text-brand-green' : 'text-brand-text'}`}>
           <CheckCircle2 size={16} className={goalDone ? '' : 'text-brand-grey-text'} />
