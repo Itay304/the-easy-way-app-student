@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getFunctions } from 'firebase/functions';
+import { getAuth, setPersistence, browserLocalPersistence, connectAuthEmulator, signInWithCustomToken } from 'firebase/auth';
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 import { getMessaging, isSupported } from 'firebase/messaging';
 
 const firebaseConfig = {
@@ -20,6 +20,16 @@ export const db = getFirestore(app);
 export const functions = getFunctions(app, 'europe-west1');
 
 setPersistence(auth, browserLocalPersistence);
+
+// מצב אמולטור (פיתוח ובדיקות מקומיות בלבד): VITE_USE_EMULATORS=1 — Auth/Firestore/Functions מקומיים
+// (firebase emulators:start בפרויקט EasyLex), בלי לגעת בפרודקשן. ב-build רגיל הקוד הזה לא רץ.
+// window.__e2eSignIn — כניסה עם custom token מסקריפט הבדיקה (Playwright).
+if (import.meta.env.VITE_USE_EMULATORS === '1') {
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+  connectFirestoreEmulator(db, '127.0.0.1', 8080);
+  connectFunctionsEmulator(functions, '127.0.0.1', 5001);
+  window.__e2eSignIn = (token) => signInWithCustomToken(auth, token);
+}
 
 // FCM לא נתמך בכל דפדפן/הקשר (Safari ישן, iframe, וכו') — isSupported()
 // היא async, לכן lazy-init עם cache במקום ליצור getMessaging() בטעינה.
