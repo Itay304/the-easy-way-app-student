@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ClipboardList, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { callGetMyAssignments, getAllProgress } from '../lib/api.js';
-import { computeAssignmentMastery } from '../lib/assignmentMastery.js';
+import { callGetMyAssignments } from '../lib/api.js';
+import { loadAssignmentStatus } from '../lib/assignmentStatus.js';
 import { ListSkeleton } from '../components/Skeleton.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
 import EmptyState from '../components/EmptyState.jsx';
 import AssignmentProgressCard from '../components/practice/AssignmentProgressCard.jsx';
 
 export default function Practice() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [assignments, setAssignments] = useState(null);
   const [error, setError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
@@ -21,13 +21,11 @@ export default function Practice() {
     async function load() {
       setError('');
       try {
-        const [assignmentsRes, allProgress] = await Promise.all([
-          callGetMyAssignments(),
-          getAllProgress(user.uid),
-        ]);
+        const assignmentsRes = await callGetMyAssignments();
         const active = assignmentsRes.data.assignments.filter((a) => a.status === 'active');
+        // מסמך התקדמות אחד לכל משימה (assignments/{id}/students/{uid}) — במקום כל ה-progress הגלובלי
         const withProgress = await Promise.all(
-          active.map(async (a) => ({ assignment: a, ...(await computeAssignmentMastery(allProgress, a)) })),
+          active.map(async (a) => ({ assignment: a, status: await loadAssignmentStatus(a, profile?.institutionId, user.uid) })),
         );
         if (!cancelled) setAssignments(withProgress);
       } catch (err) {
@@ -40,7 +38,7 @@ export default function Practice() {
     return () => {
       cancelled = true;
     };
-  }, [user, reloadKey]);
+  }, [user, reloadKey, profile?.institutionId]);
 
   return (
     <div className="px-4 pt-6 space-y-5">
@@ -66,13 +64,8 @@ export default function Practice() {
 
       {assignments && assignments.length > 0 && (
         <div className="space-y-3">
-          {assignments.map(({ assignment, mastered, total }) => (
-            <AssignmentProgressCard
-              key={assignment.assignmentId}
-              assignment={assignment}
-              mastered={mastered}
-              total={total}
-            />
+          {assignments.map(({ assignment, status }) => (
+            <AssignmentProgressCard key={assignment.assignmentId} assignment={assignment} status={status} />
           ))}
         </div>
       )}

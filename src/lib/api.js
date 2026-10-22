@@ -8,9 +8,9 @@ import {
   orderBy,
   limit,
   onSnapshot,
-  updateDoc,
   setDoc,
   getCountFromServer,
+  increment,
 } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { db, functions } from '../firebase.js';
@@ -46,6 +46,21 @@ export async function getWordListMeta(listId) {
 export async function getWordsForList(listId) {
   const snap = await getDocs(collection(db, 'word_lists', listId, 'words'));
   return snap.docs.map((d) => ({ id: d.id, sourceListId: listId, ...d.data() }));
+}
+
+/**
+ * מילות משימה — מרשימה גלובלית (word_lists, רשימות ה-Band) או מרשימה מוסדית
+ * (institutions/{inst}/customLists). listSource נכתב על משימות חדשות (createAssignment);
+ * במשימות ישנות בלי השדה: קודם word_lists, ואם אין שם כלום — הרשימות המוסדיות.
+ */
+export async function getWordsForAssignment(assignment, institutionId) {
+  if (assignment.listSource !== 'custom') {
+    const words = await getWordsForList(assignment.listId);
+    if (words.length > 0 || assignment.listSource === 'global') return words;
+  }
+  if (!institutionId) return [];
+  const snap = await getDocs(collection(db, 'institutions', institutionId, 'customLists', assignment.listId, 'words'));
+  return snap.docs.map((d) => ({ id: d.id, sourceListId: assignment.listId, ...d.data() }));
 }
 
 // ── מאגר מילים גלובלי (כל word_lists) — למסיחות במבחן/נכון-לא-נכון, כדי
@@ -142,8 +157,9 @@ export function markAnnouncementRead(id) {
   localStorage.setItem(READ_PREFS_KEY, JSON.stringify([...ids]));
 }
 
-// ── XP / רמה / streak — אותה נוסחה ומבנה כתיבה כמו GamificationEngine +
-// StreakManager (Android), רק שכל הכתיבה מתבצעת פעם אחת בסוף session.
+// ── XP / רמה / streak — אותה נוסחה כמו GamificationEngine + StreakManager (Android).
+// נקרא בכל שמירת ביניים של סשן (גם סשן שלא הסתיים נספר ל-XP ולרצף), ולכן XP והמונים
+// נכתבים כ-increment (בטוח לשני מכשירים במקביל); רצף/ימים פעילים נקבעים לפי היום האחרון שנקרא.
 // totalActiveDays/totalCorrectAttempts/totalAttemptsCount הם שדות חדשים —
 // אין להם מקבילה ב-Android — נחוצים לתג "שקדן" (30 ימי תרגול סה"כ, לא
 // streak רציף) ולממוצע הכיתה במצב ספרינט (ראה getClassAverageAccuracy). ──
@@ -156,7 +172,7 @@ export async function applySessionGamification(uid, { xpGained = 0, sessionCorre
   const current = userSnap.exists() ? userSnap.data() : {};
 
   const currentXp = typeof current.totalXp === 'number' ? current.totalXp : 0;
-  const newXp = currentXp + xpGained;
+  const newXp = currentXp + xpGained; // להחזרה ולחישוב הרמה בלבד — הכתיבה עצמה היא increment
   const newLevel = computeLevel(newXp);
 
   const todayKey = toDateKey(Date.now());
@@ -182,25 +198,16 @@ export async function applySessionGamification(uid, { xpGained = 0, sessionCorre
     }
   }
 
-  const newTotalCorrect =
-    (typeof current.totalCorrectAttempts === 'number' ? current.totalCorrectAttempts : 0) + sessionCorrect;
-  const newTotalAttemptsCount =
-    (typeof current.totalAttemptsCount === 'number' ? current.totalAttemptsCount : 0) + sessionTotal;
-
   const updates = {
-    totalXp: newXp,
+    totalXp: increment(xpGained),
     level: newLevel,
     streak: newStreak,
     lastActiveDate: todayKey,
     totalActiveDays: newTotalActiveDays,
-    totalCorrectAttempts: newTotalCorrect,
-    totalAttemptsCount: newTotalAttemptsCount,
+    totalCorrectAttempts: increment(sessionCorrect),
+    totalAttemptsCount: increment(sessionTotal),
   };
-  if (userSnap.exists()) {
-    await updateDoc(userRef, updates);
-  } else {
-    await setDoc(userRef, updates, { merge: true });
-  }
+  await setDoc(userRef, updates, { merge: true });
 
   return { totalXp: newXp, level: newLevel, streak: newStreak, totalActiveDays: newTotalActiveDays };
 }

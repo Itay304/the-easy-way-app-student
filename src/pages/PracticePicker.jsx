@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowRight, Layers, ListChecks, PenLine, Link2, Search, Zap, BookOpen, PencilLine, Shuffle } from 'lucide-react';
+import { ArrowRight, Layers, ListChecks, PenLine, Link2, Search, Zap, BookOpen, PencilLine, Play } from 'lucide-react';
+import { useAuth } from '../context/AuthContext.jsx';
 import { callGetMyAssignments } from '../lib/api.js';
+import { loadAssignmentStatus } from '../lib/assignmentStatus.js';
+import AssignmentStatus from '../components/practice/AssignmentStatus.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
 import Button from '../components/ui/Button.jsx';
@@ -17,19 +20,27 @@ const MODULES = [
   { key: 'fillsentence', label: 'השלמת משפט', icon: PencilLine, bg: 'bg-cyan-50', text: 'text-cyan-600' },
 ];
 
+// עמוד משימה: מצב השלבים + "התחל סבב" (תרגול מגוון, תמיד — המורה כבר לא בוחר מצב),
+// ומתחת — "תרגול חופשי" ב-8 המודולים הבודדים על מילות המשימה (לא משפיע על השלבים).
 export default function PracticePicker() {
   const { assignmentId } = useParams();
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
   const [assignment, setAssignment] = useState(undefined); // undefined = loading, null = not found
+  const [status, setStatus] = useState(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
     let cancelled = false;
     callGetMyAssignments()
-      .then((res) => {
+      .then(async (res) => {
         if (cancelled) return;
         const found = res.data.assignments.find((a) => a.assignmentId === assignmentId);
         setAssignment(found || null);
+        if (found) {
+          const st = await loadAssignmentStatus(found, profile?.institutionId, user.uid);
+          if (!cancelled) setStatus(st);
+        }
       })
       .catch((err) => {
         console.error('[PracticePicker] load failed:', err);
@@ -38,7 +49,7 @@ export default function PracticePicker() {
     return () => {
       cancelled = true;
     };
-  }, [assignmentId]);
+  }, [assignmentId, user, profile?.institutionId]);
 
   function goBack() {
     if (window.history.state && window.history.state.idx > 0) navigate(-1);
@@ -62,27 +73,23 @@ export default function PracticePicker() {
 
       {assignment && (
         <>
-          <div>
-            <h1 className="text-h1 font-bold text-brand-text">{assignment.title}</h1>
-            <p className="text-brand-grey-text mt-1">
-              {assignment.practiceMode === 'varied' ? 'המורה הכין לך תרגול מגוון' : 'איך תרצה לתרגל?'}
-            </p>
-          </div>
+          <h1 className="text-h1 font-bold text-brand-text">{assignment.title}</h1>
 
-          {assignment.practiceMode === 'varied' ? (
-            <button
-              onClick={() => navigate(`/practice/${assignmentId}/varied`)}
-              className="w-full flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-8 hover:shadow-lg transition"
-            >
-              <div className="h-16 w-16 rounded-2xl bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center">
-                <Shuffle size={24} strokeWidth={2} />
-              </div>
-              <span className="font-bold text-brand-text text-body-lg">התחל תרגול מגוון 🎯</span>
-              <p className="text-body-sm text-brand-grey-text text-center">
-                כל 5 מילים תעברו למודול תרגול אחר — כרטיסיות, מבחן, נכון/לא נכון ואיות, לסירוגין
-              </p>
-            </button>
-          ) : (
+          {!status && <LoadingSpinner />}
+          {status && (
+            <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-5 space-y-4">
+              <AssignmentStatus assignment={assignment} status={status} />
+              {!status.progress.complete && (
+                <Button size="lg" className="w-full" onClick={() => navigate(`/practice/${assignmentId}/varied`)}>
+                  <Play size={18} className="fill-current" />
+                  {status.sessionsToday >= status.goal.sessions ? 'סבב נוסף — בונוס XP' : 'מתחילים סבב'}
+                </Button>
+              )}
+            </div>
+          )}
+
+          <h2 className="text-h3 font-bold text-brand-text pt-2">תרגול חופשי</h2>
+          {/* 8 המודולים הבודדים על מילות המשימה — לא משנים את השלבים */}
             <div className="grid grid-cols-2 gap-3">
               {MODULES.map((m) => (
                 <button
@@ -97,7 +104,6 @@ export default function PracticePicker() {
                 </button>
               ))}
             </div>
-          )}
         </>
       )}
     </div>

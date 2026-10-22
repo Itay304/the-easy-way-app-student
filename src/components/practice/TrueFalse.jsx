@@ -25,11 +25,13 @@ function buildRounds(words, globalPool) {
   });
 }
 
-export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner }) {
+export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner, onProgress }) {
   const [globalPool, setGlobalPool] = useState(null);
   const rounds = useMemo(() => (globalPool ? buildRounds(words, globalPool) : []), [words, globalPool]);
   const [index, setIndex] = useState(0);
   const [session, setSession] = useState(() => words.map((w) => ({ ...w })));
+  // התקדמות מצטברת לכל מילה → PracticeSession שומר תוך כדי (גם ביציאה באמצע), לא רק בסוף
+  useEffect(() => onProgress?.(session), [session, onProgress]);
   const [correctCount, setCorrectCount] = useState(0);
   const [masteredCount, setMasteredCount] = useState(0);
   const [flyDirection, setFlyDirection] = useState(null); // 'right' | 'left' | null

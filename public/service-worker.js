@@ -27,8 +27,8 @@ messaging.onBackgroundMessage((payload) => {
   });
 });
 
-// v2: לוגו Easylex חדש — מחליף אייקונים/manifest שנשמרו ב-cache
-const CACHE_NAME = 'easylex-student-v2';
+// v3: משימות בשלבים (assignment-stages) — מנקה את ה-cache של הגרסה הקודמת
+const CACHE_NAME = 'easylex-student-v3';
 const APP_SHELL = ['/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {

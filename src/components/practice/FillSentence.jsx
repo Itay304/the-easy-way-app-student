@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
 import { shuffle } from '../../lib/quizChoices.js';
@@ -26,7 +26,7 @@ function buildWordChoices(words, current) {
   return shuffle([current.englishWord, ...distractors]);
 }
 
-export default function FillSentence({ words, onFinish, onBack, adaptiveBanner }) {
+export default function FillSentence({ words, onFinish, onBack, adaptiveBanner, onProgress }) {
   const eligibleWords = useMemo(() => {
     const seen = new Set();
     const list = [];
@@ -41,6 +41,8 @@ export default function FillSentence({ words, onFinish, onBack, adaptiveBanner }
 
   const [index, setIndex] = useState(0);
   const [session, setSession] = useState(() => eligibleWords.map((w) => ({ ...w })));
+  // התקדמות מצטברת לכל מילה → PracticeSession שומר תוך כדי (גם ביציאה באמצע), לא רק בסוף
+  useEffect(() => onProgress?.(session), [session, onProgress]);
   const [correctCount, setCorrectCount] = useState(0);
   const [masteredCount, setMasteredCount] = useState(0);
   const [selected, setSelected] = useState(null);

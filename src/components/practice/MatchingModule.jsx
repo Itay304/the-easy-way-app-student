@@ -58,7 +58,7 @@ function buildRounds(targetWords, distractorPool) {
 // אותו מנגנון pointerdown/up גם מזהה "הקשה" (תזוזה קטנה מ-TAP_THRESHOLD_PX) —
 // חלופה לגרירה: הקשה על מילה בוחרת אותה (selectedWord), הקשה עוקבת על משפט
 // ממתין מבצעת את ההתאמה, בדיוק כמו שחרור גרירה מעל אותו משפט.
-export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner }) {
+export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner, onProgress }) {
   const targetWords = useMemo(() => {
     const withDescription = words.filter((w) => w.descriptionSentence);
     return shuffle(dedupeByEnglishWord(withDescription));
@@ -71,6 +71,8 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
   const [roundIndex, setRoundIndex] = useState(0);
   const [round, setRound] = useState(() => rounds[0] || null);
   const [session, setSession] = useState(() => targetWords.map((w) => ({ ...w })));
+  // התקדמות מצטברת לכל מילה → PracticeSession שומר תוך כדי (גם ביציאה באמצע), לא רק בסוף
+  useEffect(() => onProgress?.(session), [session, onProgress]);
   const [usedWords, setUsedWords] = useState(() => new Set());
   const [flashWrong, setFlashWrong] = useState(null);
   const [selectedWord, setSelectedWord] = useState(null);

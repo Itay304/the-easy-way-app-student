@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { ArrowRight, Lightbulb } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
 import { shuffle } from '../../lib/quizChoices.js';
@@ -29,7 +29,7 @@ function buildWordChoices(words, current) {
   return shuffle([current.englishWord, ...distractors]);
 }
 
-export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner }) {
+export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner, onProgress }) {
   const eligibleWords = useMemo(() => {
     const seen = new Set();
     const list = [];
@@ -50,6 +50,8 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner }) {
 
   const [index, setIndex] = useState(0);
   const [session, setSession] = useState(() => eligibleWords.map((w) => ({ ...w })));
+  // התקדמות מצטברת לכל מילה → PracticeSession שומר תוך כדי (גם ביציאה באמצע), לא רק בסוף
+  useEffect(() => onProgress?.(session), [session, onProgress]);
   const [clueLevel, setClueLevel] = useState(1);
   const [status, setStatus] = useState('active'); // 'active' | 'correct' | 'wrong'
   const [input, setInput] = useState('');

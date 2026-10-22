@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { callGetMyAssignments, getAllProgress } from '../lib/api.js';
-import { computeAssignmentMastery } from '../lib/assignmentMastery.js';
+import { loadAssignmentStatus } from '../lib/assignmentStatus.js';
 import { isMastered } from '../lib/gamification.js';
 import { bucketIntoWeeks } from '../lib/dateUtils.js';
 import { Skeleton } from '../components/Skeleton.jsx';
@@ -15,7 +15,7 @@ import WordRankList from '../components/stats/WordRankList.jsx';
 const STRENGTHS_WEAKNESSES_LIMIT = 5;
 
 export default function Statistics() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [chartData, setChartData] = useState(null);
@@ -43,12 +43,12 @@ export default function Statistics() {
           .filter((ms) => ms !== null);
 
         const activeAssignments = assignmentsRes.data.assignments.filter((a) => a.status === 'active');
+        // לכל משימה: מילים ידועות (ברמת המשימה) ושלב — לא אחוז
         const donutData = await Promise.all(
-          activeAssignments.map(async (a) => ({
-            assignmentId: a.assignmentId,
-            title: a.title,
-            ...(await computeAssignmentMastery(allProgress, a)),
-          })),
+          activeAssignments.map(async (a) => {
+            const { progress } = await loadAssignmentStatus(a, profile?.institutionId, user.uid);
+            return { assignmentId: a.assignmentId, title: a.title, progress };
+          }),
         );
 
         const attempted = allProgress.filter((p) => (p.totalAttempts || 0) > 0);
@@ -80,7 +80,7 @@ export default function Statistics() {
     return () => {
       cancelled = true;
     };
-  }, [user, reloadKey]);
+  }, [user, reloadKey, profile?.institutionId]);
 
   return (
     <div className="px-4 pt-6 space-y-5">
@@ -109,7 +109,7 @@ export default function Statistics() {
               <h2 className="text-body-lg font-bold text-brand-text mb-3">התקדמות לפי משימה</h2>
               <div className="space-y-3">
                 {donuts.map((d) => (
-                  <AssignmentDonut key={d.assignmentId} title={d.title} mastered={d.mastered} total={d.total} />
+                  <AssignmentDonut key={d.assignmentId} title={d.title} progress={d.progress} />
                 ))}
               </div>
             </div>

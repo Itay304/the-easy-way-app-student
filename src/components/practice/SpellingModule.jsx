@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { ArrowRight, Check, X } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
 import { shuffle } from '../../lib/quizChoices.js';
@@ -18,7 +18,7 @@ function blankSentence(sentence, word) {
   return sentence.replace(re, '_____');
 }
 
-export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner }) {
+export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner, onProgress }) {
   const eligibleWords = useMemo(
     () => shuffle(words.filter((w) => (w.partOfSpeech || '').toLowerCase() !== 'phrase')),
     [words],
@@ -26,6 +26,8 @@ export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner
 
   const [index, setIndex] = useState(0);
   const [session, setSession] = useState(() => eligibleWords.map((w) => ({ ...w })));
+  // התקדמות מצטברת לכל מילה → PracticeSession שומר תוך כדי (גם ביציאה באמצע), לא רק בסוף
+  useEffect(() => onProgress?.(session), [session, onProgress]);
   const [input, setInput] = useState('');
   const [wrongOnce, setWrongOnce] = useState(false);
   const [feedback, setFeedback] = useState(null); // 'correct' | 'wrong' | null
