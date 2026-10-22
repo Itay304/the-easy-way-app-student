@@ -14,7 +14,7 @@ export default function StageBar({ progress, className = '' }) {
         const seenAll = s.seen === s.total;
         const fill = done || seenAll ? 100 : i === current ? Math.round((s.seen / s.total) * 100) : 0;
         return (
-          <div key={i} className="h-2.5 flex-1 overflow-hidden rounded-full bg-brand-grey-light">
+          <div key={i} className="h-2.5 flex-1 overflow-hidden rounded-full bg-black/10">
             <div
               className={`h-full rounded-full ${done ? 'bg-brand-turquoise-dark' : 'bg-brand-turquoise'}`}
               style={{ width: `${fill}%` }}
