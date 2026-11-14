@@ -3,6 +3,7 @@ import { ArrowRight, Check, X } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
 import { shuffle, buildChoicesFromPool } from '../../lib/quizChoices.js';
 import { getGlobalWordPool } from '../../lib/api.js';
+import { exerciseFor } from '../../lib/variedCycle.js';
 import useCelebration from '../../hooks/useCelebration.js';
 import useCombo from '../../hooks/useCombo.js';
 import Confetti from './Confetti.jsx';
@@ -14,8 +15,7 @@ import Button from '../ui/Button.jsx';
 
 // תרגול מגוון אמיתי: כל 5 מילים עוברים למודול הבא במחזור, וחוזר חלילה —
 // כך כל מילה מתורגלת במודול שונה, בלי שהתלמיד בוחר בעצמו (ר' PracticePicker).
-const CYCLE = ['flashcards', 'quiz', 'truefalse', 'spelling'];
-const BLOCK_SIZE = 5;
+// המחזור עצמו ב-lib/variedCycle.js (ביטויים מדלגים על איות).
 const MODULE_LABELS = {
   flashcards: 'כרטיסיות',
   quiz: 'מבחן',
@@ -23,10 +23,6 @@ const MODULE_LABELS = {
   spelling: 'איות',
 };
 const SWIPE_THRESHOLD_PX = 80;
-
-function moduleForIndex(i) {
-  return CYCLE[Math.floor(i / BLOCK_SIZE) % CYCLE.length];
-}
 
 function blankSentence(sentence, word) {
   if (!sentence) return null;
@@ -70,7 +66,7 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
   }, []);
 
   const current = session[index];
-  const currentType = current ? moduleForIndex(index) : null;
+  const currentType = current ? exerciseFor(current, index) : null;
   const progressPct = session.length > 0 ? Math.round((index / session.length) * 100) : 0;
   const needsPool = currentType === 'quiz' || currentType === 'truefalse';
 

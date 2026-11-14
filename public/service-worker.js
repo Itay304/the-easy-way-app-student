@@ -27,8 +27,8 @@ messaging.onBackgroundMessage((payload) => {
   });
 });
 
-// v3: משימות בשלבים (assignment-stages) — מנקה את ה-cache של הגרסה הקודמת
-const CACHE_NAME = 'easylex-student-v3';
+// v4: ביטויים מדלגים על שלב האיות במודול המגוון — מנקה את ה-cache של הגרסה הקודמת
+const CACHE_NAME = 'easylex-student-v4';
 const APP_SHELL = ['/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
