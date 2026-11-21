@@ -11,6 +11,7 @@ import BottomNav from './components/BottomNav.jsx';
 import SideNav from './components/SideNav.jsx';
 import KeyboardHint from './components/practice/KeyboardHint.jsx';
 import Login from './pages/Login.jsx';
+import ConsentGate from './components/consent/ConsentGate.jsx';
 import NoInstitution from './pages/NoInstitution.jsx';
 import Home from './pages/Home.jsx';
 import Practice from './pages/Practice.jsx';
@@ -84,6 +85,8 @@ export default function App() {
   }
 
   if (status === 'signed-out') return <Login />;
+  // משתמש קיים שעוד לא אישר תקנון ומדיניות פרטיות — מסך הסכמה חד-פעמי לפני כל דבר אחר
+  if (profile?.needsConsent) return <ConsentGate uid={user.uid} />;
   if (status === 'no-institution') return <NoInstitution />;
 
   return (
