@@ -31,7 +31,7 @@ export default function ConsentGate({ uid }) {
   }
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center px-6 py-12">
+    <main className="min-h-dvh flex flex-col items-center justify-center px-6 py-12">
       <img src="/logo.svg" alt="Easylex" className="w-48 h-auto mb-6" />
       <form onSubmit={handleSubmit} noValidate className="w-full max-w-sm space-y-5">
         <div className="text-center space-y-2">
@@ -59,6 +59,6 @@ export default function ConsentGate({ uid }) {
           התנתקות
         </button>
       </form>
-    </div>
+    </main>
   );
 }

@@ -107,7 +107,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center px-6 py-12">
+    <main className="min-h-dvh flex flex-col items-center justify-center px-6 py-12">
       <img src="/logo.svg" alt="Easylex" className="w-56 h-auto mb-6" />
       <h1 className="text-h1 font-bold text-brand-text mb-2">כניסת תלמידים</h1>
       <p className="text-brand-grey-text text-body-sm mb-8">
@@ -167,6 +167,6 @@ export default function Login() {
           {mode === 'login' ? 'אין לך חשבון? הירשם' : 'כבר יש לך חשבון? התחבר'}
         </button>
       </form>
-    </div>
+    </main>
   );
 }
