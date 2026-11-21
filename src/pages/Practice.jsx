@@ -18,7 +18,7 @@ export default function Practice() {
       {assignments && assignments.length > 0 && (
         <Link
           to="/sprint"
-          className="flex items-center justify-center gap-2 rounded-2xl bg-amber-500 text-white font-bold py-4 shadow-md hover:opacity-90 transition md:max-w-md lg:bg-amber-700"
+          className="flex items-center justify-center gap-2 rounded-2xl bg-amber-700 text-white font-bold py-4 shadow-md hover:opacity-90 transition md:max-w-md"
         >
           <Zap size={20} strokeWidth={2} />
           ספרינט ⚡ — 10 מילים, 60 שניות

@@ -67,20 +67,27 @@ export default function PracticePicker() {
 
       {assignment === undefined && !error && <LoadingSpinner />}
 
-      {assignment === null && !error && (
-        <p className="text-brand-grey-text text-center py-12">המשימה לא נמצאה.</p>
-      )}
+      {assignment === null && !error && <p className="text-brand-grey-text text-center py-12">המשימה לא נמצאה.</p>}
 
       {assignment && (
         <>
-          <h1 className="text-h1 font-bold text-brand-text">{assignment.title}</h1>
+          {/* טלפון/טאבלט: הכותרת מעל הכרטיס. מחשב: הכותרת בתוך הכרטיס (ר' למטה) */}
+          <h1 className="text-h1 font-bold text-brand-text lg:hidden">{assignment.title}</h1>
 
           {!status && <LoadingSpinner />}
           {status && (
-            <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-5 space-y-4 md:max-w-2xl">
-              <AssignmentStatus assignment={assignment} status={status} />
+            // מחשב: כרטיס לרוחב מלא, שתי עמודות — מימין כותרת ומצב השלבים, משמאל הכפתור (ממורכז אנכית)
+            <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-5 space-y-4 lg:flex lg:items-center lg:gap-10 lg:space-y-0 lg:p-7">
+              <div className="space-y-3 lg:flex-1 lg:min-w-0">
+                <h1 className="hidden lg:block text-h1 font-bold text-brand-text">{assignment.title}</h1>
+                <AssignmentStatus assignment={assignment} status={status} />
+              </div>
               {!status.progress.complete && (
-                <Button size="lg" className="w-full" onClick={() => navigate(`/practice/${assignmentId}/varied`)}>
+                <Button
+                  size="lg"
+                  className="w-full lg:w-auto lg:shrink-0 lg:px-8"
+                  onClick={() => navigate(`/practice/${assignmentId}/varied`)}
+                >
                   <Play size={18} className="fill-current" />
                   {status.sessionsToday >= status.goal.sessions ? 'סבב נוסף — בונוס XP' : 'מתחילים סבב'}
                 </Button>
@@ -90,20 +97,24 @@ export default function PracticePicker() {
 
           <h2 className="text-h3 font-bold text-brand-text pt-2">תרגול חופשי</h2>
           {/* 8 המודולים הבודדים על מילות המשימה — לא משנים את השלבים */}
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-              {MODULES.map((m) => (
-                <button
-                  key={m.key}
-                  onClick={() => navigate(`/practice/${assignmentId}/${m.key}`)}
-                  className="aspect-square flex flex-col items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 hover:shadow-lg transition md:aspect-auto md:py-6 lg:hover:shadow-xl"
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+            {MODULES.map((m) => (
+              <button
+                key={m.key}
+                onClick={() => navigate(`/practice/${assignmentId}/${m.key}`)}
+                className="aspect-square flex flex-col items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 hover:shadow-lg transition md:aspect-auto md:py-6 lg:flex-row lg:justify-start lg:gap-3 lg:py-3 lg:px-4 lg:hover:shadow-xl"
+              >
+                <div
+                  className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 lg:h-11 lg:w-11 lg:rounded-xl ${m.bg} ${m.text}`}
                 >
-                  <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 ${m.bg} ${m.text}`}>
-                    <m.icon size={24} strokeWidth={2} />
-                  </div>
-                  <span className="font-semibold text-brand-text text-body-sm text-center leading-tight">{m.label}</span>
-                </button>
-              ))}
-            </div>
+                  <m.icon size={24} strokeWidth={2} />
+                </div>
+                <span className="font-semibold text-brand-text text-body-sm text-center leading-tight lg:text-right lg:text-body">
+                  {m.label}
+                </span>
+              </button>
+            ))}
+          </div>
         </>
       )}
     </div>

@@ -128,7 +128,7 @@ export default function WhatMeans({ words, onFinish, onBack, adaptiveBanner, onP
       <ComboBar combo={combo} justBroke={justBroke} />
 
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
-        <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
+        <div className="h-full bg-brand-turquoise-light rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
       <p className="text-center text-body-sm text-brand-grey-text lg:text-body-lg">
         {index + 1} מתוך {session.length}

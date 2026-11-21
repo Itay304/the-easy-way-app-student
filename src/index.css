@@ -3,18 +3,22 @@
 @theme {
   --font-sans: "Assistant", "Heebo", system-ui, sans-serif;
 
-  --color-brand-green: #2e7d32;
-  --color-brand-green-dark: #1b5e20;
-  --color-brand-turquoise: #00bfa5;
-  --color-brand-turquoise-dark: #00897b;
+  /* ערכת צבעים אחת לטלפון ולמחשב, בניגודיות WCAG AA (4.5:1 לטקסט):
+     brand-turquoise — כפתורים וטקסט טורקיז (לבן עליו 5.7:1; היה #00bfa5, 2.3:1).
+     brand-turquoise-light — הטורקיז הבהיר הקודם, לקישוט בלבד (פסי התקדמות, אלמנטים גדולים בלי טקסט). */
+  --color-brand-green: #1b5e20;
+  --color-brand-green-dark: #144a18;
+  --color-brand-turquoise: #00736a;
+  --color-brand-turquoise-dark: #005f57;
+  --color-brand-turquoise-light: #00bfa5;
   --color-brand-grey-light: #f5f5f5;
   --color-brand-text: #212121;
-  --color-brand-grey-text: #757575;
+  --color-brand-grey-text: #6b6b6b;
 
   --color-brand-error-light: #fef2f2;
   --color-brand-error-border: #fecaca;
-  --color-brand-error: #dc2626;
-  --color-brand-error-dark: #b91c1c;
+  --color-brand-error: #b91c1c;
+  --color-brand-error-dark: #991b1b;
 
   /* סולם גוונים לטורקיז המותג — בשביל gradient-ים (from-turquoise-400
      to-turquoise-600 וכו'). turquoise-500 שווה בדיוק ל-brand-turquoise. */
@@ -48,17 +52,6 @@
   --text-display-lg--line-height: 1.15;
 }
 
-/* מחשב בלבד (1024px ומעלה): גוונים כהים מעט יותר לטקסט/כפתורים, כדי לעמוד בניגודיות WCAG AA (4.5:1).
-   בטלפון ובטאבלט הצבעים נשארים בדיוק כמו קודם. כדי להחיל גם בטלפון — להעביר את הערכים ל-@theme למעלה. */
-@media (min-width: 1024px) {
-  :root {
-    --color-brand-turquoise: #00736a; /* לבן עליו 5.7:1 (היה #00bfa5, 2.3:1) */
-    --color-brand-turquoise-dark: #00695c;
-    --color-brand-grey-text: #6b6b6b;
-    --color-brand-green: #1b5e20;
-    --color-brand-error: #b91c1c;
-  }
-}
 
 html {
   height: 100%;
