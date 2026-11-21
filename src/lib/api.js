@@ -13,7 +13,8 @@ import {
   increment,
 } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
-import { db, functions } from '../firebase.js';
+import { auth, db, functions } from '../firebase.js';
+import { hidesSensitive, visibleAssignment, visibleWords } from './contentFilter.js';
 import { computeLevel } from './gamification.js';
 import { toDateKey } from './dateUtils.js';
 
@@ -36,16 +37,68 @@ export async function getClass(institutionId, classId) {
 
 // ── משימות (Cloud Function קיימת בלבד) ───────────────────────────────────
 
-export const callGetMyAssignments = httpsCallable(functions, 'getMyAssignments');
+// מוסד שמסנן: מילים רגישות יוצאות מ-wordIds ומהשלבים (השרת עושה את אותו הדבר; כאן — אותה תוצאה גם
+// מול שרת שלא מסנן עדיין, ובלי שינוי כשהוא כבר מסנן). אותה צורת תשובה כמו httpsCallable: { data }.
+
+const rawGetMyAssignments = httpsCallable(functions, 'getMyAssignments');
+
+export async function callGetMyAssignments() {
+  const res = await rawGetMyAssignments();
+  const hide = await hideSensitiveForMe();
+  if (!hide || !Array.isArray(res.data?.assignments)) return res;
+  const institutionId = (await getUserDoc(auth.currentUser.uid))?.institutionId;
+  const assignments = await Promise.all(
+    res.data.assignments.map(async (a) => visibleAssignment(a, await rawWordsForAssignment(a, institutionId), true)),
+  );
+  return { ...res, data: { ...res.data, assignments } };
+}
+
+// ── "תוכן מותאם לבתי ספר דתיים" (contentFilter.js) ──────────────────────
+// ההגדרה של מוסד המשתמש המחובר, פעם אחת לכל משתמש בסשן. כל טעינת מילים בקובץ הזה עוברת דרכה.
+
+let contentPolicy = { uid: null, promise: null };
+
+export function hideSensitiveForMe() {
+  const uid = auth.currentUser?.uid || null;
+  if (contentPolicy.uid !== uid || !contentPolicy.promise) {
+    contentPolicy = {
+      uid,
+      promise: (async () => {
+        if (!uid) return false;
+        const user = await getUserDoc(uid);
+        if (!user?.institutionId) return false;
+        return hidesSensitive(await getInstitution(user.institutionId));
+      })().catch(() => false),
+    };
+  }
+  return contentPolicy.promise;
+}
 
 export async function getWordListMeta(listId) {
   const snap = await getDoc(doc(db, 'word_lists', listId));
   return snap.exists() ? { id: snap.id, ...snap.data() } : null;
 }
 
+// מילי רשימה גלובלית כפי שהם ב-Firestore (לא מסוננים) — נשמרים לסשן, כי גם getMyAssignments צריך אותם
+const rawListCache = new Map();
+
+function rawWordsForList(listId) {
+  if (!rawListCache.has(listId)) {
+    rawListCache.set(
+      listId,
+      getDocs(collection(db, 'word_lists', listId, 'words'))
+        .then((snap) => snap.docs.map((d) => ({ id: d.id, sourceListId: listId, ...d.data() })))
+        .catch((err) => {
+          rawListCache.delete(listId);
+          throw err;
+        }),
+    );
+  }
+  return rawListCache.get(listId);
+}
+
 export async function getWordsForList(listId) {
-  const snap = await getDocs(collection(db, 'word_lists', listId, 'words'));
-  return snap.docs.map((d) => ({ id: d.id, sourceListId: listId, ...d.data() }));
+  return visibleWords(await rawWordsForList(listId), await hideSensitiveForMe());
 }
 
 /**
@@ -54,8 +107,12 @@ export async function getWordsForList(listId) {
  * במשימות ישנות בלי השדה: קודם word_lists, ואם אין שם כלום — הרשימות המוסדיות.
  */
 export async function getWordsForAssignment(assignment, institutionId) {
+  return visibleWords(await rawWordsForAssignment(assignment, institutionId), await hideSensitiveForMe());
+}
+
+async function rawWordsForAssignment(assignment, institutionId) {
   if (assignment.listSource !== 'custom') {
-    const words = await getWordsForList(assignment.listId);
+    const words = await rawWordsForList(assignment.listId);
     if (words.length > 0 || assignment.listSource === 'global') return words;
   }
   if (!institutionId) return [];
@@ -68,15 +125,17 @@ export async function getWordsForAssignment(assignment, institutionId) {
 // נשמר ב-cache ברמת ה-module (לא state) — סשן דפדפן אחד, לא רוצים
 // לשלוף מחדש אלפי מסמכים בכל מעבר בין מודולי תרגול. ─────────────────────
 
-let globalWordPoolCache = null;
+let globalWordPoolCache = null; // { hide, words } — לפי הגדרת המוסד של המשתמש המחובר
 
 export async function getGlobalWordPool() {
-  if (globalWordPoolCache) return globalWordPoolCache;
+  const hide = await hideSensitiveForMe();
+  if (globalWordPoolCache?.hide === hide) return globalWordPoolCache.words;
   const listsSnap = await getDocs(collection(db, 'word_lists'));
   const listIds = listsSnap.docs.map((d) => d.id);
-  const wordArrays = await Promise.all(listIds.map((id) => getWordsForList(id)));
-  globalWordPoolCache = wordArrays.flat();
-  return globalWordPoolCache;
+  const wordArrays = await Promise.all(listIds.map((id) => rawWordsForList(id)));
+  // מוסד שמסנן: מילים רגישות גם לא מופיעות כמסיחים (תשובות שגויות) בשאלות
+  globalWordPoolCache = { hide, words: visibleWords(wordArrays.flat(), hide) };
+  return globalWordPoolCache.words;
 }
 
 // ── progress ─────────────────────────────────────────────────────────────
