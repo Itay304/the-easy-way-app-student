@@ -77,7 +77,7 @@ export default function PracticePicker() {
 
           {!status && <LoadingSpinner />}
           {status && (
-            <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-5 space-y-4">
+            <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-5 space-y-4 md:max-w-2xl">
               <AssignmentStatus assignment={assignment} status={status} />
               {!status.progress.complete && (
                 <Button size="lg" className="w-full" onClick={() => navigate(`/practice/${assignmentId}/varied`)}>
@@ -90,12 +90,12 @@ export default function PracticePicker() {
 
           <h2 className="text-h3 font-bold text-brand-text pt-2">תרגול חופשי</h2>
           {/* 8 המודולים הבודדים על מילות המשימה — לא משנים את השלבים */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
               {MODULES.map((m) => (
                 <button
                   key={m.key}
                   onClick={() => navigate(`/practice/${assignmentId}/${m.key}`)}
-                  className="aspect-square flex flex-col items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 hover:shadow-lg transition"
+                  className="aspect-square flex flex-col items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-white to-gray-50 shadow-lg p-4 hover:shadow-lg transition md:aspect-auto md:py-6 lg:hover:shadow-xl"
                 >
                   <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 ${m.bg} ${m.text}`}>
                     <m.icon size={24} strokeWidth={2} />

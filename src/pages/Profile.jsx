@@ -64,63 +64,67 @@ export default function Profile() {
   const levelPct = xpRangeOfLevel > 0 ? Math.min(100, Math.round((xpWithinLevel / xpRangeOfLevel) * 100)) : 0;
   const initial = (profile.displayName || '?').trim().charAt(0).toUpperCase();
 
+  // טלפון: עמודה אחת כמו קודם. ממסך רחב (lg): שתי עמודות — פרטים, רמה ונתונים / תגים, הגדרות והתנתקות.
   return (
-    <div className="px-4 pt-6 space-y-5">
-      <h1 className="text-h1 font-bold text-brand-text">פרופיל</h1>
+    <div className="px-4 pt-6 space-y-5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6 lg:space-y-0">
+      <h1 className="text-h1 font-bold text-brand-text lg:col-span-full">פרופיל</h1>
 
-      {error && <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />}
-
-      <Card padding="p-6" className="flex flex-col items-center text-center">
-        <div className="h-20 w-20 rounded-full bg-brand-turquoise text-white flex items-center justify-center text-display font-bold mb-3">
-          {initial}
+      {error && (
+        <div className="lg:col-span-full">
+          <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />
         </div>
-        <p className="text-h2 font-bold text-brand-text">{profile.displayName}</p>
-        {className || institutionName ? (
-          <p className="text-body-sm text-brand-grey-text mt-1">
-            {className}
-            {className && institutionName ? ' · ' : ''}
-            {institutionName}
-          </p>
-        ) : (
-          <Skeleton className="h-4 w-32 mt-2" />
-        )}
-      </Card>
+      )}
 
-      <Card padding="p-5" className="space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="font-semibold text-brand-text">רמה {level}</span>
-          <span className="text-body-sm text-brand-grey-text">
-            {xpWithinLevel} / {xpRangeOfLevel} XP
-          </span>
-        </div>
-        <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
-          <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${levelPct}%` }} />
-        </div>
-      </Card>
+      <div className="space-y-5">
+        <Card padding="p-6" className="flex flex-col items-center text-center">
+          <div className="h-20 w-20 rounded-full bg-brand-turquoise text-white flex items-center justify-center text-display font-bold mb-3">
+            {initial}
+          </div>
+          <p className="text-h2 font-bold text-brand-text">{profile.displayName}</p>
+          {className || institutionName ? (
+            <p className="text-body-sm text-brand-grey-text mt-1">
+              {className}
+              {className && institutionName ? ' · ' : ''}
+              {institutionName}
+            </p>
+          ) : (
+            <Skeleton className="h-4 w-32 mt-2" />
+          )}
+        </Card>
 
-      <div className="grid grid-cols-2 gap-3">
-        <StatCard
-          icon={Flame}
-          value={profile.streak}
-          label="ימים ברצף"
-          iconClassName="bg-amber-50 text-amber-500"
-        />
-        <StatCard
-          icon={CheckCircle2}
-          value={completedCount === null ? '—' : completedCount}
-          label="משימות הושלמו"
-          accent="success"
-        />
+        <Card padding="p-5" className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-brand-text">רמה {level}</span>
+            <span className="text-body-sm text-brand-grey-text">
+              {xpWithinLevel} / {xpRangeOfLevel} XP
+            </span>
+          </div>
+          <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
+            <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${levelPct}%` }} />
+          </div>
+        </Card>
+
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard icon={Flame} value={profile.streak} label="ימים ברצף" iconClassName="bg-amber-50 text-amber-500" />
+          <StatCard
+            icon={CheckCircle2}
+            value={completedCount === null ? '—' : completedCount}
+            label="משימות הושלמו"
+            accent="success"
+          />
+        </div>
       </div>
 
-      <BadgeGrid earnedIds={earnedBadgeIds} />
+      <div className="space-y-5">
+        <BadgeGrid earnedIds={earnedBadgeIds} />
 
-      <SettingsSection />
+        <SettingsSection />
 
-      <Button variant="danger-subtle" size="lg" onClick={() => signOut(auth)}>
-        <LogOut size={16} />
-        התנתקות
-      </Button>
+        <Button variant="danger-subtle" size="lg" onClick={() => signOut(auth)}>
+          <LogOut size={16} />
+          התנתקות
+        </Button>
+      </div>
     </div>
   );
 }

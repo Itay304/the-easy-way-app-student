@@ -15,6 +15,8 @@ import { checkAndAwardBadges } from '../lib/badges.js';
 import { buildChoices, shuffle } from '../lib/quizChoices.js';
 import useCelebration from '../hooks/useCelebration.js';
 import useBackgroundMusic from '../hooks/useBackgroundMusic.js';
+import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts.js';
+import KeyBadge from '../components/practice/KeyBadge.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
 import Confetti from '../components/practice/Confetti.jsx';
@@ -185,6 +187,13 @@ export default function SprintSession() {
     navigate('/practice', { replace: true });
   }
 
+  // קיצורי מקלדת (מחשב): 1–4 בוחרים תשובה, Esc יציאה; במסך הסיכום Enter = "סיום"
+  useKeyboardShortcuts({
+    escape: goBack,
+    choice: (i) => !result && choices[i] && selectAnswer(choices[i]),
+    enter: () => result && goBack(),
+  });
+
   if (error) {
     return (
       <div className="px-4 pt-6 lg:px-10">
@@ -219,7 +228,7 @@ export default function SprintSession() {
           : 'מתחת לממוצע הכיתתי — עוד קצת תרגול!';
 
     return (
-      <div className="px-4 pt-10 flex flex-col items-center text-center space-y-6 lg:px-10">
+      <div className="px-4 pt-10 flex flex-col items-center text-center space-y-6 lg:px-10 lg:max-w-xl lg:mx-auto">
         <div className="h-20 w-20 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center">
           <Zap size={48} strokeWidth={2} />
         </div>
@@ -290,8 +299,8 @@ export default function SprintSession() {
         </p>
       </Card>
 
-      <div className="space-y-3">
-        {choices.map((choice) => {
+      <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4">
+        {choices.map((choice, i) => {
           const isSelected = selected === choice;
           const isCorrectChoice = choice === current.hebrewTranslation;
           let style = 'bg-white text-brand-text';
@@ -308,8 +317,9 @@ export default function SprintSession() {
               key={choice}
               onClick={() => selectAnswer(choice)}
               disabled={selected !== null}
-              className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition lg:px-6 lg:text-h2 ${style} ${shakeClass}`}
+              className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition lg:flex lg:items-center lg:justify-center lg:gap-3 lg:px-6 lg:text-h2 ${style} ${shakeClass}`}
             >
+              <KeyBadge n={i + 1} />
               {choice}
             </button>
           );

@@ -48,6 +48,18 @@
   --text-display-lg--line-height: 1.15;
 }
 
+/* מחשב בלבד (1024px ומעלה): גוונים כהים מעט יותר לטקסט/כפתורים, כדי לעמוד בניגודיות WCAG AA (4.5:1).
+   בטלפון ובטאבלט הצבעים נשארים בדיוק כמו קודם. כדי להחיל גם בטלפון — להעביר את הערכים ל-@theme למעלה. */
+@media (min-width: 1024px) {
+  :root {
+    --color-brand-turquoise: #00736a; /* לבן עליו 5.7:1 (היה #00bfa5, 2.3:1) */
+    --color-brand-turquoise-dark: #00695c;
+    --color-brand-grey-text: #6b6b6b;
+    --color-brand-green: #1b5e20;
+    --color-brand-error: #b91c1c;
+  }
+}
+
 html {
   height: 100%;
 }

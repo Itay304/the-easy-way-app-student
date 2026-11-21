@@ -1,10 +1,11 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { ArrowRight, Check, X } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
 import { shuffle } from '../../lib/quizChoices.js';
 import { isPhrase } from '../../lib/variedCycle.js';
 import useCelebration from '../../hooks/useCelebration.js';
 import useCombo from '../../hooks/useCombo.js';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts.js';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
@@ -37,7 +38,15 @@ export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner
   const { confettiKey, xpFlyup, shaking, celebrate, shake, stopShake } = useCelebration();
   const { combo, justBroke, registerAnswer, getMaxCombo } = useCombo();
 
+  const inputRef = useRef(null);
   const current = session[index];
+
+  // Esc יוצא (עם שמירה). Enter בשדה בודק (כמו קודם).
+  useKeyboardShortcuts({ escape: onBack });
+  // במחשב השדה מקבל פוקוס אוטומטית בכל מילה (בטלפון לא — שלא תקפוץ המקלדת)
+  useEffect(() => {
+    if (window.matchMedia('(min-width: 1024px)').matches) inputRef.current?.focus();
+  }, [index]);
   const progressPct = session.length > 0 ? Math.round((index / session.length) * 100) : 0;
   const blanked = current ? blankSentence(current.exampleSentence, current.englishWord) : null;
 
@@ -156,6 +165,7 @@ export default function SpellingModule({ words, onFinish, onBack, adaptiveBanner
 
       <div className={`space-y-3 ${shaking ? 'animate-shake' : ''}`} onAnimationEnd={stopShake}>
         <input
+          ref={inputRef}
           type="text"
           dir="ltr"
           value={input}

@@ -4,6 +4,7 @@ import Confetti from './Confetti.jsx';
 import Card from '../ui/Card.jsx';
 import Button from '../ui/Button.jsx';
 import InstallBanner from '../InstallBanner.jsx';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts.js';
 
 export default function SessionSummary({
   correctCount,
@@ -15,9 +16,12 @@ export default function SessionSummary({
 }) {
   const incorrectCount = Math.max(total - correctCount, 0);
   const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+  // מקלדת (מחשב): Enter או Esc = "סיום"
+  useKeyboardShortcuts({ enter: onDone, escape: onDone });
 
+  // במחשב: עמודה ממורכזת ברוחב קריא (לא מתיחה לכל הרוחב)
   return (
-    <div className="px-4 pt-10 flex flex-col items-center text-center space-y-6 lg:px-10">
+    <div className="px-4 pt-10 flex flex-col items-center text-center space-y-6 lg:px-10 lg:max-w-xl lg:mx-auto">
       <Confetti count={70} durationMs={1500} />
 
       <div className="h-20 w-20 rounded-full bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center">

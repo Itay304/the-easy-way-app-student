@@ -5,6 +5,8 @@ import { buildChoicesFromPool } from '../../lib/quizChoices.js';
 import { getGlobalWordPool } from '../../lib/api.js';
 import useCelebration from '../../hooks/useCelebration.js';
 import useCombo from '../../hooks/useCombo.js';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts.js';
+import KeyBadge from './KeyBadge.jsx';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
@@ -44,6 +46,12 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner, on
     [globalPool, index],
   );
   const progressPct = Math.round((index / session.length) * 100);
+
+  // קיצורי מקלדת (מחשב): 1–4 בוחרים תשובה, Esc יציאה (עם שמירת ההתקדמות כמו "חזרה")
+  useKeyboardShortcuts({
+    escape: onBack,
+    choice: (i) => choices[i] && selectAnswer(choices[i]),
+  });
 
   function selectAnswer(choice) {
     if (selected !== null) return;
@@ -120,7 +128,7 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner, on
         <LoadingSpinner />
       ) : (
         <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4">
-          {choices.map((choice) => {
+          {choices.map((choice, i) => {
             const isSelected = selected === choice;
             const isCorrectChoice = choice === current.hebrewTranslation;
             let style = 'bg-white text-brand-text';
@@ -137,8 +145,9 @@ export default function QuizModule({ words, onFinish, onBack, adaptiveBanner, on
                 key={choice}
                 onClick={() => selectAnswer(choice)}
                 disabled={selected !== null}
-                className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition lg:px-6 lg:text-h2 ${style} ${shakeClass}`}
+                className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition lg:flex lg:items-center lg:justify-center lg:gap-3 lg:px-6 lg:text-h2 ${style} ${shakeClass}`}
               >
+                <KeyBadge n={i + 1} />
                 {choice}
               </button>
             );

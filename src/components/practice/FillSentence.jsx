@@ -4,6 +4,8 @@ import { masteryLevel } from '../../lib/gamification.js';
 import { shuffle } from '../../lib/quizChoices.js';
 import useCelebration from '../../hooks/useCelebration.js';
 import useCombo from '../../hooks/useCombo.js';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts.js';
+import KeyBadge from './KeyBadge.jsx';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
@@ -103,6 +105,12 @@ export default function FillSentence({ words, onFinish, onBack, adaptiveBanner, 
     }, RESOLVE_DELAY_MS);
   }
 
+  // קיצורי מקלדת (מחשב): 1–4 בוחרים מילה, Esc יציאה עם שמירה
+  useKeyboardShortcuts({
+    escape: onBack,
+    choice: (i) => choices[i] && selectAnswer(choices[i]),
+  });
+
   if (eligibleWords.length < 4) {
     return (
       <div className="px-4 pt-6 text-center py-12 lg:px-10">
@@ -144,7 +152,7 @@ export default function FillSentence({ words, onFinish, onBack, adaptiveBanner, 
       </Card>
 
       <div className="grid grid-cols-2 gap-3 lg:gap-5">
-        {choices.map((choice) => {
+        {choices.map((choice, i) => {
           const isSelected = selected === choice;
           const isCorrectChoice = choice === current.englishWord;
           let style = 'bg-white text-brand-text';
@@ -162,8 +170,9 @@ export default function FillSentence({ words, onFinish, onBack, adaptiveBanner, 
               onClick={() => selectAnswer(choice)}
               disabled={selected !== null}
               dir="ltr"
-              className={`rounded-xl shadow-md p-4 font-semibold transition lg:px-6 ${style} ${shakeClass}`}
+              className={`rounded-xl shadow-md p-4 font-semibold transition lg:flex lg:items-center lg:justify-center lg:gap-3 lg:px-6 lg:text-h2 ${style} ${shakeClass}`}
             >
+              <KeyBadge n={i + 1} />
               {choice}
             </button>
           );

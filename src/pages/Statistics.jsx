@@ -32,10 +32,7 @@ export default function Statistics() {
       setLoading(true);
       setError('');
       try {
-        const [assignmentsRes, allProgress] = await Promise.all([
-          callGetMyAssignments(),
-          getAllProgress(user.uid),
-        ]);
+        const [assignmentsRes, allProgress] = await Promise.all([callGetMyAssignments(), getAllProgress(user.uid)]);
 
         const masteredTimestampsMs = allProgress
           .filter((p) => isMastered(p.correctAttempts || 0, p.totalAttempts || 0))
@@ -56,10 +53,7 @@ export default function Statistics() {
           .sort((a, b) => (b.correctAttempts || 0) - (a.correctAttempts || 0))
           .slice(0, STRENGTHS_WEAKNESSES_LIMIT);
         const topWeaknesses = [...attempted]
-          .sort(
-            (a, b) =>
-              (b.totalAttempts - b.correctAttempts || 0) - (a.totalAttempts - a.correctAttempts || 0),
-          )
+          .sort((a, b) => (b.totalAttempts - b.correctAttempts || 0) - (a.totalAttempts - a.correctAttempts || 0))
           .slice(0, STRENGTHS_WEAKNESSES_LIMIT);
 
         if (!cancelled) {
@@ -82,14 +76,20 @@ export default function Statistics() {
     };
   }, [user, reloadKey, profile?.institutionId]);
 
+  // טלפון: עמודה אחת כמו קודם. ממסך רחב (lg): הגרף לרוחב מלא, המשימות בשתי עמודות,
+  // ו"החוזקות שלך" / "דורש תרגול נוסף" זו לצד זו.
   return (
-    <div className="px-4 pt-6 space-y-5">
-      <h1 className="text-h1 font-bold text-brand-text">סטטיסטיקות</h1>
+    <div className="px-4 pt-6 space-y-5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6 lg:space-y-0">
+      <h1 className="text-h1 font-bold text-brand-text lg:col-span-full">סטטיסטיקות</h1>
 
-      {error && <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />}
+      {error && (
+        <div className="lg:col-span-full">
+          <ErrorBanner message={error} onRetry={() => setReloadKey((k) => k + 1)} />
+        </div>
+      )}
 
       {loading && !error && (
-        <div className="space-y-4">
+        <div className="space-y-4 lg:col-span-full">
           <Skeleton className="h-56 !rounded-2xl" />
           <Skeleton className="h-24 !rounded-2xl" />
           <Skeleton className="h-56 !rounded-2xl" />
@@ -97,17 +97,21 @@ export default function Statistics() {
       )}
 
       {!loading && !error && !hasAnyProgress && (
-        <EmptyState icon={BarChart3} title="עדיין אין נתוני תרגול" subtitle="תרגל/י מילים כדי לראות כאן סטטיסטיקות" />
+        <div className="lg:col-span-full">
+          <EmptyState icon={BarChart3} title="עדיין אין נתוני תרגול" subtitle="תרגל/י מילים כדי לראות כאן סטטיסטיקות" />
+        </div>
       )}
 
       {!loading && !error && hasAnyProgress && (
         <>
-          <MasteryLineChart data={chartData} />
+          <div className="lg:col-span-full">
+            <MasteryLineChart data={chartData} />
+          </div>
 
           {donuts.length > 0 && (
-            <div>
+            <div className="lg:col-span-full">
               <h2 className="text-body-lg font-bold text-brand-text mb-3">התקדמות לפי משימה</h2>
-              <div className="space-y-3">
+              <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4">
                 {donuts.map((d) => (
                   <AssignmentDonut key={d.assignmentId} title={d.title} progress={d.progress} />
                 ))}

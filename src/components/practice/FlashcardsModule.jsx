@@ -3,6 +3,8 @@ import { ArrowRight, Check, X } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
 import useCelebration from '../../hooks/useCelebration.js';
 import useCombo from '../../hooks/useCombo.js';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts.js';
+import KeyBadge from './KeyBadge.jsx';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
@@ -58,6 +60,14 @@ export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBann
     setIndex((i) => i + 1);
     setFlipped(false);
   }
+
+  // קיצורי מקלדת (מחשב): רווח/Enter הופכים, 1 = לא ידעתי, 2 = ידעתי, Esc יציאה עם שמירה
+  useKeyboardShortcuts({
+    escape: onBack,
+    space: toggleFlip,
+    enter: () => !flipped && setFlipped(true),
+    choice: (i) => i < 2 && answer(i === 1),
+  });
 
   return (
     <div className="px-4 pt-6 space-y-5 lg:px-10">
@@ -120,6 +130,7 @@ export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBann
           onClick={() => answer(false)}
           className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold lg:gap-3"
         >
+          <KeyBadge n={1} />
           <X size={16} />
           לא ידעתי
         </button>
@@ -127,6 +138,7 @@ export default function FlashcardsModule({ words, onFinish, onBack, adaptiveBann
           onClick={() => answer(true)}
           className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold lg:gap-3"
         >
+          <KeyBadge n={2} />
           <Check size={16} />
           ידעתי
         </button>

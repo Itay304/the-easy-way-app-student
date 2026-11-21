@@ -4,6 +4,7 @@ import { masteryLevel } from '../../lib/gamification.js';
 import { shuffle } from '../../lib/quizChoices.js';
 import useCelebration from '../../hooks/useCelebration.js';
 import useCombo from '../../hooks/useCombo.js';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts.js';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
@@ -259,6 +260,9 @@ export default function MatchingModule({ words, onFinish, onBack, adaptiveBanner
   const dragDistance =
     dragInfo && dragPos ? Math.hypot(dragPos.x - dragInfo.startClientX, dragPos.y - dragInfo.startClientY) : 0;
   const isActuallyDragging = dragInfo && dragDistance > TAP_THRESHOLD_PX;
+
+  // Esc יוצא (עם שמירה) — ההתאמה עצמה נשארת בגרירה/הקשה
+  useKeyboardShortcuts({ escape: onBack });
 
   if (targetWords.length === 0) {
     return (

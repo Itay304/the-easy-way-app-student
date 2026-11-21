@@ -5,6 +5,8 @@ import { shuffle } from '../../lib/quizChoices.js';
 import { getGlobalWordPool } from '../../lib/api.js';
 import useCelebration from '../../hooks/useCelebration.js';
 import useCombo from '../../hooks/useCombo.js';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts.js';
+import KeyBadge from './KeyBadge.jsx';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
@@ -100,6 +102,12 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner, onP
     }, RESOLVE_DELAY_MS);
   }
 
+  // קיצורי מקלדת (מחשב): 1 = לא נכון, 2 = נכון (לפי סדר הכפתורים), Esc יציאה עם שמירה
+  useKeyboardShortcuts({
+    escape: onBack,
+    choice: (i) => i < 2 && answer(i === 1),
+  });
+
   function handleTouchStart(e) {
     touchStartX.current = e.touches[0].clientX;
   }
@@ -169,6 +177,7 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner, onP
           disabled={!!flyDirection}
           className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold disabled:opacity-50 lg:gap-3"
         >
+          <KeyBadge n={1} />
           <X size={16} />
           לא נכון
         </button>
@@ -177,6 +186,7 @@ export default function TrueFalse({ words, onFinish, onBack, adaptiveBanner, onP
           disabled={!!flyDirection}
           className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold disabled:opacity-50 lg:gap-3"
         >
+          <KeyBadge n={2} />
           <Check size={16} />
           נכון
         </button>
