@@ -15,11 +15,14 @@ function ToggleRow({ icon: Icon, label, checked, onChange }) {
         role="switch"
         aria-checked={checked}
         aria-label={label}
-        className={`w-12 h-7 rounded-full relative transition-colors ${checked ? 'bg-brand-turquoise' : 'bg-brand-grey-light'}`}
+        // כבוי: מסגרת וידית אפורות כהות (ניגודיות 5:1 מול הלבן) — כדי שהמתג ייראה גם כשהוא כבוי
+        className={`w-12 h-7 shrink-0 rounded-full relative border-2 transition-colors ${
+          checked ? 'bg-brand-turquoise border-brand-turquoise' : 'bg-white border-brand-grey-text'
+        }`}
       >
         <span
-          className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-all ${
-            checked ? 'left-1' : 'right-1'
+          className={`absolute top-0.5 h-5 w-5 rounded-full shadow transition-all ${
+            checked ? 'left-0.5 bg-white' : 'right-0.5 bg-brand-grey-text'
           }`}
         />
       </button>
@@ -27,7 +30,8 @@ function ToggleRow({ icon: Icon, label, checked, onChange }) {
   );
 }
 
-export default function SettingsSection() {
+// children — פעולה בתחתית הכרטיס (בפרופיל: כפתור ההתנתקות)
+export default function SettingsSection({ children }) {
   const {
     soundEnabled,
     animationsEnabled,
@@ -51,6 +55,7 @@ export default function SettingsSection() {
         checked={whoAmITypingMode}
         onChange={toggleWhoAmITypingMode}
       />
+      {children && <div className="pt-4">{children}</div>}
     </Card>
   );
 }

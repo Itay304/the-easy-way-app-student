@@ -8,7 +8,10 @@ import { AuthProvider } from './context/AuthContext.jsx';
 import LoadingSpinner from './components/LoadingSpinner.jsx';
 import SplashScreen from './components/SplashScreen.jsx';
 import BottomNav from './components/BottomNav.jsx';
+import SideNav from './components/SideNav.jsx';
+import KeyboardHint from './components/practice/KeyboardHint.jsx';
 import Login from './pages/Login.jsx';
+import ConsentGate from './components/consent/ConsentGate.jsx';
 import NoInstitution from './pages/NoInstitution.jsx';
 import Home from './pages/Home.jsx';
 import Practice from './pages/Practice.jsx';
@@ -18,18 +21,29 @@ import SprintSession from './pages/SprintSession.jsx';
 import Statistics from './pages/Statistics.jsx';
 import Profile from './pages/Profile.jsx';
 
-// מסכי תרגול (סשן מודול/ספרינט + סיכום) מקבלים פריסה רחבה במחשב (lg = 1024px ומעלה), כדי
-// שהתרגול ימלא את המסך ולא ייראה כמו מסך טלפון. מתחת ל-1024px — ללא שינוי (480px כמו תמיד).
-// שאר האפליקציה (בית, פרופיל, בחירת מודול, ניווט) נשארת ברוחב 480px גם במחשב.
-const WIDE_PRACTICE_ROUTE = /^\/(practice\/[^/]+\/[^/]+|sprint)\/?$/;
+// פריסה לפי רוחב המסך:
+// • טלפון (עד 767px): עמודה של 480px וסרגל טאבים תחתון — בדיוק כמו קודם (מחלקות הבסיס לא השתנו).
+// • טאבלט (768–1023px): אותו כרטיס לבן וסרגל תחתון, אבל רחב יותר (768px) — העמודים עוברים לשתי
+//   עמודות היכן שזה מתאים (md:).
+// • מחשב (1024px ומעלה): ניווט צד מימין (SideNav) במקום הסרגל התחתון; התוכן עד 1200px, ממורכז
+//   בשטח שנשאר. מסכי תרגול (סשן מודול/ספרינט + סיכום) — עמודה ממורכזת של 720px.
+const PRACTICE_SESSION_ROUTE = /^\/(practice\/[^/]+\/[^/]+|sprint)\/?$/;
 
 function Layout() {
   const { pathname } = useLocation();
-  const widePractice = WIDE_PRACTICE_ROUTE.test(pathname);
+  const practiceSession = PRACTICE_SESSION_ROUTE.test(pathname);
   return (
-    <div className="min-h-dvh flex flex-col md:bg-gradient-to-b md:from-brand-grey-light md:to-white">
-      <main className={`flex-1 max-w-[480px] w-full mx-auto pb-24 md:py-6 ${widePractice ? 'lg:max-w-4xl' : ''}`}>
-        <div className="md:rounded-3xl md:bg-white md:shadow-lg md:min-h-[calc(100dvh-3rem)]">
+    <div className="min-h-dvh flex flex-col md:bg-gradient-to-b md:from-brand-grey-light md:to-white lg:bg-none lg:pr-64">
+      <SideNav />
+      <main
+        className={`flex-1 max-w-[480px] w-full mx-auto pb-24 md:py-6 md:max-w-3xl lg:pb-12 lg:pt-4 lg:px-6 ${
+          practiceSession ? 'lg:max-w-[720px] lg:px-0' : 'lg:max-w-[1200px]'
+        }`}
+      >
+        <div className="md:rounded-3xl md:bg-white md:shadow-lg md:min-h-[calc(100dvh-3rem)] lg:rounded-none lg:bg-transparent lg:shadow-none lg:min-h-0">
+          {/* כותרת לקוראי מסך בלבד (לא נראית בשום רוחב) — לכל עמוד יש h1 */}
+          {practiceSession && <h1 className="sr-only">תרגול</h1>}
+          {practiceSession && <KeyboardHint />}
           <Outlet />
         </div>
       </main>
@@ -71,6 +85,8 @@ export default function App() {
   }
 
   if (status === 'signed-out') return <Login />;
+  // משתמש קיים שעוד לא אישר תקנון ומדיניות פרטיות — מסך הסכמה חד-פעמי לפני כל דבר אחר
+  if (profile?.needsConsent) return <ConsentGate uid={user.uid} />;
   if (status === 'no-institution') return <NoInstitution />;
 
   return (

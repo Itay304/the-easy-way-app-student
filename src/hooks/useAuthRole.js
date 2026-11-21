@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase.js';
+import { needsConsent } from '../lib/consent.js';
 
 // syncUserClaims (functions/index.js, onDocumentWritten על users/{uid}) מסנכרן
 // role/institutionId ל-Custom Claims א-סינכרונית, אחרי הכתיבה שקבעה אותם —
@@ -52,7 +53,9 @@ export default function useAuthRole() {
     const unsubDoc = onSnapshot(
       doc(db, 'users', user.uid),
       async (snap) => {
-        const data = snap.data() || {};
+        // estimate: אחרי כתיבה עם serverTimestamp() ה-snapshot המקומי כבר מכיל ערך (לא null) —
+        // כך מסך ההסכמה לא "מהבהב" רגע אחרי ההרשמה/האישור
+        const data = snap.data({ serverTimestamps: 'estimate' }) || {};
         const institutionId = data.institutionId || null;
 
         if (institutionId) {
@@ -74,6 +77,7 @@ export default function useAuthRole() {
           streak: typeof data.streak === 'number' ? data.streak : 0,
           lastActiveDate: data.lastActiveDate || null,
           totalActiveDays: typeof data.totalActiveDays === 'number' ? data.totalActiveDays : 0,
+          needsConsent: needsConsent(snap.exists(), data),
         });
         setStatus(institutionId ? 'ready' : 'no-institution');
       },

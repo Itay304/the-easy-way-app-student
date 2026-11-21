@@ -6,6 +6,8 @@ import { getGlobalWordPool } from '../../lib/api.js';
 import { exerciseFor } from '../../lib/variedCycle.js';
 import useCelebration from '../../hooks/useCelebration.js';
 import useCombo from '../../hooks/useCombo.js';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts.js';
+import KeyBadge from './KeyBadge.jsx';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
@@ -54,6 +56,9 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
   const { confettiKey, xpFlyup, shaking, celebrate, shake, stopShake } = useCelebration();
   const { combo, justBroke, registerAnswer, getMaxCombo } = useCombo();
   const touchStartX = useRef(null);
+  const spellingInputRef = useRef(null);
+  // נעילה מול תשובה כפולה (לחיצה כפולה / מקש) עד המעבר למילה הבאה
+  const answeredRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -111,6 +116,7 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
   }
 
   function advance() {
+    answeredRef.current = false;
     setIndex((i) => i + 1);
     setFlipped(false);
     setSelected(null);
@@ -150,6 +156,8 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
   }
 
   function answerFlashcard(knew) {
+    if (answeredRef.current) return;
+    answeredRef.current = true;
     const { nextSession, nextCorrectCount, nextMasteredCount } = commitAnswer(knew);
     setTimeout(() => {
       if (!finishIfDone(nextSession, nextCorrectCount, nextMasteredCount)) advance();
@@ -157,7 +165,8 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
   }
 
   function answerQuiz(choice) {
-    if (selected !== null) return;
+    if (selected !== null || answeredRef.current) return;
+    answeredRef.current = true;
     setSelected(choice);
     const isCorrect = choice === current.hebrewTranslation;
     const { nextSession, nextCorrectCount, nextMasteredCount } = commitAnswer(isCorrect);
@@ -167,7 +176,8 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
   }
 
   function answerTrueFalse(saidTrue) {
-    if (flyDirection || !trueFalseRound) return;
+    if (flyDirection || !trueFalseRound || answeredRef.current) return;
+    answeredRef.current = true;
     const isCorrect = saidTrue === trueFalseRound.isTrue;
     setFlyDirection(saidTrue ? 'right' : 'left');
     const { nextSession, nextCorrectCount, nextMasteredCount } = commitAnswer(isCorrect);
@@ -237,6 +247,26 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
     }
   }
 
+  // קיצורי מקלדת (מחשב): 1–4 תשובה לפי סדר הכפתורים, רווח/Enter הופכים כרטיסייה, Esc יציאה (עם שמירה).
+  // באיות Enter מטופל בשדה עצמו.
+  useKeyboardShortcuts({
+    escape: onBack,
+    choice: (i) => {
+      if (currentType === 'flashcards' && i < 2) answerFlashcard(i === 1);
+      else if (currentType === 'quiz' && quizChoices[i]) answerQuiz(quizChoices[i]);
+      else if (currentType === 'truefalse' && i < 2) answerTrueFalse(i === 1);
+    },
+    space: () => currentType === 'flashcards' && setFlipped((f) => !f),
+    enter: () => currentType === 'flashcards' && !flipped && setFlipped(true),
+  });
+
+  // איות במחשב: השדה מקבל פוקוס אוטומטית בכל מילה (בטלפון לא — שלא תקפוץ המקלדת)
+  useEffect(() => {
+    if (currentType === 'spelling' && window.matchMedia('(min-width: 1024px)').matches) {
+      spellingInputRef.current?.focus();
+    }
+  }, [index, currentType]);
+
   if (session.length === 0) {
     return (
       <div className="px-4 pt-6 text-center py-12 lg:px-10">
@@ -262,7 +292,7 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
       <ComboBar combo={combo} justBroke={justBroke} />
 
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
-        <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
+        <div className="h-full bg-brand-turquoise-light rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
       <p className="text-center text-body-sm text-brand-grey-text lg:text-body-lg">
         {index + 1} מתוך {session.length}
@@ -309,6 +339,7 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
                   onClick={() => answerFlashcard(false)}
                   className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold lg:gap-3"
                 >
+                  <KeyBadge n={1} />
                   <X size={16} />
                   לא ידעתי
                 </button>
@@ -316,6 +347,7 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
                   onClick={() => answerFlashcard(true)}
                   className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold lg:gap-3"
                 >
+                  <KeyBadge n={2} />
                   <Check size={16} />
                   ידעתי
                 </button>
@@ -331,7 +363,7 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
                 </p>
               </Card>
               <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4">
-                {quizChoices.map((choice) => {
+                {quizChoices.map((choice, i) => {
                   const isSelected = selected === choice;
                   const isCorrectChoice = choice === current.hebrewTranslation;
                   let style = 'bg-white text-brand-text';
@@ -348,8 +380,9 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
                       key={choice}
                       onClick={() => answerQuiz(choice)}
                       disabled={selected !== null}
-                      className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition lg:px-6 lg:text-h2 ${style} ${shakeClass}`}
+                      className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition lg:flex lg:items-center lg:justify-center lg:gap-3 lg:px-6 lg:text-h2 ${style} ${shakeClass}`}
                     >
+                      <KeyBadge n={i + 1} />
                       {choice}
                     </button>
                   );
@@ -384,6 +417,7 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
                   disabled={!!flyDirection}
                   className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-error-light text-brand-error font-bold disabled:opacity-50 lg:gap-3"
                 >
+                  <KeyBadge n={1} />
                   <X size={16} />
                   לא נכון
                 </button>
@@ -392,6 +426,7 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
                   disabled={!!flyDirection}
                   className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green/10 text-brand-green font-bold disabled:opacity-50 lg:gap-3"
                 >
+                  <KeyBadge n={2} />
                   <Check size={16} />
                   נכון
                 </button>
@@ -413,6 +448,7 @@ export default function VariedModule({ words, onFinish, onBack, onProgress, orde
               </Card>
               <div className={`space-y-3 ${shaking ? 'animate-shake' : ''}`} onAnimationEnd={stopShake}>
                 <input
+                  ref={spellingInputRef}
                   type="text"
                   dir="ltr"
                   value={input}

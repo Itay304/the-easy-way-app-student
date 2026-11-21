@@ -1,10 +1,12 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { ArrowRight, Lightbulb } from 'lucide-react';
 import { masteryLevel } from '../../lib/gamification.js';
 import { shuffle } from '../../lib/quizChoices.js';
 import { isWhoAmITypingMode } from '../../lib/settings.js';
 import useCelebration from '../../hooks/useCelebration.js';
 import useCombo from '../../hooks/useCombo.js';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts.js';
+import KeyBadge from './KeyBadge.jsx';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
@@ -169,6 +171,16 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner, onProg
     }
   }
 
+  // קיצורי מקלדת (מחשב): 1–4 בוחרים מילה, Esc יציאה עם שמירה. במצב הקלדה — השדה בפוקוס אוטומטית.
+  const inputRef = useRef(null);
+  useKeyboardShortcuts({
+    escape: onBack,
+    choice: (i) => choices[i] && selectChoice(choices[i]),
+  });
+  useEffect(() => {
+    if (typingMode && window.matchMedia('(min-width: 1024px)').matches) inputRef.current?.focus();
+  }, [index, clueLevel, typingMode]);
+
   if (eligibleWords.length === 0) {
     return (
       <div className="px-4 pt-6 text-center py-12 lg:px-10">
@@ -198,7 +210,7 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner, onProg
       <ComboBar combo={combo} justBroke={justBroke} />
 
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
-        <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
+        <div className="h-full bg-brand-turquoise-light rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
       <p className="text-center text-body-sm text-brand-grey-text lg:text-body-lg">
         {index + 1} מתוך {session.length}
@@ -253,6 +265,7 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner, onProg
       {typingMode ? (
         <div className="space-y-3">
           <input
+            ref={inputRef}
             type="text"
             dir="ltr"
             value={input}
@@ -267,8 +280,8 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner, onProg
           </Button>
         </div>
       ) : (
-        <div className="space-y-3">
-          {choices.map((choice) => {
+        <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4">
+          {choices.map((choice, i) => {
             const isCorrectChoice = choice === current.englishWord;
             let style = 'bg-white text-brand-text';
             if (status !== 'active' && isCorrectChoice) style = 'bg-brand-green/10 text-brand-green';
@@ -278,8 +291,9 @@ export default function WhoAmI({ words, onFinish, onBack, adaptiveBanner, onProg
                 onClick={() => selectChoice(choice)}
                 disabled={status !== 'active'}
                 dir="ltr"
-                className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition lg:px-6 lg:text-h2 ${style}`}
+                className={`w-full rounded-xl shadow-md p-4 font-semibold text-body-lg transition lg:flex lg:items-center lg:justify-center lg:gap-3 lg:px-6 lg:text-h2 ${style}`}
               >
+                <KeyBadge n={i + 1} />
                 {choice}
               </button>
             );

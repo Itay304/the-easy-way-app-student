@@ -81,7 +81,9 @@ export default function LeaderboardCard({ topStudents, myRank, totalStudents, my
               <span className="flex-1 min-w-0 truncate font-medium text-brand-text">
                 {s.displayName || s.fullName || 'תלמיד'}
               </span>
-              <span className="text-body-sm font-bold text-brand-turquoise shrink-0">{s.totalXp} XP</span>
+              <span className="text-body-sm font-bold text-brand-turquoise shrink-0" dir="ltr">
+                {s.totalXp} XP
+              </span>
             </li>
           ))}
         </ul>

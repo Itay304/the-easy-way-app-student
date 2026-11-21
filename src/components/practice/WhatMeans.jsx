@@ -4,6 +4,8 @@ import { masteryLevel } from '../../lib/gamification.js';
 import { shuffle } from '../../lib/quizChoices.js';
 import useCelebration from '../../hooks/useCelebration.js';
 import useCombo from '../../hooks/useCombo.js';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts.js';
+import KeyBadge from './KeyBadge.jsx';
 import Confetti from './Confetti.jsx';
 import XpFlyup from './XpFlyup.jsx';
 import ComboBar from './ComboBar.jsx';
@@ -93,6 +95,12 @@ export default function WhatMeans({ words, onFinish, onBack, adaptiveBanner, onP
     }, RESOLVE_DELAY_MS);
   }
 
+  // קיצורי מקלדת (מחשב): 1–4 בוחרים הסבר, Esc יציאה עם שמירה
+  useKeyboardShortcuts({
+    escape: onBack,
+    choice: (i) => choices[i] && selectAnswer(choices[i]),
+  });
+
   if (eligibleWords.length < 4) {
     return (
       <div className="px-4 pt-6 text-center py-12 lg:px-10">
@@ -120,7 +128,7 @@ export default function WhatMeans({ words, onFinish, onBack, adaptiveBanner, onP
       <ComboBar combo={combo} justBroke={justBroke} />
 
       <div className="h-2 rounded-full bg-brand-grey-light overflow-hidden">
-        <div className="h-full bg-brand-turquoise rounded-full transition-all" style={{ width: `${progressPct}%` }} />
+        <div className="h-full bg-brand-turquoise-light rounded-full transition-all" style={{ width: `${progressPct}%` }} />
       </div>
       <p className="text-center text-body-sm text-brand-grey-text lg:text-body-lg">
         {index + 1} מתוך {session.length}
@@ -134,7 +142,7 @@ export default function WhatMeans({ words, onFinish, onBack, adaptiveBanner, onP
       </Card>
 
       <div className="space-y-3">
-        {choices.map((choice) => {
+        {choices.map((choice, i) => {
           const isSelected = selected === choice;
           const isCorrectChoice = choice === current.descriptionSentence;
           let style = 'bg-white text-brand-text';
@@ -148,8 +156,9 @@ export default function WhatMeans({ words, onFinish, onBack, adaptiveBanner, onP
               onClick={() => selectAnswer(choice)}
               disabled={selected !== null}
               dir="ltr"
-              className={`w-full rounded-xl shadow-md p-4 text-body font-medium text-right transition lg:px-6 lg:text-body-lg ${style}`}
+              className={`w-full rounded-xl shadow-md p-4 text-body font-medium text-right transition lg:flex lg:items-center lg:gap-3 lg:px-6 lg:text-body-lg ${style}`}
             >
+              <KeyBadge n={i + 1} />
               {choice}
             </button>
           );
