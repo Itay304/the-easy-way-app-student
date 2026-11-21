@@ -28,7 +28,8 @@ messaging.onBackgroundMessage((payload) => {
 });
 
 // v4: ביטויים מדלגים על שלב האיות במודול המגוון — מנקה את ה-cache של הגרסה הקודמת
-const CACHE_NAME = 'easylex-student-v4';
+// v5: פריסת מחשב, ערכת צבעים נגישה אחת, הסכמה לתקנון — מנקה את ה-cache של הגרסה הקודמת
+const CACHE_NAME = 'easylex-student-v5';
 const APP_SHELL = ['/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
