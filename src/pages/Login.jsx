@@ -9,6 +9,8 @@ import { httpsCallable } from 'firebase/functions';
 import { auth, db, functions } from '../firebase.js';
 import Input from '../components/ui/Input.jsx';
 import Button from '../components/ui/Button.jsx';
+import TermsCheckbox from '../components/consent/TermsCheckbox.jsx';
+import { studentConsentFields, TERMS_REQUIRED_ERROR } from '../lib/consent.js';
 
 export default function Login() {
   const [mode, setMode] = useState('login'); // 'login' | 'signup'
@@ -16,6 +18,8 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [classCode, setClassCode] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsError, setTermsError] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -33,11 +37,18 @@ export default function Login() {
   function switchMode() {
     setMode((m) => (m === 'login' ? 'signup' : 'login'));
     setError('');
+    setTermsError('');
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+    // הרשמה בלי אישור התקנון — לא נשלחת בכלל
+    if (mode === 'signup' && !termsAccepted) {
+      setTermsError(TERMS_REQUIRED_ERROR);
+      return;
+    }
+    setTermsError('');
     setSubmitting(true);
     try {
       if (mode === 'login') {
@@ -58,6 +69,7 @@ export default function Login() {
             totalXp: 0,
             totalAttemptsCount: 0,
             totalCorrectAttempts: 0,
+            ...studentConsentFields(), // termsAcceptedAt (זמן שרת), termsVersion, marketingConsent: false
           });
           const joinClass = httpsCallable(functions, 'joinClass');
           // הפונקציה קוראת request.data.joinCode — לא code (ר' functions/index.js,
@@ -135,6 +147,16 @@ export default function Login() {
             placeholder="קוד כיתה"
             maxLength={8}
             className="text-center font-mono"
+          />
+        )}
+        {mode === 'signup' && (
+          <TermsCheckbox
+            checked={termsAccepted}
+            onChange={(v) => {
+              setTermsAccepted(v);
+              if (v) setTermsError('');
+            }}
+            error={termsError}
           />
         )}
         {error && <p className="text-brand-error text-body-sm text-center">{error}</p>}
