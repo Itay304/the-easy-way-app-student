@@ -29,6 +29,7 @@ import WhatMeans from '../components/practice/WhatMeans.jsx';
 import FillSentence from '../components/practice/FillSentence.jsx';
 import VariedModule from '../components/practice/VariedModule.jsx';
 import SessionSummary from '../components/practice/SessionSummary.jsx';
+import { scopeToAssignment } from '../lib/assignmentScope.js';
 import BadgeUnlockToast from '../components/practice/BadgeUnlockToast.jsx';
 
 // תרגול אדפטיבי (30% מהמילים החלשות בתחילת הסשן) חל רק על quiz/flashcards,
@@ -39,16 +40,15 @@ const EXTRA_SESSION_XP = 30; // סבב נוסף מעבר ליעד היומי
 
 async function buildSessionWords(assignment, uid, institutionId) {
   const allWords = await getWordsForAssignment(assignment, institutionId);
-  const scoped =
-    assignment.wordIds && assignment.wordIds.length > 0
-      ? allWords.filter((w) => assignment.wordIds.includes(w.id))
-      : allWords;
+  const scoped = scopeToAssignment(allWords, assignment);
 
   const allProgress = await getAllProgress(uid);
   const progressByWord = new Map(allProgress.map((p) => [`${p.sourceListId}::${p.englishWord}`, p]));
 
   return scoped.map((w) => {
-    const baseline = progressByWord.get(`${assignment.listId}::${w.englishWord}`);
+    // ההתקדמות הגלובלית נשמרת לפי הרשימה של המילה עצמה (במשימה משולבת — לא תמיד listId של המשימה)
+    const sourceListId = w.sourceListId || assignment.listId;
+    const baseline = progressByWord.get(`${sourceListId}::${w.englishWord}`);
     return withBaseline({
       wordId: w.id,
       englishWord: w.englishWord,
@@ -57,7 +57,7 @@ async function buildSessionWords(assignment, uid, institutionId) {
       exampleSentence: w.exampleSentence,
       hebrewExample: w.hebrewExample,
       descriptionSentence: w.descriptionSentence,
-      sourceListId: assignment.listId,
+      sourceListId,
       correctAttempts: baseline?.correctAttempts || 0,
       totalAttempts: baseline?.totalAttempts || 0,
     });

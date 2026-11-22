@@ -10,6 +10,7 @@ import { auth, db, functions } from '../firebase.js';
 import Input from '../components/ui/Input.jsx';
 import Button from '../components/ui/Button.jsx';
 import TermsCheckbox from '../components/consent/TermsCheckbox.jsx';
+import { friendlyError } from '../lib/errors.js';
 import { studentConsentFields, TERMS_REQUIRED_ERROR } from '../lib/consent.js';
 
 export default function Login() {
@@ -97,7 +98,7 @@ export default function Login() {
         // joinClass (functions/index.js) זורק HttpsError עם הודעות עברית
         // מוכנות (קוד לא נמצא / הגבלת קצב וכו') — מציגים אותן ישירות במקום
         // להתאים תבנית לטקסט אנגלי שלעולם לא מופיע בהודעה בפועל.
-        setError(err.message || 'קוד הכיתה אינו תקין. בקש מהמורה קוד חדש.');
+        setError(friendlyError(err, { context: 'joinClass' }));
       } else {
         setError('שגיאה בהרשמה. נסו שנית.');
       }

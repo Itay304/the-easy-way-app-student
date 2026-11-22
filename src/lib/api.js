@@ -16,6 +16,7 @@ import { httpsCallable } from 'firebase/functions';
 import { auth, db, functions } from '../firebase.js';
 import { hidesSensitive, visibleAssignment, visibleWords } from './contentFilter.js';
 import { computeLevel } from './gamification.js';
+import { assignmentSources } from './assignmentScope.js';
 import { toDateKey } from './dateUtils.js';
 
 // ── משתמש / מוסד / כיתה ──────────────────────────────────────────────────
@@ -110,14 +111,21 @@ export async function getWordsForAssignment(assignment, institutionId) {
   return visibleWords(await rawWordsForAssignment(assignment, institutionId), await hideSensitiveForMe());
 }
 
+// assignments-v2: משימה יכולה לשלב מילים מכמה רשימות (assignment.sources — ר' assignmentScope.js). כל מקור נטען מהרשימה שלו,
+// וכל מילה נושאת sourceListId. מילים כפולות בין רשימות כבר הוסרו בשרת (wordIds/wordListIds).
 async function rawWordsForAssignment(assignment, institutionId) {
-  if (assignment.listSource !== 'custom') {
-    const words = await rawWordsForList(assignment.listId);
-    if (words.length > 0 || assignment.listSource === 'global') return words;
+  const lists = await Promise.all(assignmentSources(assignment).map((s) => rawWordsForSource(s, institutionId)));
+  return lists.flat();
+}
+
+async function rawWordsForSource({ listId, listSource }, institutionId) {
+  if (listSource !== 'custom') {
+    const words = await rawWordsForList(listId);
+    if (words.length > 0 || listSource === 'global') return words;
   }
   if (!institutionId) return [];
-  const snap = await getDocs(collection(db, 'institutions', institutionId, 'customLists', assignment.listId, 'words'));
-  return snap.docs.map((d) => ({ id: d.id, sourceListId: assignment.listId, ...d.data() }));
+  const snap = await getDocs(collection(db, 'institutions', institutionId, 'customLists', listId, 'words'));
+  return snap.docs.map((d) => ({ id: d.id, sourceListId: listId, ...d.data() }));
 }
 
 // ── מאגר מילים גלובלי (כל word_lists) — למסיחות במבחן/נכון-לא-נכון, כדי
