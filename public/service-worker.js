@@ -30,7 +30,8 @@ messaging.onBackgroundMessage((payload) => {
 // v4: ביטויים מדלגים על שלב האיות במודול המגוון — מנקה את ה-cache של הגרסה הקודמת
 // v5: פריסת מחשב, ערכת צבעים נגישה אחת, הסכמה לתקנון — מנקה את ה-cache של הגרסה הקודמת
 // v6: assignments-v2 — משימות בארכיון/שחזור/מחיקה לצמיתות, עד 1,000 מילים, כמה רשימות, הודעות שגיאה ברורות
-const CACHE_NAME = 'easylex-student-v6';
+// v7: קוד כיתה שגוי בהרשמה — הודעה ברורה ובדיקה לפני יצירת חשבון
+const CACHE_NAME = 'easylex-student-v7';
 const APP_SHELL = ['/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
