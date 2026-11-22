@@ -17,7 +17,7 @@ const SERVER_MESSAGE_CODES = new Set([
 
 export function friendlyError(
   err,
-  { context = '', online = typeof navigator === 'undefined' || navigator.onLine } = {},
+  { context = '', online = typeof navigator === 'undefined' || navigator.onLine !== false } = {},
 ) {
   console.error(`[callable error]${context ? ` ${context}` : ''}`, err?.code, err?.message, err?.details ?? '');
   const code = String(err?.code || '').replace(/^functions\//, '');

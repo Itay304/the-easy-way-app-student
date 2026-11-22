@@ -17,9 +17,15 @@ export default function Input({ label, error, disabled = false, id, name, classN
             ? 'border-brand-error-border focus:ring-2 focus:ring-brand-error'
             : 'border-black/10 focus:ring-2 focus:ring-brand-turquoise'
         } ${className}`}
+        aria-invalid={error ? 'true' : undefined}
+        aria-describedby={error && inputId ? `${inputId}-error` : undefined}
         {...rest}
       />
-      {error && <p className="text-caption text-brand-error mt-1">{error}</p>}
+      {error && (
+        <p id={inputId ? `${inputId}-error` : undefined} role="alert" className="text-caption text-brand-error mt-1">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
