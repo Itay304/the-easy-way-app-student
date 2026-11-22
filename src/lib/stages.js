@@ -13,7 +13,9 @@ export const STAGE_MIN = 10;
 export const STAGE_MAX = 15;
 export const SESSION_BASE = 16; // פריטים בסבב (חדשות + חזרה) — כ-5–7 דקות
 export const SESSION_MAX_REPEATS = 4; // טעויות שחוזרות פעם נוספת באותו סבב → עד 20 שאלות
-export const MAX_ASSIGNMENT_WORDS = 300;
+// מעל LARGE_ASSIGNMENT_WORDS — רק באישור המורה; MAX_ASSIGNMENT_WORDS — תקרה קשיחה (assignments-v2, כמו functions/stages.js)
+export const LARGE_ASSIGNMENT_WORDS = 300;
+export const MAX_ASSIGNMENT_WORDS = 1000;
 export const HIGH_PACE_WORDS_PER_DAY = 20;
 // כל מילה צריכה לפחות 2 הופעות ב-2 ימים, ולכן בסבב יציב חצי חדשות וחצי חזרה: כ-8 מילים חדשות לסבב.
 export const NEW_PER_SESSION = Math.ceil(SESSION_BASE / 2);

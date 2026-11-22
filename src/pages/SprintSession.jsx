@@ -23,6 +23,7 @@ import Confetti from '../components/practice/Confetti.jsx';
 import XpFlyup from '../components/practice/XpFlyup.jsx';
 import BadgeUnlockToast from '../components/practice/BadgeUnlockToast.jsx';
 import Card from '../components/ui/Card.jsx';
+import { assignmentSources } from '../lib/assignmentScope.js';
 import Button from '../components/ui/Button.jsx';
 
 const SPRINT_DURATION_SEC = 60;
@@ -35,8 +36,13 @@ async function buildSprintPool(uid, institutionId) {
   const active = res.data.assignments.filter((a) => a.status === 'active');
   if (active.length === 0) return [];
 
-  // רשימה אחת לכל listId (גלובלית או מוסדית — getWordsForAssignment)
-  const byList = new Map(active.filter((a) => a.listId).map((a) => [a.listId, a]));
+  // רשימה אחת לכל מקור (גלובלית או מוסדית — getWordsForAssignment); משימה משולבת תורמת את כל המקורות שלה
+  const byList = new Map();
+  for (const a of active) {
+    for (const s of assignmentSources(a)) {
+      if (s.listId && !byList.has(s.listId)) byList.set(s.listId, { listId: s.listId, listSource: s.listSource });
+    }
+  }
   const [wordLists, allProgress] = await Promise.all([
     Promise.all([...byList.values()].map((a) => getWordsForAssignment(a, institutionId))),
     getAllProgress(uid),
